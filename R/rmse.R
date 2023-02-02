@@ -35,7 +35,7 @@ rmse_prev <- function(formula, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
   }
 }
 
-rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, ...) {
+rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, date = 10, ...) {
   formula <- paste(deparse(formula), collapse = " ")
   x_lm <- dynlm(formula = formula(formula), data = data)
   formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
@@ -46,45 +46,40 @@ rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, ...) 
   x_piecelm_fixe <- piece_reg(x_lm, tvlm = FALSE, var_fixes = var_fixes, ...)
   x_piecetvlm_fixe <- piece_reg(x_lm, tvlm = TRUE, var_fixes = var_fixes, ...)
   x_tvlm_fixe <- fixed_coef$tv_reg
-  print("ok1")
   resid_lm <- x_lm$residuals
   resid_tvlm <- x_tvlm$residuals
   resid_tvlm_fixe <- x_tvlm_fixe$residuals
   if(inherits(x_piecelm, "lm")) {
     resid_piecelm <- x_piecelm$residuals
     resid_piecetvlm <- x_piecetvlm$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm, ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
+    prev_x_piecelm <- soos_prev(x_piecelm, date = date, ...)
+    prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   } else {
     resid_piecelm <- x_piecelm$model$residuals
     resid_piecetvlm <- x_piecetvlm$model$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm$model, ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
+    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, ...)
+    prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   if(inherits(x_piecelm_fixe, "lm")) {
     resid_piecelm_fixe <- x_piecelm_fixe$residuals
     resid_piecetvlm_fixe <- x_piecetvlm_fixe$residuals
-    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe, ...)
-    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
+    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe, date = date, ...)
+    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   } else {
     resid_piecelm_fixe <- x_piecelm_fixe$model$residuals
     resid_piecetvlm_fixe <- x_piecetvlm_fixe$model$residuals
-    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe$model, ...)
-    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
+    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe$model, date = date, ...)
+    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
-  print("ok2")
-  prev_x_lm <- soos_prev(x_lm, ...)
-  prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
-  print("ok3")
+  prev_x_lm <- soos_prev(x_lm, date = date, ...)
+  prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   data_est <- lapply(prev_x_lm$model, resid_lm_fixed, var_fixes = var_fixes)
-  prev_x_tvlm_fixe <- soos_prev(x_tvlm_fixe, data_est = data_est, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
+  prev_x_tvlm_fixe <- soos_prev(x_tvlm_fixe, data_est = data_est, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   prev_fixed_coef <- prev_lm_fixed(x = prev_x_lm, var_fixes = var_fixes, ...)
-  print("ok4")
   y <- prev_x_lm$model[[length(prev_x_lm$model)]]$model[, 1]
   y <- y[-seq_len(prev_x_lm$debut)]
   prev_x_tvlm_fixe$prevision <- prev_x_tvlm_fixe$prevision + prev_fixed_coef$prevision
   prev_x_tvlm_fixe$residuals <- y - prev_x_tvlm_fixe$prevision
-  print("ok5")
   resid_prev_lm <- prev_x_lm$residuals
   resid_prev_piecelm <- prev_x_piecelm$residuals
   resid_prev_piecetvlm <- prev_x_piecetvlm$residuals
@@ -92,7 +87,6 @@ rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, ...) 
   resid_prev_tvlm_fixe <- prev_x_tvlm_fixe$residuals
   resid_prev_piecelm_fixe <- prev_x_piecelm_fixe$residuals
   resid_prev_piecetvlm_fixe <- prev_x_piecetvlm_fixe$residuals
-  print("ok6")
   residus_past <- list(resid_lm, resid_piecelm, resid_piecetvlm, resid_tvlm, resid_piecelm_fixe, resid_piecetvlm_fixe, resid_tvlm_fixe)
   residus_fut <- data.frame(ts.union(
     resid_prev_lm,
@@ -103,12 +97,10 @@ rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, ...) 
     resid_prev_piecetvlm_fixe,
     resid_prev_tvlm_fixe
   ))
-  print("ok7")
   rmse_past <- sapply(residus_past, rmse_res)
   rmse_fut <- sapply(residus_fut, rmse_res)
   names(rmse_past) <- c("lm", "piece_lm", "piece_tvlm", "TvLM", "piece_lm fixed coeff", "piece_tvlm fixed coeff", "TvLM fixed coeff")
   names(rmse_fut) <- c("lm", "piece_lm", "piece_tvlm", "TvLM", "piece_lm fixed coeff", "piece_tvlm fixed coeff", "TvLM fixed coeff")
-  print("ok8")
   res <- list(
     model = list(
       "lm" = x_lm,
@@ -131,75 +123,66 @@ rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, ...) 
     rmse = list(rmse_past, rmse_fut)
   )
   class(res) <- "prev"
-  print("ok9")
   res
 }
 
 
-rmse_prev_stable <- function(formula, data, fixed_bw = FALSE, ...) {
-    formula <- paste(deparse(formula), collapse = " ")
-    x_lm <- dynlm(formula = formula(formula), data = data)
-    formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
-    x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
-    x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, ...)
-    x_tvlm <- tvLM(formula(formule), data = x_lm$model, ...)
-    print("ok1")
-    resid_lm <- x_lm$residuals
-    resid_tvlm <- x_tvlm$residuals
-    print("ok2")
-    prev_x_lm <- soos_prev(x_lm, ...)
-    prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
-    if(inherits(x_piecelm, "lm")) {
-      resid_piecelm <- x_piecelm$residuals
-      resid_piecetvlm <- x_piecetvlm$residuals
-      prev_x_piecelm <- soos_prev(x_piecelm, ...)
-      prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
-    } else {
-      resid_piecelm <- x_piecelm$model$residuals
-      resid_piecetvlm <- x_piecetvlm$model$residuals
-      prev_x_piecelm <- soos_prev(x_piecelm$model, ...)
-      prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, ...)
-    }
-    print("ok3")
-    print("ok4")
-    print("ok5")
-    resid_prev_lm <- prev_x_lm$residuals
-    resid_prev_piecelm <- prev_x_piecelm$residuals
-    resid_prev_piecetvlm <- prev_x_piecetvlm$residuals
-    resid_prev_tvlm <- prev_x_tvlm$residuals
-    print("ok6")
-    residus_past <- list(resid_lm, resid_piecelm, resid_piecetvlm, resid_tvlm)
-    residus_fut <- data.frame(ts.union(
-      resid_prev_lm,
-      resid_prev_piecelm,
-      resid_prev_piecetvlm,
-      resid_prev_tvlm
-    ))
-    print("ok7")
-    rmse_past <- sapply(residus_past, rmse_res)
-    rmse_fut <- sapply(residus_fut, rmse_res)
-    names(rmse_past) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
-    names(rmse_fut) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
-    print("ok8")
-    res <- list(
-      model = list(
-        "lm" = x_lm,
-        "piece_lm" = x_piecelm,
-        "piece_tvlm" = x_piecetvlm,
-        "tvlm" = x_tvlm
-      ),
-      prevision = list(
-        "prev_lm" = prev_x_lm,
-        "prev_piece_lm" = prev_x_piecelm,
-        "prev_piece_tvlm" = prev_x_piecetvlm,
-        "prev_tvlm" = prev_x_tvlm
-      ),
-      rmse = list(rmse_past, rmse_fut)
-    )
-    class(res) <- "prev"
-    print("ok9")
-    res
+
+rmse_prev_stable <- function(formula, data, fixed_bw = FALSE, date = 10, ...) {
+  formula <- paste(deparse(formula), collapse = " ")
+  x_lm <- dynlm(formula = formula(formula), data = data)
+  formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
+  x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, ...)
+  x_tvlm <- tvLM(formula(formule), data = x_lm$model, ...)
+  resid_lm <- x_lm$residuals
+  resid_tvlm <- x_tvlm$residuals
+  prev_x_lm <- soos_prev(x_lm, date = date,...)
+  prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
+  if(inherits(x_piecelm, "lm")) {
+    resid_piecelm <- x_piecelm$residuals
+    resid_piecetvlm <- x_piecetvlm$residuals
+    prev_x_piecelm <- soos_prev(x_piecelm, date = date, ...)
+    prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
+  } else {
+    resid_piecelm <- x_piecelm$model$residuals
+    resid_piecetvlm <- x_piecetvlm$model$residuals
+    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, ...)
+    prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
+  resid_prev_lm <- prev_x_lm$residuals
+  resid_prev_piecelm <- prev_x_piecelm$residuals
+  resid_prev_piecetvlm <- prev_x_piecetvlm$residuals
+  resid_prev_tvlm <- prev_x_tvlm$residuals
+  residus_past <- list(resid_lm, resid_piecelm, resid_piecetvlm, resid_tvlm)
+  residus_fut <- data.frame(ts.union(
+    resid_prev_lm,
+    resid_prev_piecelm,
+    resid_prev_piecetvlm,
+    resid_prev_tvlm
+  ))
+  rmse_past <- sapply(residus_past, rmse_res)
+  rmse_fut <- sapply(residus_fut, rmse_res)
+  names(rmse_past) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
+  names(rmse_fut) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
+  res <- list(
+    model = list(
+      "lm" = x_lm,
+      "piece_lm" = x_piecelm,
+      "piece_tvlm" = x_piecetvlm,
+      "tvlm" = x_tvlm
+    ),
+    prevision = list(
+      "prev_lm" = prev_x_lm,
+      "prev_piece_lm" = prev_x_piecelm,
+      "prev_piece_tvlm" = prev_x_piecetvlm,
+      "prev_tvlm" = prev_x_tvlm
+    ),
+    rmse = list(rmse_past, rmse_fut)
+  )
+  class(res) <- "prev"
+  res
+}
 
 #' @export
 print.prev <- function(x, ...) {
