@@ -66,13 +66,19 @@ ssm_lm.default <- function(x,
                    fixed_variables = TRUE, ...,
                    remove_last_dummies = FALSE) {
   data <<- x
+
+  if(length(var_variables) == 1)
+    var_variables <- rep(var_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
+  if(length(fixed_variables) == 1)
+    fixed_variables <- rep(fixed_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
+  names(var_variables) <- names(fixed_variables) <- colnames(data[,-1])
+
   if (remove_last_dummies) {
     # on enleve la derniere ligne car on utilise le filtering et il faut au moins 1 obs
     # apres la premiere date de l indicatrice
     data_0 = apply(data[-nrow(data),],2, function(x) all(x==0))
     data = data[, !data_0]
   }
-
   jmodel <- rjd3sts::model()
   jeq <- rjd3sts::equation("eq1",variance = 0, fixed = TRUE)  #ne pas modifier
 
@@ -88,7 +94,11 @@ ssm_lm.default <- function(x,
   }
 
   for (nom_var in colnames(data)[-1]) {
-    rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables, fixed = fixed_variables))
+    if (fixed_variables[nom_var] & var_variables[nom_var] == 0){
+      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = NULL, fixed = fixed_variables[nom_var]))
+    } else {
+      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_variables[nom_var]))
+    }
     rjd3sts::add.equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
@@ -131,7 +141,7 @@ ssm_lm.default <- function(x,
   col_to_remove = ncol(filtering_states)
   if(trend)
     col_to_remove = c(2, col_to_remove)
-  X = data[, -1]
+  X = data[, -1, drop = FALSE]
   if (trend | intercept)
     X = cbind(1, X)
   fitted_filtering <- rowSums(X * filtered_states[,-col_to_remove])
@@ -139,6 +149,9 @@ ssm_lm.default <- function(x,
   fitted_smoothed <- rowSums(X * smoothed_states[,-col_to_remove])
   fitted <- cbind(fitted_smoothed, fitted_filtered, fitted_filtering)
   colnames(fitted) <- c("smoothed", "filtered", "filtering")
+  if (is.ts(data)) {
+    fitted <- ts(fitted, end = end(data), frequency = frequency(data))
+  }
 
   if (remove_last_dummies && any(data_0)) {
     smoothed_states <- add_removed_var(smoothed_states, data_0, intercept, trend)
@@ -278,6 +291,9 @@ ssm_lm_oos <- function(model, trend = FALSE,
                        remove_last_dummies = TRUE)
   filtering <- ts(t(sapply(est_models, function(x) tail(x$filtering_states, 1))),
                   end = end(data), frequency = frequency(data))
+  filtering[, ncol(filtering)] <- ts(t(sapply(est_models, function(x) {
+    tail(x$data[,1],1) - tail(x$fitted[,3], 1)})),
+    end = end(data), frequency = frequency(data))
   colnames(filtering) <- colnames(est_models[[1]]$filtering_states)
   filtering
 }
