@@ -23,10 +23,20 @@ get_data <- function(model, ...) {
   UseMethod("get_data", model)
 }
 
+
+
+
 #' @rdname get_data
 #' @export
+get_data.lm <- function(model, start, ...) {
+  if (missing(start))
+    start <- as.numeric(rownames(model$model)[1])
+  ts(model$model, start = start,...)
+}
 
-get_data.lm <- function(model, ...) {
+#' @rdname get_data
+#' @export
+get_data.dynlm <- function(model, ...) {
   dates <- sapply(strsplit(rownames(model$model), " "), function(x) {
     gsub("\\D", "", x)
   })
@@ -38,7 +48,6 @@ get_data.lm <- function(model, ...) {
 
 #' @rdname get_data
 #' @export
-
 get_data.tvlm <- function(model, end, frequency, ...) {
   data <- cbind(model$y, model$x)
   # gsub(" ~.*", "", deparse(model$call$formula)) # plutot que y
@@ -51,7 +60,6 @@ get_data.tvlm <- function(model, end, frequency, ...) {
 
 #' @rdname get_data
 #' @export
-
 get_data.bp.lms <- function(model, ...) {
   if (model$tvlm) {
     data <- sapply(seq_along(model$model), function(i) {

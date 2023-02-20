@@ -25,9 +25,44 @@
 #' \item{rmse}{a list of the 2 computed rmse, in sample and out of sample}
 #'
 #' @export
-#'
+rmse_prev <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...){
+  UseMethod("rmse_prev", x)
+}
 
-rmse_prev <- function(formula, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
+#'@export
+rmse_prev.formula <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
+  formula <- paste(deparse(formula), collapse = " ")
+  x_lm <- dynlm(formula = formula(formula), data = data)
+  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  if(intercept) {
+    formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  } else {
+    formule <- sprintf("%s ~ 0 + .", colnames(x_lm$model)[1])
+  }
+  data = get_data(x_lm)
+  colnames(data) = c("y", names(x_lm$coefficients))
+
+  if (is.null(var_fixes)) {
+    rmse_prev_stable(formula = formula, data = data, fixed_bw = fixed_bw, ...)
+  } else {
+    rmse_prev_instable(formula = formula, data = data, var_fixes = var_fixes, fixed_bw = fixed_bw, ...)
+  }
+}
+
+#' @export
+rmse_prev.lm <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
+  x_lm <- x
+  formula <- paste(deparse(get_formula(x_lm)), collapse = " ")
+  data = get_data(x_lm)
+  colnames(data) = c("y", names(x_lm$coefficients)[-1])
+
+  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  if(intercept) {
+    formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  } else {
+    formule <- sprintf("%s ~ 0 + .", colnames(x_lm$model)[1])
+  }
+
   if (is.null(var_fixes)) {
     rmse_prev_stable(formula = formula, data = data, fixed_bw = fixed_bw, ...)
   } else {
@@ -36,9 +71,14 @@ rmse_prev <- function(formula, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
 }
 
 rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, date = 10, ...) {
-  formula <- paste(deparse(formula), collapse = " ")
-  x_lm <- dynlm(formula = formula(formula), data = data)
-  formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  # formula <- paste(deparse(formula), collapse = " ")
+  # x_lm <- dynlm(formula = formula(formula), data = data)
+  # intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  # if(intercept) {
+  #   formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  # } else {
+  #   formule <- sprintf("%s ~ 0 + .", colnames(x_lm$model)[1])
+  # }
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL, ...)
   x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, ...)
   x_tvlm <- tvLM(formula(formule), data = x_lm$model, ...)
@@ -129,9 +169,14 @@ rmse_prev_instable <- function(formula, data, var_fixes, fixed_bw = FALSE, date 
 
 
 rmse_prev_stable <- function(formula, data, fixed_bw = FALSE, date = 10, ...) {
-  formula <- paste(deparse(formula), collapse = " ")
-  x_lm <- dynlm(formula = formula(formula), data = data)
-  formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  # formula <- paste(deparse(formula), collapse = " ")
+  # x_lm <- dynlm(formula = formula(formula), data = data)
+  # intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  # if(intercept) {
+  #   formule <- sprintf("%s ~ .", colnames(x_lm$model)[1])
+  # } else {
+  #   formule <- sprintf("%s ~ 0 + .", colnames(x_lm$model)[1])
+  # }
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
   x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, ...)
   x_tvlm <- tvLM(formula(formule), data = x_lm$model, ...)

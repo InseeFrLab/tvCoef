@@ -58,20 +58,20 @@ ssm_lm.lm <- function(x, trend = FALSE,
 ssm_lm.default <- function(x,
                            intercept = TRUE,
                            trend = FALSE,
-                   var_intercept = 0,
-                   var_slope = 0,
-                   var_variables = 0,
-                   fixed_intercept = TRUE,
-                   fixed_trend = TRUE,
-                   fixed_variables = TRUE, ...,
-                   remove_last_dummies = FALSE) {
-  data <<- x
+                           var_intercept = 0,
+                           var_slope = 0,
+                           var_variables = 0,
+                           fixed_intercept = TRUE,
+                           fixed_trend = TRUE,
+                           fixed_variables = TRUE, ...,
+                           remove_last_dummies = FALSE) {
+  data <- x
 
   if(length(var_variables) == 1)
     var_variables <- rep(var_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
   if(length(fixed_variables) == 1)
     fixed_variables <- rep(fixed_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
-  names(var_variables) <- names(fixed_variables) <- colnames(data[,-1])
+  names(var_variables) <- names(fixed_variables) <- colnames(data)[-1]
 
   if (remove_last_dummies) {
     # on enleve la derniere ligne car on utilise le filtering et il faut au moins 1 obs
@@ -199,7 +199,8 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 
 
 ssm_lm_data <- function(data,
-                        intercept = TRUE, trend = FALSE,
+                        intercept = TRUE,
+                        trend = FALSE,
                         var_intercept = 0,
                         var_variables = 1,
                         fixed_intercept = FALSE,
@@ -273,29 +274,43 @@ ssm_lm_data <- function(data,
 #' Returns all coefficients of all variables and the residual
 #'
 #' @export
-ssm_lm_oos <- function(model, trend = FALSE,
+ssm_lm_oos <- function(model,
+                       trend = FALSE,
                        var_intercept = 0,
                        var_variables = 0,
                        fixed_intercept = TRUE,
                        fixed_variables = TRUE, ...) {
   data <- get_data(model)
+  intercept <- length(grep("Intercept", names(coef(model)))) > 0
   est_data <- lapply(time(data)[-(1:28)], function(end_date) {
     window(data, end = end_date)
   })
   est_models <- lapply(est_data, ssm_lm,
                        trend = trend,
+                       intercept = intercept,
                        var_intercept = var_intercept,
                        var_variables = var_variables,
                        fixed_intercept = fixed_intercept,
                        fixed_variables = fixed_variables,
                        remove_last_dummies = TRUE)
-  filtering <- ts(t(sapply(est_models, function(x) tail(x$filtering_states, 1))),
-                  end = end(data), frequency = frequency(data))
-  filtering[, ncol(filtering)] <- ts(t(sapply(est_models, function(x) {
-    tail(x$data[,1],1) - tail(x$fitted[,3], 1)})),
-    end = end(data), frequency = frequency(data))
-  colnames(filtering) <- colnames(est_models[[1]]$filtering_states)
-  filtering
+  # filtering <- ts(t(sapply(est_models, function(x) tail(x$filtering_states, 1))),
+  #                 end = end(data), frequency = frequency(data))
+  # filtering[, ncol(filtering)] <- ts(t(sapply(est_models, function(x) {
+  #   tail(x$data[,1],1) - tail(x$fitted[,"filtering"], 1)})),
+  #   end = end(data), frequency = frequency(data))
+  # colnames(filtering) <- colnames(est_models[[1]]$filtering_states)
+  # filtering
+  oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
+                                                    1))),
+              end = end(data), frequency = frequency(data))
+  oos_f[, ncol(oos_f)] <- data[,1] -
+    ts(sapply(est_models, function(x) tail(x$fitted[,"filtering"],
+                                           1)),
+       end = end(data), frequency = frequency(data))
+  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)
+  res = list(oos_f,
+             est_models)
+  res
 }
 
 
