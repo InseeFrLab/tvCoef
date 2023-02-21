@@ -3,13 +3,16 @@
 \name{get_data}
 \alias{get_data}
 \alias{get_data.lm}
+\alias{get_data.dynlm}
 \alias{get_data.tvlm}
 \alias{get_data.bp.lms}
 \title{Get data function}
 \usage{
 get_data(model, ...)
 
-\method{get_data}{lm}(model, ...)
+\method{get_data}{lm}(model, start, ...)
+
+\method{get_data}{dynlm}(model, ...)
 
 \method{get_data}{tvlm}(model, end, frequency, ...)
 

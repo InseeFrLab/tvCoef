@@ -54,10 +54,13 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...
   intercept <- length(grep("Intercept", names(coef(x)))) > 0
   if (intercept) {
     data_ <- cbind(data[, 1], 1, data[, -1])
-    colnames(data_) <- c(colnames(data)[1], "(Intercept)", colnames(data)[-1])
+    colnames(data_) <- c("y", "(Intercept)", colnames(data)[-1])
     data <- data_
+  } else {
+    colnames(data) <- c("y", colnames(data)[-1])
   }
-  formula <- sprintf("%s ~ -1 + .", colnames(x$model)[1])
+  formula <- sprintf("%s ~ 0 + .", colnames(data)[1])
+
   if (is.null(break_dates)) {
     break_dates <- breakdates(breakpoints(as.formula(formula), data = data))
   }

@@ -27,11 +27,16 @@ soos_prev <- function(model, date = 10, period = 1, ...) {
 #' @export
 
 soos_prev.lm <- function(model, date = 10, period = 1, data, ...) {
-  formula <- get_formula(model)
+  # formula <- get_formula(model)
   if (missing(data)) {
     data <- get_data(model)
   }
-  formule <- sprintf("%s ~ .", colnames(data)[1])
+  intercept <- length(grep("Intercept", names(coef(model)))) > 0
+  if(intercept) {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
+  } else {
+    formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
+  }
   est_dates <- time(data)
   est_dates <- est_dates[seq(date, length(est_dates))]
   est_dates <- est_dates[seq(1, length(est_dates), by = period)]
@@ -83,7 +88,12 @@ soos_prev.tvlm <- function(model, data_est = NULL, date = 10, period = 1, fixed_
     bw <- NULL
   }
   data <- get_data(model, end = end, frequency = frequency)
-  formule <- sprintf("%s ~ .", colnames(data)[1])
+  intercept <- length(grep("Intercept", names(coef(model)))) > 0
+  if(intercept) {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
+  } else {
+    formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
+  }
   est_dates <- time(data)
   est_dates <- est_dates[seq(date, length(est_dates))]
   est_dates <- est_dates[seq(1, length(est_dates), by = period)]

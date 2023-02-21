@@ -2,12 +2,18 @@
 % Please edit documentation in R/rmse.R
 \name{rmse_prev}
 \alias{rmse_prev}
+\alias{rmse_prev.formula}
+\alias{rmse_prev.lm}
 \title{Computes RMSE of different models}
 \usage{
-rmse_prev(formula, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+rmse_prev(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+
+\method{rmse_prev}{formula}(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+
+\method{rmse_prev}{lm}(x, var_fixes = NULL, fixed_bw = FALSE, ...)
 }
 \arguments{
-\item{formula}{an object of class \code{formula}, that is the description of the model to be fitted.}
+\item{x}{an object of class \code{formula} or \code{lm}, that is the description of the model to be fitted, or the model itself.}
 
 \item{data}{a \code{ts} object containing the variables in the model}
 
@@ -31,5 +37,5 @@ In additional arguments, parameters as date and period can be informed. As in \l
 
 To estimate prevision models, the function \link{soos_prev} is used.
 
-For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before \link{bp.lms} or \link{tvLM} are run on oving variables.
+For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before \link{bp.lms} or \link{tvLM} are run on moving variables.
 }

@@ -8,7 +8,7 @@ get_formula <- function(x) {
 #' @export
 
 get_formula.default <- function(x) {
-  x$call$formula
+  as.formula(x[["call"]][["formula"]])
 }
 
 #' Get data function
@@ -22,9 +22,6 @@ get_formula.default <- function(x) {
 get_data <- function(model, ...) {
   UseMethod("get_data", model)
 }
-
-
-
 
 #' @rdname get_data
 #' @export
