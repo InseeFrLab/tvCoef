@@ -9,7 +9,7 @@
 #' @param var_intercept,var_slope variance of the intercept and the slope (used if `trend = TRUE`).
 #' @param var_variables ??
 #' @param fixed_intercept ??
-#' @param fixed_variables ??
+#' @param fixed_variables ??.
 #'
 #' @return Returns a `list` containig :
 #' \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
