@@ -15,5 +15,5 @@ resid_lm_fixed(x, var_fixes)
 A new environment where the explained variable is named "fixed".
 }
 \description{
-According to parameter code\link{var_fixes}, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
+According to parameter \code{var_fixes}, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 }

@@ -18,18 +18,19 @@
 #' \item{tvlm}{same as the parameter specified above}
 #'
 #' @export
-
+#' @importFrom tvReg tvLM
+#' @importFrom strucchange breakdates breakpoints
 bp.lms <- function(x, data, right = TRUE, break_dates, tvlm = FALSE, ...) {
   formula <- sprintf("%s ~ .", colnames(x$model)[1])
   .data <- ts(x$model, end = end(data), frequency = frequency(data))
   if (missing(break_dates)) {
-    break_dates <- breakdates(breakpoints(as.formula(formula), data = x$model))
+    break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = x$model))
   }
   if (all(is.na(break_dates))) {
     if (!tvlm) {
       return(x)
     } else {
-      tv = tvLM(formula = formula, data = x$model, ...)
+      tv = tvReg::tvLM(formula = formula, data = x$model, ...)
       return(tv)
     }
   } else {

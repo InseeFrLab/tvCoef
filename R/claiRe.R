@@ -51,7 +51,7 @@ lm_fenetre_fixe <- function(formula, data, nbw = 1) {
 
 #' @export
 
-print.lmffixe <- function(x) {
+print.lmffixe <- function(x, ...) {
   colname <- sapply(1:length(x$model), function(i) {
     start <- time(x$model[[i]])[1]
     end <- time(x$model[[i]])[length(time(x$model[[i]]))]
@@ -156,7 +156,7 @@ prev_tvlm <- function(x) {
 #' Extract data frame for lm_fixed_coeff
 #'
 #' @description
-#' According to parameter code[var_fixes], computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
+#' According to parameter `var_fixes`, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 #'
 #' @param x `lm` model
 #' @param var_fixes list of variables that don't vary through time according to [hansen.test]
@@ -207,8 +207,8 @@ lm_fixed_coeff <- function(formula, data, var_fixes, ...) {
   formula <- deparse(formula)
   x <- dynlm::dynlm(formula = formula(paste(formula, collapse = " ")), data = data)
   data_variables <- resid_lm_fixed(x, var_fixes = var_fixes)
-  y_lm <- dynlm(formula = fixes ~ -1 + ., data = data_variables)
-  y_tvlm <- tvLM(fixes ~ -1 + ., data = data_variables, ...)
+  y_lm <- dynlm::dynlm(formula = fixes ~ -1 + ., data = data_variables)
+  y_tvlm <- tvReg::tvLM(fixes ~ -1 + ., data = data_variables, ...)
   y_bplm <- bp.lms(y_lm, data_variables)
   res <- list(
     global_model = x,

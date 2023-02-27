@@ -191,9 +191,9 @@ soos_prev.bp.lms <- function(model, data_est = NULL, date = 10, period = 1, data
     }
     if(model$tvlm) {
       model <- lapply(dataf, function(data) {
-        tryCatch(tvLM(data = data, formula = as.formula(formule), bw = bw[[i]], ...),
+        tryCatch(tvReg::tvLM(data = data, formula = as.formula(formule), bw = bw[[i]], ...),
                  error = function(e) {
-                   tvLM(data = data, formula = as.formula(formule), bw = NULL, ...)
+                   tvReg::tvLM(data = data, formula = as.formula(formule), bw = NULL, ...)
                  })
       })
     } else {

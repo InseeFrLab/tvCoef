@@ -4,10 +4,10 @@
 \alias{plot.best_ssm}
 \title{Plot best_ssm}
 \usage{
-\method{plot}{best_ssm}(ssm, choice = c("smoothed", "filtered", "filtering"))
+\method{plot}{best_ssm}(x, choice = c("smoothed", "filtered", "filtering"), ...)
 }
 \arguments{
-\item{ssm}{a \code{best_ssm} object}
+\item{x}{a \code{best_ssm} object}
 
 \item{choice}{choose between \code{smoothed}, \code{filtered} or \code{filtering}}
 }

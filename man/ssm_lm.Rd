@@ -8,6 +8,7 @@ ssm_lm(
   x,
   trend = FALSE,
   var_intercept = 0,
+  var_trend = 0,
   var_slope = 0,
   var_variables = 0,
   fixed_intercept = TRUE,
@@ -43,5 +44,5 @@ Returns a \code{list} containig :
 \description{
 Computes state space model with one equation. Starting with a simple \code{lm} model, build the all state space model and run it.
 
-Use \link{rjd3stst} and \link{rjd3toolkit} packages.
+Use \code{rjd3sts} packages.
 }

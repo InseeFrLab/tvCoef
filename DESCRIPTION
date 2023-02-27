@@ -1,16 +1,20 @@
 Package: tvCoef
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Linear Time-Varying Coefficient Models
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: c(
+  person("Claire", "de Rosamel", role = c("aut")),
+  person("Alain", "Quartier-la-Tente", role = c("aut", "cre"),
+                 email = "alain.quartier@yahoo.fr",
+                 comment = c(ORCID = "0000-0001-7890-3857")))
+Description: Convert linear model to a time-varying coefficient model using
+  stepwise regressions, local regressions or state-space models.
 License: EUPL
 Depends: 
     R (>= 3.6.0)
 Imports:
   dynlm,
+  strucchange,
   tvReg,
   rjd3toolkit,
   rjd3sts

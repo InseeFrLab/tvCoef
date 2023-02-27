@@ -2,7 +2,7 @@
 #' @description
 #' Computes state space model with one equation. Starting with a simple `lm` model, build the all state space model and run it.
 #'
-#' Use [rjd3stst] and [rjd3toolkit] packages.
+#' Use `rjd3sts` packages.
 #'
 #' @param model a `lm` or `dynlm` model
 #' @param trend trend
@@ -24,6 +24,7 @@
 
 ssm_lm <- function(x, trend = FALSE,
                    var_intercept = 0,
+                   var_trend = 0,
                    var_slope = 0,
                    var_variables = 0,
                    fixed_intercept = TRUE,
@@ -35,6 +36,7 @@ ssm_lm <- function(x, trend = FALSE,
 #' @export
 ssm_lm.lm <- function(x, trend = FALSE,
                       var_intercept = 0,
+                      var_trend = 0,
                       var_slope = 0,
                       var_variables = 0,
                       fixed_intercept = TRUE,
@@ -45,6 +47,7 @@ ssm_lm.lm <- function(x, trend = FALSE,
          intercept = length(grep("Intercept", names(coef(x)))) > 0,
          trend = trend,
          var_intercept = var_intercept,
+         var_trend = var_trend,
          var_slope = var_slope,
          var_variables = var_variables,
          fixed_intercept = fixed_intercept,
@@ -59,6 +62,7 @@ ssm_lm.default <- function(x,
                            intercept = TRUE,
                            trend = FALSE,
                            var_intercept = 0,
+                           var_trend = 0,
                            var_slope = 0,
                            var_variables = 0,
                            fixed_intercept = TRUE,
@@ -277,6 +281,7 @@ ssm_lm_data <- function(data,
 ssm_lm_oos <- function(model,
                        trend = FALSE,
                        var_intercept = 0,
+                       var_trend = 0,
                        var_variables = 0,
                        fixed_intercept = TRUE,
                        fixed_variables = TRUE, ...) {
@@ -289,6 +294,7 @@ ssm_lm_oos <- function(model,
                        trend = trend,
                        intercept = intercept,
                        var_intercept = var_intercept,
+                       var_trend = var_trend,
                        var_variables = var_variables,
                        fixed_intercept = fixed_intercept,
                        fixed_variables = fixed_variables,
@@ -737,10 +743,10 @@ ssm_lm_best_oos <- function(model) {
 }
 
 #' @export
-print.best_ssm <- function(res) {
-  print(rbind("rmse_best_model_smoothed" = names(res$rmse_best_model_smoothed),
-              "rmse_best_model_filtered" = names(res$rmse_best_model_filtered),
-              "rmse_best_model_filtering" = names(res$rmse_best_model_filtering)))
+print.best_ssm <- function(x, ...) {
+  print(rbind("rmse_best_model_smoothed" = names(x$rmse_best_model_smoothed),
+              "rmse_best_model_filtered" = names(x$rmse_best_model_filtered),
+              "rmse_best_model_filtering" = names(x$rmse_best_model_filtering)))
 }
 
 #' Plot best_ssm
@@ -748,14 +754,14 @@ print.best_ssm <- function(res) {
 #' @description
 #' Plot explained variable against fitted values computed with smoothed, filtered or filtering states.
 #'
-#' @param ssm a `best_ssm` object
+#' @param x a `best_ssm` object
 #' @param choice choose between `smoothed`, `filtered` or `filtering`
 #'
 #' @export
-plot.best_ssm <- function(ssm, choice = c("smoothed", "filtered", "filtering")) {
+plot.best_ssm <- function(x, choice = c("smoothed", "filtered", "filtering"), ...) {
   choice = match.arg(tolower(choice)[1],
                      choices = c("smoothed", "filtered", "filtering"))
-  best_mod = ssm[[sprintf("best_model_%s", choice)]]
+  best_mod = x[[sprintf("best_model_%s", choice)]]
   best_mod = best_mod[[names(best_mod)]]
   fitted =  fitted(best_mod)
   plot(cbind(best_mod$data[,1], fitted), plot.type = "s", col = c("black", "red"))

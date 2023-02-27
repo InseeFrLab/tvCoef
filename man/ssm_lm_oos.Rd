@@ -8,6 +8,7 @@ ssm_lm_oos(
   model,
   trend = FALSE,
   var_intercept = 0,
+  var_trend = 0,
   var_variables = 0,
   fixed_intercept = TRUE,
   fixed_variables = TRUE,

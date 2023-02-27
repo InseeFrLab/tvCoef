@@ -34,7 +34,7 @@ rmse_prev <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...){
 #' @export
 rmse_prev.formula <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
   formula <- paste(deparse(x), collapse = " ")
-  x_lm <- dynlm(formula = as.formula(formula), data = data)
+  x_lm <- dynlm::dynlm(formula = as.formula(formula), data = data)
   data = get_data(x_lm)
 
   intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
@@ -76,7 +76,7 @@ rmse_prev.lm <- function(x, var_fixes = NULL, fixed_bw = FALSE, ...) {
 }
 
 rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE, date = 10, ...) {
-  x_tvlm <- tvLM(formula(formule), data = data, ...)
+  x_tvlm <- tvReg::tvLM(formula(formule), data = data, ...)
   if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
   x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, bw = b)
@@ -167,7 +167,7 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
 
 
 rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 10, ...) {
-  x_tvlm <- tvLM(formula(formule), data = data, ...)
+  x_tvlm <- tvReg::tvLM(formula(formule), data = data, ...)
   if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
   x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, bw = b)

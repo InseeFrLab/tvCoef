@@ -1,4 +1,6 @@
-#' @importFrom stats as.formula coef coefficients deltat end fitted frequency is.mts lm na.omit resid residuals start time ts ts.union tsp window
+#' @importFrom stats as.formula coef coefficients deltat end fitted frequency is.mts lm na.omit resid residuals start time ts ts.union tsp window is.ts
+#' @importFrom stats formula
+#' @importFrom utils tail
 NULL
 
 #' Break data
@@ -62,13 +64,13 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
   formula <- sprintf("%s ~ 0 + .", colnames(data)[1])
 
   if (is.null(break_dates)) {
-    break_dates <- breakdates(breakpoints(as.formula(formula), data = data))
+    break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = data))
   }
   if (all(is.na(break_dates))) {
     if (!tvlm) {
       return(x)
     } else {
-      tv = tvLM(formula = formula, data = data, bw = bw, ...)
+      tv = tvReg::tvLM(formula = formula, data = data, bw = bw, ...)
       return(tv)
     }
   }
@@ -77,9 +79,9 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
     data2 <- cbind(data[,1], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_break))
     if(!tvlm) {
-      piecereg = dynlm(formula = as.formula(formula), data = data2)
+      piecereg = dynlm::dynlm(formula = as.formula(formula), data = data2)
     } else {
-      piecereg = tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
+      piecereg = tvReg::tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
     }
   } else {
     data_x = data[,-1]
@@ -87,9 +89,9 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
     data2 <- cbind(data[,1], data_x[,var_fixes], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_x)[var_fixes], colnames(data_break))
     if(!tvlm) {
-      piecereg = dynlm(formula = as.formula(formula), data = data2)
+      piecereg = dynlm::dynlm(formula = as.formula(formula), data = data2)
     } else {
-      piecereg = tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
+      piecereg = tvReg::tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
     }
   }
   res <- list(
