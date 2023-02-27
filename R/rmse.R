@@ -76,12 +76,13 @@ rmse_prev.lm <- function(x, var_fixes = NULL, fixed_bw = FALSE, ...) {
 }
 
 rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE, date = 10, ...) {
-  x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL, ...)
-  x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, ...)
   x_tvlm <- tvLM(formula(formule), data = data, ...)
+  if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
+  x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
+  x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, bw = b)
   fixed_coef <- lm_fixed_coeff(formula = formula(formule), data = data, var_fixes = var_fixes, ...)
-  x_piecelm_fixe <- piece_reg(x_lm, tvlm = FALSE, var_fixes = var_fixes, ...)
-  x_piecetvlm_fixe <- piece_reg(x_lm, tvlm = TRUE, var_fixes = var_fixes, ...)
+  x_piecelm_fixe <- piece_reg(x_lm, tvlm = FALSE, var_fixes = var_fixes)
+  x_piecetvlm_fixe <- piece_reg(x_lm, tvlm = TRUE, var_fixes = var_fixes, bw = b)
   x_tvlm_fixe <- fixed_coef$tv_reg
   resid_lm <- x_lm$residuals
   resid_tvlm <- x_tvlm$residuals
@@ -166,9 +167,10 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
 
 
 rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 10, ...) {
-  x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
-  x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL)
   x_tvlm <- tvLM(formula(formule), data = data, ...)
+  if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
+  x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
+  x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, bw = b)
   resid_lm <- x_lm$residuals
   resid_tvlm <- x_tvlm$residuals
   prev_x_lm <- soos_prev(x_lm, date = date, data = data, ...)

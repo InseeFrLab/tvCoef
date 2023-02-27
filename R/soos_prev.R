@@ -88,7 +88,7 @@ soos_prev.tvlm <- function(model, data_est = NULL, date = 10, period = 1, fixed_
     bw <- NULL
   }
   data <- get_data(model, end = end, frequency = frequency)
-  intercept <- length(grep("Intercept", names(coef(model)))) > 0
+  intercept <- length(grep("Intercept", colnames(coef(model)))) > 0
   if(intercept) {
     formule <- sprintf("%s ~ .", colnames(data)[1])
   } else {

@@ -15,7 +15,7 @@ rmse_prev(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
 \arguments{
 \item{x}{an object of class \code{formula} or \code{lm}, that is the description of the model to be fitted, or the model itself.}
 
-\item{data}{a \code{ts} object containing the variables in the model}
+\item{data}{a \code{ts} object containing the variables in the model. Necessary only when \code{x} is a formula.}
 
 \item{var_fixes}{which variables of the model should have their coefficients fixed for the models with fixed coefficients. Obtained thanks to the hansen test.}
 

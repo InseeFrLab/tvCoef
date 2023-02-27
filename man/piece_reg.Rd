@@ -4,7 +4,14 @@
 \alias{piece_reg}
 \title{Piecewise regression}
 \usage{
-piece_reg(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...)
+piece_reg(
+  x,
+  break_dates = NULL,
+  var_fixes = NULL,
+  tvlm = FALSE,
+  bw = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{lm} object, of which we will separate the data}

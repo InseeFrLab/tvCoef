@@ -49,7 +49,7 @@ break_data <- function(x, break_dates, right = TRUE, ...) {
 #'
 #' @export
 
-piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...) {
+piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw = NULL,...) {
   data <- get_data(x)
   intercept <- length(grep("Intercept", names(coef(x)))) > 0
   if (intercept) {
@@ -68,7 +68,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...
     if (!tvlm) {
       return(x)
     } else {
-      tv = tvLM(formula = formula, data = data, ...)
+      tv = tvLM(formula = formula, data = data, bw = bw, ...)
       return(tv)
     }
   }
@@ -79,7 +79,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...
     if(!tvlm) {
       piecereg = dynlm(formula = as.formula(formula), data = data2)
     } else {
-      piecereg = tvLM(formula = as.formula(formula), data = data2, ...)
+      piecereg = tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
     }
   } else {
     data_x = data[,-1]
@@ -89,7 +89,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, ...
     if(!tvlm) {
       piecereg = dynlm(formula = as.formula(formula), data = data2)
     } else {
-      piecereg = tvLM(formula = as.formula(formula), data = data2, ...)
+      piecereg = tvLM(formula = as.formula(formula), data = data2, bw = bw, ...)
     }
   }
   res <- list(

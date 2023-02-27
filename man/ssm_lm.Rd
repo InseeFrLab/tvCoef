@@ -26,7 +26,7 @@ ssm_lm(
 
 \item{fixed_intercept}{??}
 
-\item{fixed_variables}{??}
+\item{fixed_variables}{??.}
 
 \item{model}{a \code{lm} or \code{dynlm} model}
 }
