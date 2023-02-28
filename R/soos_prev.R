@@ -31,11 +31,16 @@ soos_prev.lm <- function(model, date = 10, period = 1, data, ...) {
   if (missing(data)) {
     data <- get_data(model)
   }
-  intercept <- length(grep("Intercept", names(coef(model)))) > 0
-  if(intercept) {
-    formule <- sprintf("%s ~ .", colnames(data)[1])
-  } else {
+  intercept_coef <- length(grep("Intercept", names(coef(model)))) > 0
+  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+  if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
+  } else if (intercept_coef & !intercept_data) {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
+  } else if (!intercept_coef & !intercept_data) {
+    formule <- sprintf("%s ~ 0+ .", colnames(data)[1])
+  } else {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
   }
   est_dates <- time(data)
   est_dates <- est_dates[seq(date, length(est_dates))]
@@ -88,11 +93,17 @@ soos_prev.tvlm <- function(model, data_est = NULL, date = 10, period = 1, fixed_
     bw <- NULL
   }
   data <- get_data(model, end = end, frequency = frequency)
-  intercept <- length(grep("Intercept", colnames(coef(model)))) > 0
-  if(intercept) {
-    formule <- sprintf("%s ~ .", colnames(data)[1])
-  } else {
+  intercept_coef <- length(grep("Intercept", colnames(coef(model)))) > 0
+  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+
+  if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
+  } else if (intercept_coef & !intercept_data) {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
+  } else if (!intercept_coef & !intercept_data) {
+    formule <- sprintf("%s ~ 0+ .", colnames(data)[1])
+  } else {
+    formule <- sprintf("%s ~ .", colnames(data)[1])
   }
   est_dates <- time(data)
   est_dates <- est_dates[seq(date, length(est_dates))]

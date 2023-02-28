@@ -95,7 +95,7 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
   } else {
     resid_piecelm <- x_piecelm$model$residuals
     resid_piecetvlm <- x_piecetvlm$model$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm), ...)
+    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm$model), ...)
     prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   if(inherits(x_piecelm_fixe, "lm")) {
@@ -106,7 +106,7 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
   } else {
     resid_piecelm_fixe <- x_piecelm_fixe$model$residuals
     resid_piecetvlm_fixe <- x_piecetvlm_fixe$model$residuals
-    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe$model, date = date, data = get_data(x_piecelm_fixe), ...)
+    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe$model, date = date, data = get_data(x_piecelm_fixe$model), ...)
     prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   prev_x_lm <- soos_prev(x_lm, date = date, data = data, ...)
@@ -183,7 +183,7 @@ rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 10, .
   } else {
     resid_piecelm <- x_piecelm$model$residuals
     resid_piecetvlm <- x_piecetvlm$model$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm), ...)
+    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm$model), ...)
     prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   resid_prev_lm <- prev_x_lm$residuals
