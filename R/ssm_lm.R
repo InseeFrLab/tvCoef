@@ -168,8 +168,8 @@ ssm_lm.default <- function(x,
 
   res <- list(smoothed_states = smoothed_states,
               smoothed_var = smoothed_var,
-              filtered_states = filtered_states,
-              filtered_var = filtered_var,
+              #filtered_states = filtered_states,
+              #filtered_var = filtered_var,
               filtering_states = filtering_states,
               filtering_var = filtering_var,
               fitted = fitted,
@@ -299,22 +299,19 @@ ssm_lm_oos <- function(model,
                        fixed_intercept = fixed_intercept,
                        fixed_variables = fixed_variables,
                        remove_last_dummies = TRUE)
-  # filtering <- ts(t(sapply(est_models, function(x) tail(x$filtering_states, 1))),
-  #                 end = end(data), frequency = frequency(data))
-  # filtering[, ncol(filtering)] <- ts(t(sapply(est_models, function(x) {
-  #   tail(x$data[,1],1) - tail(x$fitted[,"filtering"], 1)})),
-  #   end = end(data), frequency = frequency(data))
-  # colnames(filtering) <- colnames(est_models[[1]]$filtering_states)
-  # filtering
   oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
                                                     1))),
               end = end(data), frequency = frequency(data))
-  oos_f[, ncol(oos_f)] <- data[,1] -
+  oos_f <- oos_f[, c(1:(ncol(oos_f)-1))]
+  oos_noise <- data[,1] -
     ts(sapply(est_models, function(x) tail(x$fitted[,"filtering"],
                                            1)),
        end = end(data), frequency = frequency(data))
-  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)
+  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)[1:(length(colnames(est_models[[1]]$filtering_states))-1)]
+  prevision = data[,1] - oos_noise
   res = list(oos_filtering = oos_f,
+             oos_noise = oos_noise,
+             prevision = prevision,
              all_models = est_models)
   res
 }
