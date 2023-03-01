@@ -314,8 +314,8 @@ ssm_lm_oos <- function(model,
                                            1)),
        end = end(data), frequency = frequency(data))
   colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)
-  res = list(oos_f,
-             est_models)
+  res = list(oos_filtering = oos_f,
+             all_models = est_models)
   res
 }
 
