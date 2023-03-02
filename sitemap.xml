@@ -16,6 +16,9 @@
     <loc>/reference/break_data.html</loc>
   </url>
   <url>
+    <loc>/reference/gdp.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_data.html</loc>
   </url>
   <url>
@@ -41,6 +44,9 @@
   </url>
   <url>
     <loc>/reference/lm_residual_effect.html</loc>
+  </url>
+  <url>
+    <loc>/reference/manufacturing.html</loc>
   </url>
   <url>
     <loc>/reference/moving_coefficients.html</loc>
