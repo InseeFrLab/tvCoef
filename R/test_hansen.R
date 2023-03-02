@@ -210,10 +210,6 @@ fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE) 
   uni_var
 }
 
-#' Hansen Table
-#' @docType data
-"hansen_table"
-
 
 # usethis::use_data(hansen_table)
 hansen_table <- structure(
