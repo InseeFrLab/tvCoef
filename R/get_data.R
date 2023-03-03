@@ -79,3 +79,30 @@ get_data.bp.lms <- function(model, ...) {
   }
   data
 }
+#' @export
+full_exogeneous_matrix <- function(model, ...){
+  new_diff <- new.env()
+  new_diff$diff <- diff_na
+  new_model <- eval(model$call, envir = new_diff)
+  res <- model.matrix(new_model,
+                      na.action = na.pass)
+  data <- eval(model$call$data)
+  if (is.ts(data))
+    res <- ts(res, start = start(data), frequency = frequency(data))
+
+  res
+}
+
+diff_na <- function(x, lag = 1, differences = 1, ...){
+  res <- diff(x, lag = differences, differences = differences, ...)
+  if (is.matrix(x)){
+    res <- rbind(matrix(NA, ncol = ncol(res),
+                        nrow = nrow(x) - nrow(res)),
+                 res)
+  } else {
+    res <- c(rep(NA, length(x) - length(res)), res)
+  }
+  if (is.ts(x))
+    res <- ts(res, start = start(x), frequency = frequency(x))
+  res
+}
