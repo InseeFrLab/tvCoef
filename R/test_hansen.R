@@ -92,7 +92,7 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
     names <- rbind(as.matrix(names(x$L)), "Joint Lc")
   }
   datnames <- format(names, digits = 4)
-  stat <- c(rep(hansen_table[1, b], times = k), hansen_table[length(x$L) + 1, b])
+  stat <- c(rep(hansen_table[1, b], times = k), hansen_table[length(x$selected_var) + 1, b])
   l <- format(c(x$L, x$L_c), digits = 4)
   rejet <- format(rejet, digits = 4)
   for (j in 1:nrow(names)) {
@@ -100,13 +100,7 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
   }
   cat("\n")
   cat("\n")
-  cat("Lecture : True means reject H0", "\n")
-  cat("If Joint Lc = NA, see warning hansen.test", "\n")
-  cat("\n")
-  cat("\n")
-  cat("************************************************************", "\n")
-  cat("\n")
-  cat("\n")
+  cat(sprintf("Lecture : True means reject H0 at level %s", b), "\n")
 }
 
 
