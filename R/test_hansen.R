@@ -145,11 +145,12 @@ hansen.test.var <- function(x, var) {
 #'
 #' @inheritParams hansen.test
 #' @param a level
+#' @param intercept boolean indicating if the intercept should be consider as a moving coefficient when at least one other variable is moving.
 #'
 #' @return `NULL` if no variable selected, otherwise the order of the variables.
 #' @export
 
-moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE) {
+moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
   test <- hansen.test(x, sigma = sigma)
@@ -165,21 +166,28 @@ moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE)
     return(NULL)
   }
 
-  if(length(uni_var) == 1)
+  has_unique_intercept <- length(grep("Intercept", names(coef(x)))) == 1
+
+  if(length(uni_var) == 1) {
+    if (intercept && has_unique_intercept)
+      uni_var <- unique(1, uni_var)
     return(uni_var)
+  }
   joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
   } else if (joint_test$L_c < hansen_table[length(uni_var), b]) {
     warning("Result not conform with joint test")
   }
-  uni_var
+  if (intercept && has_unique_intercept)
+    uni_var <- unique(1, uni_var)
+  return(uni_var)
 }
 
 #' @name moving_coefficients
 #' @export
 
-fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE) {
+fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
   test <- hansen.test(x, sigma = sigma)
@@ -195,14 +203,22 @@ fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE) 
     return(NULL)
   }
 
-  if(length(uni_var) == 1)
+  has_unique_intercept <- length(grep("Intercept", names(coef(x)))) == 1
+
+
+  if(length(uni_var) == 1) {
+    if (intercept && has_unique_intercept && uni_var == 1)
+      uni_var <- NULL
     return(uni_var)
+  }
   joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
   } else if (joint_test$L_c >= hansen_table[length(uni_var), b]) {
     warning("Result not conform with joint test")
   }
+  if (intercept && has_unique_intercept)
+    uni_var <- uni_var[uni_var != 1]
   uni_var
 }
 
