@@ -58,9 +58,9 @@ Use rjd3sts packages."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
 <span>  var_trend <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  var_slope <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  var_variables <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  fixed_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  fixed_trend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  fixed_variables <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fixed_var_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fixed_var_trend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fixed_var_variables <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  remove_last_dummies <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -77,15 +77,11 @@ Use rjd3sts packages."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
 
 
 <dt>var_variables</dt>
-<dd><p>??</p></dd>
+<dd><p>variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.</p></dd>
 
 
-<dt>fixed_intercept</dt>
-<dd><p>??</p></dd>
-
-
-<dt>fixed_variables</dt>
-<dd><p>??.</p></dd>
+<dt>fixed_var_intercept, fixed_var_trend, fixed_var_variables</dt>
+<dd><p>logical indicating if the variance are fixed or estimated.</p></dd>
 
 
 <dt>model</dt>
@@ -96,7 +92,7 @@ Use rjd3sts packages."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Returns a <code>list</code> containig :</p>
+<p>Returns a <code>list</code> containing :</p>
 <dl><dt>smoothed_states</dt>
 <dd><p>\(E[a_t|y_0,\dots,y_n]\)</p></dd>
 
@@ -108,6 +104,9 @@ Use rjd3sts packages."><!-- mathjax --><script src="https://cdnjs.cloudflare.com
 
 <dt>filtering_stdev</dt>
 <dd><p>\(V[a_t|y_0,\dots,y_{t-1}]\)</p></dd>
+
+<dt>parameters</dt>
+<dd><p>some estimation parameters</p></dd>
 
 <dt>data</dt>
 <dd><p>data used in the original model</p></dd>
