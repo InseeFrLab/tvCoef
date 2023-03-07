@@ -78,9 +78,9 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
   sigma <- length(grep("sigma2", names(x$L))) > 0
   if (sigma) {
-    u <- length(x$L) + 1
+    u <- length(x$selected_var) + 1
   } else {
-    u <- length(x$L)
+    u <- length(x$selected_var)
   }
   rejet <- c(
     x$L >= hansen_table[1, b],
@@ -92,7 +92,7 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
     names <- rbind(as.matrix(names(x$L)), "Joint Lc")
   }
   datnames <- format(names, digits = 4)
-  stat <- c(rep(hansen_table[1, b], times = k), hansen_table[length(x$selected_var) + 1, b])
+  stat <- c(rep(hansen_table[1, b], times = k), hansen_table[u + 1, b])
   l <- format(c(x$L, x$L_c), digits = 4)
   rejet <- format(rejet, digits = 4)
   for (j in 1:nrow(names)) {
