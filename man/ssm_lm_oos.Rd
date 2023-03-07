@@ -12,6 +12,7 @@ ssm_lm_oos(
   var_variables = 0,
   fixed_intercept = TRUE,
   fixed_variables = TRUE,
+  date = 28,
   ...
 )
 }

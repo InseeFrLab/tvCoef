@@ -4,13 +4,13 @@
 \alias{plot.best_ssm}
 \title{Plot best_ssm}
 \usage{
-\method{plot}{best_ssm}(x, choice = c("smoothed", "filtered", "filtering"), ...)
+\method{plot}{best_ssm}(x, choice = c("smoothed", "filtering"), ...)
 }
 \arguments{
 \item{x}{a \code{best_ssm} object}
 
-\item{choice}{choose between \code{smoothed}, \code{filtered} or \code{filtering}}
+\item{choice}{choose between \code{smoothed} or \code{filtering}}
 }
 \description{
-Plot explained variable against fitted values computed with smoothed, filtered or filtering states.
+Plot explained variable against fitted values computed with smoothed or filtering states.
 }
