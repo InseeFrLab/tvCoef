@@ -10,8 +10,8 @@ ssm_lm_oos(
   var_intercept = 0,
   var_trend = 0,
   var_variables = 0,
-  fixed_intercept = TRUE,
-  fixed_variables = TRUE,
+  fixed_var_intercept = TRUE,
+  fixed_var_variables = TRUE,
   date = 28,
   ...
 )
@@ -25,9 +25,9 @@ ssm_lm_oos(
 
 \item{var_variables}{??}
 
-\item{fixed_intercept}{\code{logical}}
+\item{fixed_var_intercept}{\code{logical}}
 
-\item{fixed_variables}{\code{logical}}
+\item{fixed_var_variables}{\code{logical}}
 }
 \value{
 Returns all coefficients of all variables and the residual

@@ -19,7 +19,7 @@ Return an object of class \code{best_ssm}, a list containing :
 \item{rmse}{a \code{list} of 3 : all computed rmse}
 }
 \description{
-Computes 25 state space models, using \link{ssm_lm} with different parameters : \code{fixed_intercept} and \code{fixed_variables} either \code{TRUE} or \code{FALSE}, and \code{var_intercept} and \code{var_variables} taking 0.01, 100 or 0 (only when associated parameters is set to \code{TRUE})
+Computes 25 state space models, using \link{ssm_lm} with different parameters : \code{fixed_var_intercept} and \code{fixed_var_variables} either \code{TRUE} or \code{FALSE}, and \code{var_intercept} and \code{var_variables} taking 0.01, 100 or 0 (only when associated parameters is set to \code{TRUE})
 }
 \details{
 It can give different models for smoothed and filtering states.

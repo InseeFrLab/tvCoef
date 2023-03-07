@@ -16,7 +16,7 @@ ssm_lm_best_oos(model)
 \item{rmse_filtering}{all 25 rmse}
 }
 \description{
-Computes 25 state space models, using \link{ssm_lm_oos} with different parameters : \code{fixed_intercept} and \code{fixed_variables} either \code{TRUE} or \code{FALSE}, and \code{var_intercept} and \code{var_variables} taking 0.01, 100 or 0 (only when associated parameters is set to \code{TRUE}).
+Computes 25 state space models, using \link{ssm_lm_oos} with different parameters : \code{fixed_var_intercept} and \code{fixed_var_variables} either \code{TRUE} or \code{FALSE}, and \code{var_intercept} and \code{var_variables} taking 0.01, 100 or 0 (only when associated parameters is set to \code{TRUE}).
 
 Is is the same 25 conbinations of parameters than in \link{ssm_lm_best}
 }

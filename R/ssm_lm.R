@@ -7,15 +7,14 @@
 #' @param model a `lm` or `dynlm` model
 #' @param trend trend
 #' @param var_intercept,var_slope variance of the intercept and the slope (used if `trend = TRUE`).
-#' @param var_variables ??
-#' @param fixed_intercept ??
-#' @param fixed_variables ??.
-#'
-#' @return Returns a `list` containig :
+#' @param var_variables variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.
+#' @param fixed_var_intercept,fixed_var_trend,fixed_var_variables logical indicating if the variance are fixed or estimated.
+#' @return Returns a `list` containing :
 #' \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
 #' \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
 #' \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
 #' \item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+#' \item{parameters}{some estimation parameters}
 #' \item{data}{data used in the original model}
 #'
 #' @export
@@ -25,9 +24,9 @@ ssm_lm <- function(x, trend = FALSE,
                    var_trend = 0,
                    var_slope = 0,
                    var_variables = 0,
-                   fixed_intercept = TRUE,
-                   fixed_trend = TRUE,
-                   fixed_variables = TRUE, ...,
+                   fixed_var_intercept = TRUE,
+                   fixed_var_trend = TRUE,
+                   fixed_var_variables = TRUE, ...,
                    remove_last_dummies = FALSE) {
   UseMethod("ssm_lm", x)
 }
@@ -37,9 +36,9 @@ ssm_lm.lm <- function(x, trend = FALSE,
                       var_trend = 0,
                       var_slope = 0,
                       var_variables = 0,
-                      fixed_intercept = TRUE,
-                      fixed_trend = TRUE,
-                      fixed_variables = TRUE, ...,
+                      fixed_var_intercept = TRUE,
+                      fixed_var_trend = TRUE,
+                      fixed_var_variables = TRUE, ...,
                       remove_last_dummies = FALSE) {
   ssm_lm(get_data(x),
          intercept = length(grep("Intercept", names(coef(x)))) > 0,
@@ -48,9 +47,9 @@ ssm_lm.lm <- function(x, trend = FALSE,
          var_trend = var_trend,
          var_slope = var_slope,
          var_variables = var_variables,
-         fixed_intercept = fixed_intercept,
-         fixed_trend = fixed_trend,
-         fixed_variables = fixed_variables,
+         fixed_var_intercept = fixed_var_intercept,
+         fixed_var_trend = fixed_var_trend,
+         fixed_var_variables = fixed_var_variables,
          remove_last_dummies = remove_last_dummies,
          ...)
 }
@@ -63,17 +62,17 @@ ssm_lm.default <- function(x,
                            var_trend = 0,
                            var_slope = 0,
                            var_variables = 0,
-                           fixed_intercept = TRUE,
-                           fixed_trend = TRUE,
-                           fixed_variables = TRUE, ...,
+                           fixed_var_intercept = TRUE,
+                           fixed_var_trend = TRUE,
+                           fixed_var_variables = TRUE, ...,
                            remove_last_dummies = FALSE) {
   data <- x
 
   if(length(var_variables) == 1)
     var_variables <- rep(var_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
-  if(length(fixed_variables) == 1)
-    fixed_variables <- rep(fixed_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
-  names(var_variables) <- names(fixed_variables) <- colnames(data)[-1]
+  if(length(fixed_var_variables) == 1)
+    fixed_var_variables <- rep(fixed_var_variables, ncol(data[,-1, drop = FALSE]))[1:ncol(data[,-1, drop = FALSE])]
+  names(var_variables) <- names(fixed_var_variables) <- colnames(data)[-1]
 
   if (remove_last_dummies) {
     # on enleve la derniere ligne car on utilise le filtering et il faut au moins 1 obs
@@ -87,19 +86,19 @@ ssm_lm.default <- function(x,
   if (trend) {
     rjd3sts::add(jmodel, rjd3sts::locallineartrend("Trend",
                                                    levelVariance = var_intercept,
-                                                   fixedLevelVariance = fixed_intercept,
-                                                   slopevariance = var_trend, fixedSlopeVariance = fixed_trend))
+                                                   fixedLevelVariance = fixed_var_intercept,
+                                                   slopevariance = var_trend, fixedSlopeVariance = fixed_var_trend))
     rjd3sts::add.equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
-    rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_intercept))
+    rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
     rjd3sts::add.equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   for (nom_var in colnames(data)[-1]) {
-    if (fixed_variables[nom_var] & var_variables[nom_var] == 0){
-      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = NULL, fixed = fixed_variables[nom_var]))
+    if (fixed_var_variables[nom_var] & var_variables[nom_var] == 0){
+      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = NULL, fixed = fixed_var_variables[nom_var]))
     } else {
-      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_variables[nom_var]))
+      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_var_variables[nom_var]))
     }
     rjd3sts::add.equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
@@ -109,7 +108,7 @@ ssm_lm.default <- function(x,
 
   rjd3sts::add(jmodel, jeq)
 
-  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1])
+  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1],...)
 
   cmp_names <- rjd3toolkit::result(jmodestimated, "ssf.cmpnames")
 
@@ -155,15 +154,20 @@ ssm_lm.default <- function(x,
     filtering_stdev <- add_removed_var(filtering_stdev, data_0, intercept, trend)
   }
 
+  parameters <- rjd3toolkit::result(jmodestimated, "parameters")
+  names(parameters) <- rjd3toolkit::result(jmodestimated, "parametersnames")
+  scaling_factor <- rjd3toolkit::result(jmodestimated, "scalingfactor")
+
   res <- list(smoothed_states = smoothed_states,
               smoothed_stdev = smoothed_stdev,
               filtering_states = filtering_states,
               filtering_stdev = filtering_stdev,
               fitted = fitted,
-              # parameters = list(scalingfactor = rjd3toolkit::result(jmodestimated, "scalingfactor"),
-              #                   ll = rjd3toolkit::result(jmodestimated, "likelihood.ll"),
-              #                   lser= rjd3toolkit::result(jmodestimated, "likelihood.ser"),
-              #                   ncmp = rjd3toolkit::result(jmodestimated, "ssf.ncmps")),
+              parameters = list(parameters = parameters,
+                                scaling = scaling_factor,
+                                ll = rjd3toolkit::result(jmodestimated, "likelihood.ll"),
+                                lser= rjd3toolkit::result(jmodestimated, "likelihood.ser"),
+                                ncmp = rjd3toolkit::result(jmodestimated, "ssf.ncmps")),
               data = data)
   class(res) <- "ssm_lm"
   res
@@ -202,8 +206,8 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 #' @param trend trend
 #' @param var_intercept ??
 #' @param var_variables ??
-#' @param fixed_intercept `logical`
-#' @param fixed_variables `logical`
+#' @param fixed_var_intercept `logical`
+#' @param fixed_var_variables `logical`
 #'
 #' @return
 #' Returns all coefficients of all variables and the residual
@@ -214,8 +218,8 @@ ssm_lm_oos <- function(model,
                        var_intercept = 0,
                        var_trend = 0,
                        var_variables = 0,
-                       fixed_intercept = TRUE,
-                       fixed_variables = TRUE,
+                       fixed_var_intercept = TRUE,
+                       fixed_var_variables = TRUE,
                        date = 28, ...) {
   data <- get_data(model)
   intercept <- length(grep("Intercept", names(coef(model)))) > 0
@@ -228,8 +232,8 @@ ssm_lm_oos <- function(model,
                        var_intercept = var_intercept,
                        var_trend = var_trend,
                        var_variables = var_variables,
-                       fixed_intercept = fixed_intercept,
-                       fixed_variables = fixed_variables,
+                       fixed_var_intercept = fixed_var_intercept,
+                       fixed_var_variables = fixed_var_variables,
                        remove_last_dummies = TRUE)
   oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
                                                     1))),
@@ -252,7 +256,7 @@ ssm_lm_oos <- function(model,
 #' Best state space model
 #'
 #' @description
-#' Computes 25 state space models, using [ssm_lm] with different parameters : `fixed_intercept` and `fixed_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`)
+#' Computes 25 state space models, using [ssm_lm] with different parameters : `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`)
 #'
 #' @param model a `lm` or `dynlm` model
 #'
@@ -271,133 +275,133 @@ ssm_lm_oos <- function(model,
 #' @export
 ssm_lm_best <- function(model) {
   var_move_1_int_fixe_0 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = FALSE,
+                                          fixed_var_variables = FALSE,
                                           var_intercept = 0,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_move_100_int_fixe_0 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = FALSE,
+                                            fixed_var_variables = FALSE,
                                             var_intercept = 0,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_1_int_fixe_0 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_fixe_100_int_fixe_0 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 0,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_0_int_fixe_0 = tryCatch(ssm_lm(model, var_variables = 0,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
 
   var_move_1_int_fixe_1 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = FALSE,
+                                          fixed_var_variables = FALSE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_move_100_int_fixe_1 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = FALSE,
+                                            fixed_var_variables = FALSE,
                                             var_intercept = 0.01,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_1_int_fixe_1 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_fixe_100_int_fixe_1 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 0.01,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_0_int_fixe_1 = tryCatch(ssm_lm(model, var_variables = 0,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = TRUE),
+                                          fixed_var_intercept = TRUE),
                                    error = function(e) NA)
 
   var_move_1_int_fixe_100 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                            fixed_variables = FALSE,
+                                            fixed_var_variables = FALSE,
                                             var_intercept = 100,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_move_100_int_fixe_100 = tryCatch(ssm_lm(model, var_variables = 100,
-                                              fixed_variables = FALSE,
+                                              fixed_var_variables = FALSE,
                                               var_intercept = 100,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                        error = function(e) NA)
   var_fixe_1_int_fixe_100 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 100,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_100_int_fixe_100 = tryCatch(ssm_lm(model, var_variables = 100,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 100,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                        error = function(e) NA)
   var_fixe_0_int_fixe_100 = tryCatch(ssm_lm(model, var_variables = 0,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 100,
-                                            fixed_intercept = TRUE),
+                                            fixed_var_intercept = TRUE),
                                      error = function(e) NA)
 
   var_move_1_int_move_1 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = FALSE,
+                                          fixed_var_variables = FALSE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = FALSE),
+                                          fixed_var_intercept = FALSE),
                                    error = function(e) NA)
   var_move_100_int_move_1 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = FALSE,
+                                            fixed_var_variables = FALSE,
                                             var_intercept = 0.01,
-                                            fixed_intercept = FALSE),
+                                            fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_1_int_move_1 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = FALSE),
+                                          fixed_var_intercept = FALSE),
                                    error = function(e) NA)
   var_fixe_100_int_move_1 = tryCatch(ssm_lm(model, var_variables = 100,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 0.01,
-                                            fixed_intercept = FALSE),
+                                            fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_0_int_move_1 = tryCatch(ssm_lm(model, var_variables = 0,
-                                          fixed_variables = TRUE,
+                                          fixed_var_variables = TRUE,
                                           var_intercept = 0.01,
-                                          fixed_intercept = FALSE),
+                                          fixed_var_intercept = FALSE),
                                    error = function(e) NA)
 
   var_move_1_int_move_100 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                            fixed_variables = FALSE,
+                                            fixed_var_variables = FALSE,
                                             var_intercept = 100,
-                                            fixed_intercept = FALSE),
+                                            fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_move_100_int_move_100 = tryCatch(ssm_lm(model, var_variables = 100,
-                                              fixed_variables = FALSE,
+                                              fixed_var_variables = FALSE,
                                               var_intercept = 100,
-                                              fixed_intercept = FALSE),
+                                              fixed_var_intercept = FALSE),
                                        error = function(e) NA)
   var_fixe_1_int_move_100 = tryCatch(ssm_lm(model, var_variables = 0.01,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 100,
-                                            fixed_intercept = FALSE),
+                                            fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_100_int_move_100 = tryCatch(ssm_lm(model, var_variables = 100,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 100,
-                                              fixed_intercept = FALSE),
+                                              fixed_var_intercept = FALSE),
                                        error = function(e) NA)
   var_fixe_0_int_move_100 = tryCatch(ssm_lm(model, var_variables = 0,
-                                            fixed_variables = TRUE,
+                                            fixed_var_variables = TRUE,
                                             var_intercept = 100,
-                                            fixed_intercept = FALSE),
+                                            fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   mod = list(var_move_1_int_fixe_0 = var_move_1_int_fixe_0,
              var_move_100_int_fixe_0 = var_move_100_int_fixe_0,
@@ -467,7 +471,7 @@ ssm_lm_best <- function(model) {
 #' Best out of sample state space model
 #'
 #' @description
-#' Computes 25 state space models, using [ssm_lm_oos] with different parameters : `fixed_intercept` and `fixed_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`).
+#' Computes 25 state space models, using [ssm_lm_oos] with different parameters : `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`).
 #'
 #' Is is the same 25 conbinations of parameters than in [ssm_lm_best]
 #'
@@ -486,133 +490,133 @@ ssm_lm_best <- function(model) {
 
 ssm_lm_best_oos <- function(model) {
   var_move_1_int_fixe_0 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = FALSE,
+                                              fixed_var_variables = FALSE,
                                               var_intercept = 0,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_move_100_int_fixe_0 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = FALSE,
+                                                fixed_var_variables = FALSE,
                                                 var_intercept = 0,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_1_int_fixe_0 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_fixe_100_int_fixe_0 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 0,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_0_int_fixe_0 = tryCatch(ssm_lm_oos(model, var_variables = 0,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
 
   var_move_1_int_fixe_1 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = FALSE,
+                                              fixed_var_variables = FALSE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_move_100_int_fixe_1 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = FALSE,
+                                                fixed_var_variables = FALSE,
                                                 var_intercept = 0.01,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_1_int_fixe_1 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
   var_fixe_100_int_fixe_1 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 0.01,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_0_int_fixe_1 = tryCatch(ssm_lm_oos(model, var_variables = 0,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = TRUE),
+                                              fixed_var_intercept = TRUE),
                                    error = function(e) NA)
 
   var_move_1_int_fixe_100 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                                fixed_variables = FALSE,
+                                                fixed_var_variables = FALSE,
                                                 var_intercept = 100,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_move_100_int_fixe_100 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                  fixed_variables = FALSE,
+                                                  fixed_var_variables = FALSE,
                                                   var_intercept = 100,
-                                                  fixed_intercept = TRUE),
+                                                  fixed_var_intercept = TRUE),
                                        error = function(e) NA)
   var_fixe_1_int_fixe_100 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 100,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
   var_fixe_100_int_fixe_100 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                  fixed_variables = TRUE,
+                                                  fixed_var_variables = TRUE,
                                                   var_intercept = 100,
-                                                  fixed_intercept = TRUE),
+                                                  fixed_var_intercept = TRUE),
                                        error = function(e) NA)
   var_fixe_0_int_fixe_100 = tryCatch(ssm_lm_oos(model, var_variables = 0,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 100,
-                                                fixed_intercept = TRUE),
+                                                fixed_var_intercept = TRUE),
                                      error = function(e) NA)
 
   var_move_1_int_move_1 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = FALSE,
+                                              fixed_var_variables = FALSE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = FALSE),
+                                              fixed_var_intercept = FALSE),
                                    error = function(e) NA)
   var_move_100_int_move_1 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = FALSE,
+                                                fixed_var_variables = FALSE,
                                                 var_intercept = 0.01,
-                                                fixed_intercept = FALSE),
+                                                fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_1_int_move_1 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = FALSE),
+                                              fixed_var_intercept = FALSE),
                                    error = function(e) NA)
   var_fixe_100_int_move_1 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 0.01,
-                                                fixed_intercept = FALSE),
+                                                fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_0_int_move_1 = tryCatch(ssm_lm_oos(model, var_variables = 0,
-                                              fixed_variables = TRUE,
+                                              fixed_var_variables = TRUE,
                                               var_intercept = 0.01,
-                                              fixed_intercept = FALSE),
+                                              fixed_var_intercept = FALSE),
                                    error = function(e) NA)
 
   var_move_1_int_move_100 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                                fixed_variables = FALSE,
+                                                fixed_var_variables = FALSE,
                                                 var_intercept = 100,
-                                                fixed_intercept = FALSE),
+                                                fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_move_100_int_move_100 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                  fixed_variables = FALSE,
+                                                  fixed_var_variables = FALSE,
                                                   var_intercept = 100,
-                                                  fixed_intercept = FALSE),
+                                                  fixed_var_intercept = FALSE),
                                        error = function(e) NA)
   var_fixe_1_int_move_100 = tryCatch(ssm_lm_oos(model, var_variables = 0.01,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 100,
-                                                fixed_intercept = FALSE),
+                                                fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   var_fixe_100_int_move_100 = tryCatch(ssm_lm_oos(model, var_variables = 100,
-                                                  fixed_variables = TRUE,
+                                                  fixed_var_variables = TRUE,
                                                   var_intercept = 100,
-                                                  fixed_intercept = FALSE),
+                                                  fixed_var_intercept = FALSE),
                                        error = function(e) NA)
   var_fixe_0_int_move_100 = tryCatch(ssm_lm_oos(model, var_variables = 0,
-                                                fixed_variables = TRUE,
+                                                fixed_var_variables = TRUE,
                                                 var_intercept = 100,
-                                                fixed_intercept = FALSE),
+                                                fixed_var_intercept = FALSE),
                                      error = function(e) NA)
   filtering = list(var_move_1_int_fixe_0 = var_move_1_int_fixe_0,
                    var_move_100_int_fixe_0 = var_move_100_int_fixe_0,

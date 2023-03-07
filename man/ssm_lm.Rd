@@ -11,9 +11,9 @@ ssm_lm(
   var_trend = 0,
   var_slope = 0,
   var_variables = 0,
-  fixed_intercept = TRUE,
-  fixed_trend = TRUE,
-  fixed_variables = TRUE,
+  fixed_var_intercept = TRUE,
+  fixed_var_trend = TRUE,
+  fixed_var_variables = TRUE,
   ...,
   remove_last_dummies = FALSE
 )
@@ -23,20 +23,19 @@ ssm_lm(
 
 \item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
 
-\item{var_variables}{??}
+\item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 
-\item{fixed_intercept}{??}
-
-\item{fixed_variables}{??.}
+\item{fixed_var_intercept, fixed_var_trend, fixed_var_variables}{logical indicating if the variance are fixed or estimated.}
 
 \item{model}{a \code{lm} or \code{dynlm} model}
 }
 \value{
-Returns a \code{list} containig :
+Returns a \code{list} containing :
 \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
 \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
 \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
 \item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+\item{parameters}{some estimation parameters}
 \item{data}{data used in the original model}
 }
 \description{
