@@ -75,7 +75,7 @@ rmse_prev.lm <- function(x, var_fixes = NULL, fixed_bw = FALSE, ...) {
   }
 }
 
-rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE, date = 10, ...) {
+rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE, date = 28, ...) {
   x_tvlm <- tvLM(formula(formule), data = data, ...)
   if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)
@@ -166,7 +166,7 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
 
 
 
-rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 10, ...) {
+rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 28, ...) {
   x_tvlm <- tvLM(formula(formule), data = data, ...)
   if(fixed_bw){b = x_tvlm$bw} else{b = NULL}
   x_piecelm <- piece_reg(x_lm, tvlm = FALSE, var_fixes = NULL)

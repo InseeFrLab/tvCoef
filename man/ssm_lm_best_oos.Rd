@@ -21,5 +21,5 @@ Computes 25 state space models, using \link{ssm_lm_oos} with different parameter
 Is is the same 25 conbinations of parameters than in \link{ssm_lm_best}
 }
 \details{
-It can give different models for smoothed, filtered and filtering states.
+It can give different models for smoothed and filtering states.
 }

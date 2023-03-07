@@ -12,10 +12,8 @@ ssm_lm_best(model)
 \value{
 Return an object of class \code{best_ssm}, a list containing :
 \item{rmse_best_model_smoothed}{gives the rmse of the best model for smoothed states}
-\item{rmse_best_model_filtered}{gives the rmse of the best model for filtered states}
 \item{rmse_best_model_filtering}{gives the rmse of the best model for filtering states}
 \item{best_model_smoothed}{the entire best model for smoothed states}
-\item{best_model_filtered}{the entire best model for filtered states}
 \item{best_model_filtering}{the entire best model for filtering states}
 \item{model}{all 25 models}
 \item{rmse}{a \code{list} of 3 : all computed rmse}
@@ -24,5 +22,5 @@ Return an object of class \code{best_ssm}, a list containing :
 Computes 25 state space models, using \link{ssm_lm} with different parameters : \code{fixed_intercept} and \code{fixed_variables} either \code{TRUE} or \code{FALSE}, and \code{var_intercept} and \code{var_variables} taking 0.01, 100 or 0 (only when associated parameters is set to \code{TRUE})
 }
 \details{
-It can give different models for smoothed, filtered and filtering states.
+It can give different models for smoothed and filtering states.
 }

@@ -7,14 +7,14 @@
 \alias{soos_prev.bp.lms}
 \title{Out of sample prevision (or simulated out of sample)}
 \usage{
-soos_prev(model, date = 10, period = 1, ...)
+soos_prev(model, date = 28, period = 1, ...)
 
-\method{soos_prev}{lm}(model, date = 10, period = 1, data, ...)
+\method{soos_prev}{lm}(model, date = 28, period = 1, data, ...)
 
 \method{soos_prev}{tvlm}(
   model,
   data_est = NULL,
-  date = 10,
+  date = 28,
   period = 1,
   fixed_bw = FALSE,
   bw = NULL,
@@ -26,7 +26,7 @@ soos_prev(model, date = 10, period = 1, ...)
 \method{soos_prev}{bp.lms}(
   model,
   data_est = NULL,
-  date = 10,
+  date = 28,
   period = 1,
   data,
   fixed_bw = FALSE,
