@@ -4,7 +4,7 @@
 #'
 #' @param x `lm` object. It is the global regression model
 #' @param data 	a data frame, list or environment containing the variables in the model
-#' @param right `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
+#' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
 #' @param break_dates optional, to indicate the breakup dates if they are known
 #' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. FALSE means a [lm] will be run.
 #'
@@ -14,13 +14,13 @@
 #' \item{end}{end date of the time serie}
 #' \item{frequency}{frequency of the time serie}
 #' \item{breakdates}{a list of the breakup dates}
-#' \item{right}{same as the parameter specified above}
+#' \item{left}{same as the parameter specified above}
 #' \item{tvlm}{same as the parameter specified above}
 #'
 #' @export
 #' @importFrom tvReg tvLM
 #' @importFrom strucchange breakdates breakpoints
-bp.lms <- function(x, data, right = TRUE, break_dates, tvlm = FALSE, ...) {
+bp.lms <- function(x, data, left = TRUE, break_dates, tvlm = FALSE, ...) {
   formula <- sprintf("%s ~ .", colnames(x$model)[1])
   .data <- ts(x$model, end = end(data), frequency = frequency(data))
   if (missing(break_dates)) {
@@ -34,20 +34,20 @@ bp.lms <- function(x, data, right = TRUE, break_dates, tvlm = FALSE, ...) {
       return(tv)
     }
   } else {
-    break_dates <- c(time(.data)[1] - deltat(.data) * right, break_dates, time(.data)[length(time(.data))] + deltat(.data) * !right)
+    break_dates <- c(time(.data)[1] - deltat(.data) * left, break_dates, time(.data)[length(time(.data))] + deltat(.data) * !left)
     if (!tvlm) {
       model <- lapply(1:(length(break_dates) - 1), function(i) {
         lm(formula = formula, window(.data,
-                                     start = (break_dates[i] + deltat(.data) * right),
-                                     end = (break_dates[i + 1] - deltat(.data) * !right)
+                                     start = (break_dates[i] + deltat(.data) * left),
+                                     end = (break_dates[i + 1] - deltat(.data) * !left)
         ))
       })
     } else {
       model <- lapply(1:(length(break_dates) - 1), function(i) {
         tvLM(formula = formula,
              data = window(.data,
-                           start = (break_dates[i] + deltat(.data) * right),
-                           end = (break_dates[i + 1] - deltat(.data) * !right)
+                           start = (break_dates[i] + deltat(.data) * left),
+                           end = (break_dates[i + 1] - deltat(.data) * !left)
              ),
              ...)
       })
@@ -59,7 +59,7 @@ bp.lms <- function(x, data, right = TRUE, break_dates, tvlm = FALSE, ...) {
     end = end(.data),
     frequency = frequency(.data),
     breakdates = break_dates,
-    right = right,
+    left = left,
     tvlm = tvlm
   )
   class(res) <- "bp.lms"
@@ -74,8 +74,8 @@ print.bp.lms <- function(x, ...) {
   } else {
     start_date <- x$start[1] + (x$start[2] - 1) / x$frequency
     end_date <- x$end[1] + (x$end[2] - 1) / x$frequency
-    v1 <- c("Start date", rep("Breakdates", time = length(x$breakdates) - 2), "End date", "Frequency", "Right")
-    v2 <- c(start_date, x$breakdates[-c(1, length(x$breakdates))], end_date, x$frequency, x$right)
+    v1 <- c("Start date", rep("Breakdates", time = length(x$breakdates) - 2), "End date", "Frequency", "left")
+    v2 <- c(start_date, x$breakdates[-c(1, length(x$breakdates))], end_date, x$frequency, x$left)
     datav <- kable(rbind(v2), col.names = v1, row.names = FALSE)
     print(datav)
   }
@@ -117,8 +117,8 @@ coef.bp.lms <- function(object, ...) {
   if (inherits(object$model[[1]], "lm")) {
     res <- do.call(rbind, lapply(1:(length(object$breakdates) - 1), function(i) {
       ts(matrix(coef(object$model[[i]]), nrow = 1),
-         start = object$breakdates[i] + 1 / object$frequency * (object$right),
-         end = object$breakdates[i + 1] - 1 / object$frequency * !(object$right),
+         start = object$breakdates[i] + 1 / object$frequency * (object$left),
+         end = object$breakdates[i + 1] - 1 / object$frequency * !(object$left),
          frequency = object$frequency,
          names = rownames(sapply(object$model, coef))
       )
@@ -131,8 +131,8 @@ coef.bp.lms <- function(object, ...) {
     coef_tvlm = sapply(object$model, coef)
     res <- sapply(seq_along(coef_tvlm), function(i){
       ts(coef_tvlm[[i]],
-         start = object$breakdates[i] + 1 / object$frequency * (object$right),
-         end = object$breakdates[i + 1] - 1 / object$frequency * !(object$right),
+         start = object$breakdates[i] + 1 / object$frequency * (object$left),
+         end = object$breakdates[i + 1] - 1 / object$frequency * !(object$left),
          frequency = object$frequency,
          names = colnames(coef_tvlm[[i]])
       )

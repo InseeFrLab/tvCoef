@@ -90,27 +90,23 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
   if(inherits(x_piecelm, "lm")) {
     resid_piecelm <- x_piecelm$residuals
     resid_piecetvlm <- x_piecetvlm$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm, date = date, data = get_data(x_piecelm), ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   } else {
     resid_piecelm <- x_piecelm$model$residuals
     resid_piecetvlm <- x_piecetvlm$model$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm$model), ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   if(inherits(x_piecelm_fixe, "lm")) {
     resid_piecelm_fixe <- x_piecelm_fixe$residuals
     resid_piecetvlm_fixe <- x_piecetvlm_fixe$residuals
-    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe, date = date, data = get_data(x_piecelm_fixe), ...)
-    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   } else {
     resid_piecelm_fixe <- x_piecelm_fixe$model$residuals
     resid_piecetvlm_fixe <- x_piecetvlm_fixe$model$residuals
-    prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe$model, date = date, data = get_data(x_piecelm_fixe$model), ...)
-    prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
   prev_x_lm <- soos_prev(x_lm, date = date, data = data, ...)
   prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
+  prev_x_piecelm <- soos_prev(x_piecelm, date = date, data = get_data(x_piecelm), ...)
+  prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
+  prev_x_piecelm_fixe <- soos_prev(x_piecelm_fixe, date = date, data = get_data(x_piecelm_fixe), ...)
+  prev_x_piecetvlm_fixe <- soos_prev(x_piecetvlm_fixe, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   data_est <- lapply(prev_x_lm$model, resid_lm_fixed, var_fixes = var_fixes)
   prev_x_tvlm_fixe <- soos_prev(x_tvlm_fixe, data_est = data_est, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   prev_fixed_coef <- prev_lm_fixed(x = prev_x_lm, var_fixes = var_fixes, ...)
@@ -173,19 +169,17 @@ rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 28, .
   x_piecetvlm <- piece_reg(x_lm, tvlm = TRUE, var_fixes = NULL, bw = b)
   resid_lm <- x_lm$residuals
   resid_tvlm <- x_tvlm$residuals
-  prev_x_lm <- soos_prev(x_lm, date = date, data = data, ...)
-  prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   if(inherits(x_piecelm, "lm")) {
     resid_piecelm <- x_piecelm$residuals
     resid_piecetvlm <- x_piecetvlm$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm, date = date, data = get_data(x_piecelm), ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   } else {
     resid_piecelm <- x_piecelm$model$residuals
     resid_piecetvlm <- x_piecetvlm$model$residuals
-    prev_x_piecelm <- soos_prev(x_piecelm$model, date = date, data = get_data(x_piecelm$model), ...)
-    prev_x_piecetvlm <- soos_prev(x_piecetvlm$model, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   }
+  prev_x_lm <- soos_prev(x_lm, date = date, data = data, ...)
+  prev_x_tvlm <- soos_prev(x_tvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
+  prev_x_piecelm <- soos_prev(x_piecelm, date = date, data = get_data(x_piecelm), ...)
+  prev_x_piecetvlm <- soos_prev(x_piecetvlm, end = end(data), frequency = frequency(data), fixed_bw = fixed_bw, date = date, ...)
   resid_prev_lm <- prev_x_lm$residuals
   resid_prev_piecelm <- prev_x_piecelm$residuals
   resid_prev_piecetvlm <- prev_x_piecetvlm$residuals

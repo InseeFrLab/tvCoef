@@ -4,14 +4,14 @@
 \alias{bp.lms}
 \title{Breakdates regression}
 \usage{
-bp.lms(x, data, right = TRUE, break_dates, tvlm = FALSE, ...)
+bp.lms(x, data, left = TRUE, break_dates, tvlm = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{lm} object. It is the global regression model}
 
 \item{data}{a data frame, list or environment containing the variables in the model}
 
-\item{right}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each submodel}
+\item{left}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each submodel}
 
 \item{break_dates}{optional, to indicate the breakup dates if they are known}
 
@@ -24,7 +24,7 @@ Returns an element of class \code{bp.lms}. It is a list containing the following
 \item{end}{end date of the time serie}
 \item{frequency}{frequency of the time serie}
 \item{breakdates}{a list of the breakup dates}
-\item{right}{same as the parameter specified above}
+\item{left}{same as the parameter specified above}
 \item{tvlm}{same as the parameter specified above}
 }
 \description{

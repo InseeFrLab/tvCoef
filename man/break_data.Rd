@@ -4,14 +4,14 @@
 \alias{break_data}
 \title{Break data}
 \usage{
-break_data(x, break_dates, right = TRUE, ...)
+break_data(x, break_dates, left = TRUE, ...)
 }
 \arguments{
 \item{x}{a \code{mts} to split}
 
 \item{break_dates}{the date(s) at which you want to divide the data}
 
-\item{right}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each subcolumn}
+\item{left}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each subcolumn}
 }
 \value{
 a \code{mts} containing as many times more data columns than breakdates
