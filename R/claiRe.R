@@ -60,9 +60,11 @@ print.lmffixe <- function(x, ...) {
   colname2 <- sapply(1:(length(colname) / 2), function(i) {
     paste(colname[1, i], colname[2, i], sep = "-")
   })
-  print(kable(rbind(sapply(1:length(x$model), function(i) {
+  data <- sapply(1:length(x$model), function(i) {
     coef(x$model[[i]])
-  })), col.names = colname2, digits = 4))
+  })
+  colnames(data) <- colname2
+  data
 }
 
 

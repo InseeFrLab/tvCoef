@@ -76,10 +76,11 @@ print.bp.lms <- function(x, ...) {
     end_date <- x$end[1] + (x$end[2] - 1) / x$frequency
     v1 <- c("Start date", rep("Breakdates", time = length(x$breakdates) - 2), "End date", "Frequency", "left")
     v2 <- c(start_date, x$breakdates[-c(1, length(x$breakdates))], end_date, x$frequency, x$left)
-    datav <- kable(rbind(v2), col.names = v1, row.names = FALSE)
+    datav <- rbind(v2)
+    colnames(datav) <- v1
     print(datav)
   }
-  print(kable(sapply(x$model, coef)))
+  print(sapply(x$model, coef))
 }
 
 
