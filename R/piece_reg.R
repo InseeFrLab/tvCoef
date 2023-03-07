@@ -9,26 +9,26 @@ NULL
 #'
 #' @param x a `mts` to split
 #' @param break_dates the date(s) at which you want to divide the data
-#' @param right `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each subcolumn
+#' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each subcolumn
 #'
 #' @return a `mts` containing as many times more data columns than breakdates
 #'
 #' @export
 
-break_data <- function(x, break_dates, right = TRUE, ...) {
+break_data <- function(x, break_dates, left = TRUE, ...) {
   if (is.mts(x)) {
     name_x <- colnames(x)
   } else {
     name_x <- deparse(substitute(x))
   }
   range_time_x = tsp(x)
-  break_dates = c(range_time_x[1] - deltat(x) * right,
+  break_dates = c(range_time_x[1] - deltat(x) * left,
                   break_dates,
-                  range_time_x[2] + deltat(x) * !right)
+                  range_time_x[2] + deltat(x) * !left)
   res <- do.call(ts.union, lapply(1:(length(break_dates) - 1), function(i) {
     window(x,
-           start = (break_dates[i] + deltat(x) * right),
-           end = (break_dates[i + 1] - deltat(x) * !right))
+           start = (break_dates[i] + deltat(x) * left),
+           end = (break_dates[i + 1] - deltat(x) * !left))
   }))
   res[is.na(res)] <- 0
   colnames(res) <- sprintf("%s_%s",
@@ -51,7 +51,7 @@ break_data <- function(x, break_dates, right = TRUE, ...) {
 #'
 #' @export
 
-piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw = NULL,...) {
+piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw = NULL, left = TRUE, ...) {
   data <- get_data(x)
   intercept <- length(grep("Intercept", names(coef(x)))) > 0
   if (intercept) {
@@ -75,7 +75,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
     }
   }
   if(is.null(var_fixes)) {
-    data_break <- break_data(data[,-1], break_dates = break_dates)
+    data_break <- break_data(data[,-1], break_dates = break_dates, left = left)
     data2 <- cbind(data[,1], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_break))
     if(!tvlm) {
@@ -85,7 +85,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
     }
   } else {
     data_x = data[,-1]
-    data_break <- break_data(data_x[,- var_fixes], break_dates = break_dates)
+    data_break <- break_data(data_x[,- var_fixes], break_dates = break_dates, left = left)
     data2 <- cbind(data[,1], data_x[,var_fixes], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_x)[var_fixes], colnames(data_break))
     if(!tvlm) {
