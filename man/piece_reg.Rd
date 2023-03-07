@@ -10,7 +10,7 @@ piece_reg(
   var_fixes = NULL,
   tvlm = FALSE,
   bw = NULL,
-  right = TRUE,
+  left = TRUE,
   ...
 )
 }
