@@ -79,6 +79,13 @@ get_data.bp.lms <- function(model, ...) {
   }
   data
 }
+
+#' @rdname get_data
+#' @export
+get_data.piecereg <- function(model, ...) {
+  get_data(model$model, ...)
+}
+
 #' @export
 full_exogeneous_matrix <- function(model, ...){
   new_diff <- new.env()
