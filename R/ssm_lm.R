@@ -160,10 +160,10 @@ ssm_lm.default <- function(x,
               filtering_states = filtering_states,
               filtering_stdev = filtering_stdev,
               fitted = fitted,
-              parameters = list(scalingfactor = rjd3toolkit::result(jmodestimated, "scalingfactor"),
-                                ll = rjd3toolkit::result(jmodestimated, "likelihood.ll"),
-                                lser= rjd3toolkit::result(jmodestimated, "likelihood.ser"),
-                                ncmp = rjd3toolkit::result(jmodestimated, "ssf.ncmps")),
+              # parameters = list(scalingfactor = rjd3toolkit::result(jmodestimated, "scalingfactor"),
+              #                   ll = rjd3toolkit::result(jmodestimated, "likelihood.ll"),
+              #                   lser= rjd3toolkit::result(jmodestimated, "likelihood.ser"),
+              #                   ncmp = rjd3toolkit::result(jmodestimated, "ssf.ncmps")),
               data = data)
   class(res) <- "ssm_lm"
   res
