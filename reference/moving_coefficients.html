@@ -48,9 +48,19 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">moving_coefficients</span><span class="op">(</span><span class="va">x</span>, a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">2.5</span>, <span class="fl">7.5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">moving_coefficients</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">2.5</span>, <span class="fl">7.5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  intercept <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">fixed_coefficients</span><span class="op">(</span><span class="va">x</span>, a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">2.5</span>, <span class="fl">7.5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">fixed_coefficients</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">2.5</span>, <span class="fl">7.5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  intercept <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -65,6 +75,10 @@
 
 <dt>sigma</dt>
 <dd><p><code>logical</code> indicating if the joint test should include the variance</p></dd>
+
+
+<dt>intercept</dt>
+<dd><p>boolean indicating if the intercept should be consider as a moving coefficient when at least one other variable is moving.</p></dd>
 
 </dl></div>
     <div class="section level2">
