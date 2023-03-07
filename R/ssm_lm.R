@@ -13,11 +13,9 @@
 #'
 #' @return Returns a `list` containig :
 #' \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
-#' \item{smoothed_var}{\eqn{V[a_t|y_0,\dots,y_n]}}
-#' \item{filtered_states}{\eqn{E[a_t|y_0,\dots,y_t]}}
-#' \item{filtered_var}{\eqn{E[a_t|y_0,\dots,y_t]}}
+#' \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
 #' \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
-#' \item{filtering_var}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+#' \item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
 #' \item{data}{data used in the original model}
 #'
 #' @export
@@ -120,27 +118,21 @@ ssm_lm.default <- function(x,
   }
   default_matrix <- matrix(NA, nrow = nrow(data), ncol = length(cmp_names))
   smoothed_states <- tryCatch(rjd3sts::smoothedstates(jmodestimated), error = function(e) default_matrix)
-  smoothed_var <- tryCatch(rjd3sts::smoothedstatesstdev(jmodestimated), error = function(e) default_matrix)
-  filtered_states <- tryCatch(rjd3sts::filteredstates(jmodestimated), error = function(e) default_matrix)
-  filtered_var <- tryCatch(rjd3sts::filteredstatesstdev(jmodestimated), error = function(e) default_matrix)
-  filtering_states <- rjd3sts::filteringstates(jmodestimated)
-  filtering_var <- rjd3sts::filteringstatesstdev(jmodestimated)
+  smoothed_stdev <- tryCatch(rjd3sts::smoothedstatesstdev(jmodestimated), error = function(e) default_matrix)
+  filtering_states <- tryCatch(rjd3sts::filteringstates(jmodestimated), error = function(e) default_matrix)
+  filtering_stdev <- tryCatch(rjd3sts::filteringstatesstdev(jmodestimated), error = function(e) default_matrix)
 
 
-  colnames(smoothed_states) <- colnames(smoothed_var) <-
-    colnames(filtered_states) <-
-    colnames(filtered_var) <-
+  colnames(smoothed_states) <- colnames(smoothed_stdev) <-
     colnames(filtering_states) <-
-    colnames(filtering_var) <-
+    colnames(filtering_stdev) <-
     cmp_names
 
   if (is.ts(data)) {
     smoothed_states <- ts(smoothed_states, end = end(data), frequency = frequency(data))
-    smoothed_var <- ts(smoothed_var, end = end(data), frequency = frequency(data))
-    filtered_states <- ts(filtered_states, end = end(data), frequency = frequency(data))
-    filtered_var <- ts(filtered_var, end = end(data), frequency = frequency(data))
+    smoothed_stdev <- ts(smoothed_stdev, end = end(data), frequency = frequency(data))
     filtering_states <- ts(filtering_states, end = end(data), frequency = frequency(data))
-    filtering_var <- ts(filtering_var, end = end(data), frequency = frequency(data))
+    filtering_stdev <- ts(filtering_stdev, end = end(data), frequency = frequency(data))
   }
   col_to_remove = ncol(filtering_states)
   if(trend)
@@ -148,31 +140,30 @@ ssm_lm.default <- function(x,
   X = data[, -1, drop = FALSE]
   if (trend | intercept)
     X = cbind(1, X)
-  fitted_filtering <- rowSums(X * filtered_states[,-col_to_remove])
-  fitted_filtered <- rowSums(X * filtering_states[,-col_to_remove])
+  fitted_filtering <- rowSums(X * filtering_states[,-col_to_remove])
   fitted_smoothed <- rowSums(X * smoothed_states[,-col_to_remove])
-  fitted <- cbind(fitted_smoothed, fitted_filtered, fitted_filtering)
-  colnames(fitted) <- c("smoothed", "filtered", "filtering")
+  fitted <- cbind(fitted_smoothed, fitted_filtering)
+  colnames(fitted) <- c("smoothed", "filtering")
   if (is.ts(data)) {
     fitted <- ts(fitted, end = end(data), frequency = frequency(data))
   }
 
   if (remove_last_dummies && any(data_0)) {
     smoothed_states <- add_removed_var(smoothed_states, data_0, intercept, trend)
-    smoothed_var <- add_removed_var(smoothed_var, data_0, intercept, trend)
-    filtered_states <- add_removed_var(filtered_states, data_0, intercept, trend)
-    filtered_var <- add_removed_var(filtered_var, data_0, intercept, trend)
+    smoothed_stdev <- add_removed_var(smoothed_stdev, data_0, intercept, trend)
     filtering_states <- add_removed_var(filtering_states, data_0, intercept, trend)
-    filtering_var <- add_removed_var(filtering_var, data_0, intercept, trend)
+    filtering_stdev <- add_removed_var(filtering_stdev, data_0, intercept, trend)
   }
 
   res <- list(smoothed_states = smoothed_states,
-              smoothed_var = smoothed_var,
-              #filtered_states = filtered_states,
-              #filtered_var = filtered_var,
+              smoothed_stdev = smoothed_stdev,
               filtering_states = filtering_states,
-              filtering_var = filtering_var,
+              filtering_stdev = filtering_stdev,
               fitted = fitted,
+              parameters = list(scalingfactor = rjd3toolkit::result(jmodestimated, "scalingfactor"),
+                                ll = rjd3toolkit::result(jmodestimated, "likelihood.ll"),
+                                lser= rjd3toolkit::result(jmodestimated, "likelihood.ser"),
+                                ncmp = rjd3toolkit::result(jmodestimated, "ssf.ncmps")),
               data = data)
   class(res) <- "ssm_lm"
   res
@@ -202,66 +193,6 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 
 
 
-ssm_lm_data <- function(data,
-                        intercept = TRUE,
-                        trend = FALSE,
-                        var_intercept = 0,
-                        var_variables = 1,
-                        fixed_intercept = FALSE,
-                        fixed_variables = FALSE, ...) {
-  # on enleve la derniere ligne car on utilise le filtering et il faut au moins 1 obs
-  # apres la premiere date de l indicatrice
-  data_0 = apply(data[-nrow(data),],2, function(x) all(x==0))
-  data = data[, !data_0]
-
-  jmodel <- rjd3sts::model()
-
-  jeq <- rjd3sts::equation("eq1",variance = 0, fixed = TRUE)  #ne pas modifier
-
-  if (intercept) {
-    rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_intercept))
-    rjd3sts::add.equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
-  }
-
-  for (nom_var in colnames(data)[-1]) {
-    rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables, fixed = fixed_variables))
-    rjd3sts::add.equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
-  }
-
-  rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
-  rjd3sts::add.equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
-
-  rjd3sts::add(jmodel, jeq)
-
-  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1])
-
-  filtering_states <- rjd3sts::filteringstates(jmodestimated)
-  filtering_var <- rjd3sts::filteringstatesstdev(jmodestimated)
-
-  data_filtering <- data[,-1]
-  y = data[,1]
-  if (intercept) {
-    data_filtering <- cbind(1, data_filtering)
-  }
-  filtering_states[,ncol(filtering_states)] <- y - rowSums(filtering_states[,-ncol(filtering_states)] * data_filtering)
-
-  colnames(filtering_states) <-
-    colnames(filtering_var) <-
-    rjd3toolkit::result(jmodestimated, "ssf.cmpnames")
-
-  filtering_states <- add_removed_var(filtering_states, data_0, intercept)
-  filtering_var <- add_removed_var(filtering_var, data_0, intercept)
-
-  if (is.ts(data)){
-    filtering_states <- ts(filtering_states, end = end(data), frequency = frequency(data))
-    filtering_var <- ts(filtering_var, end = end(data), frequency = frequency(data))
-  }
-
-  res <- list(filtering_states = filtering_states,
-              filtering_var = filtering_var)
-  res
-}
-
 #' Out of sample prevision of state space model
 #'
 #' @description
@@ -284,10 +215,11 @@ ssm_lm_oos <- function(model,
                        var_trend = 0,
                        var_variables = 0,
                        fixed_intercept = TRUE,
-                       fixed_variables = TRUE, ...) {
+                       fixed_variables = TRUE,
+                       date = 28, ...) {
   data <- get_data(model)
   intercept <- length(grep("Intercept", names(coef(model)))) > 0
-  est_data <- lapply(time(data)[-(1:28)], function(end_date) {
+  est_data <- lapply(time(data)[-(1:date)], function(end_date) {
     window(data, end = end_date)
   })
   est_models <- lapply(est_data, ssm_lm,
@@ -327,16 +259,14 @@ ssm_lm_oos <- function(model,
 #' @return
 #' Return an object of class `best_ssm`, a list containing :
 #' \item{rmse_best_model_smoothed}{gives the rmse of the best model for smoothed states}
-#' \item{rmse_best_model_filtered}{gives the rmse of the best model for filtered states}
 #' \item{rmse_best_model_filtering}{gives the rmse of the best model for filtering states}
 #' \item{best_model_smoothed}{the entire best model for smoothed states}
-#' \item{best_model_filtered}{the entire best model for filtered states}
 #' \item{best_model_filtering}{the entire best model for filtering states}
 #' \item{model}{all 25 models}
 #' \item{rmse}{a `list` of 3 : all computed rmse}
 #'
 #' @details
-#' It can give different models for smoothed, filtered and filtering states.
+#' It can give different models for smoothed and filtering states.
 #'
 #' @export
 ssm_lm_best <- function(model) {
@@ -507,37 +437,27 @@ ssm_lm_best <- function(model) {
   smoothed_res = lapply(resid, function(x) {
     x[,"smoothed"]
   })
-  filtered_res = lapply(resid, function(x) {
-    x[,"filtered"]
-  })
   filtering_res = lapply(resid, function(x) {
     x[,"filtering"]
   })
 
-  names(smoothed_res) = names(filtered_res) = names(filtering_res) = names(mod)
+  names(smoothed_res) = names(filtering_res) = names(mod)
 
   rmse_smoothed = lapply(smoothed_res, rmse_res)
-  rmse_filtered = lapply(filtered_res, rmse_res)
   rmse_filtering = lapply(filtering_res, rmse_res)
   min_rmse_smoothed = min(unlist(rmse_smoothed), na.rm = TRUE)
-  min_rmse_filtered = min(unlist(rmse_filtered), na.rm = TRUE)
   min_rmse_filtering = min(unlist(rmse_filtering), na.rm = TRUE)
   rmse_best_model_smoothed = rmse_smoothed[c(match(min_rmse_smoothed, rmse_smoothed))]
-  rmse_best_model_filtered = rmse_filtered[c(match(min_rmse_filtered, rmse_filtered))]
   rmse_best_model_filtering = rmse_filtering[c(match(min_rmse_filtering, rmse_filtering))]
   best_model_smoothed = mod[names(rmse_best_model_smoothed)]
-  best_model_filtered = mod[names(rmse_best_model_filtered)]
   best_model_filtering = mod[names(rmse_best_model_filtering)]
 
   res = list(rmse_best_model_smoothed = rmse_best_model_smoothed,
-             rmse_best_model_filtered = rmse_best_model_filtered,
              rmse_best_model_filtering = rmse_best_model_filtering,
              best_model_smoothed = best_model_smoothed,
-             best_model_filtered = best_model_filtered,
              best_model_filtering = best_model_filtering,
              model = mod,
              rmse = list(rmse_smoothed = rmse_smoothed,
-                         rmse_filtered = rmse_filtered,
                          rmse_filtering = rmse_filtering)
   )
   class(res) <- "best_ssm"
@@ -560,7 +480,7 @@ ssm_lm_best <- function(model) {
 #' \item{rmse_filtering}{all 25 rmse}
 #'
 #' @details
-#' It can give different models for smoothed, filtered and filtering states.
+#' It can give different models for smoothed and filtering states.
 #'
 #' @export
 
@@ -742,22 +662,21 @@ ssm_lm_best_oos <- function(model) {
 #' @export
 print.best_ssm <- function(x, ...) {
   print(rbind("rmse_best_model_smoothed" = names(x$rmse_best_model_smoothed),
-              "rmse_best_model_filtered" = names(x$rmse_best_model_filtered),
               "rmse_best_model_filtering" = names(x$rmse_best_model_filtering)))
 }
 
 #' Plot best_ssm
 #'
 #' @description
-#' Plot explained variable against fitted values computed with smoothed, filtered or filtering states.
+#' Plot explained variable against fitted values computed with smoothed or filtering states.
 #'
 #' @param x a `best_ssm` object
-#' @param choice choose between `smoothed`, `filtered` or `filtering`
+#' @param choice choose between `smoothed` or `filtering`
 #'
 #' @export
-plot.best_ssm <- function(x, choice = c("smoothed", "filtered", "filtering"), ...) {
+plot.best_ssm <- function(x, choice = c("smoothed", "filtering"), ...) {
   choice = match.arg(tolower(choice)[1],
-                     choices = c("smoothed", "filtered", "filtering"))
+                     choices = c("smoothed", "filtering"))
   best_mod = x[[sprintf("best_model_%s", choice)]]
   best_mod = best_mod[[names(best_mod)]]
   fitted =  fitted(best_mod)
