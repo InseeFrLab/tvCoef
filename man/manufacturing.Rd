@@ -5,7 +5,7 @@
 \alias{manufacturing}
 \title{Business Surveys}
 \format{
-An object of class \code{mts} (inherits from \code{ts}, \code{matrix}) with 294 rows and 200 columns.
+An object of class \code{mts} (inherits from \code{ts}, \code{matrix}) with 296 rows and 200 columns.
 }
 \source{
 INSEE, Banque de France
