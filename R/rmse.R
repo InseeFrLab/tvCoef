@@ -125,32 +125,32 @@ rmse_prev_instable <- function(x_lm, formule, data, var_fixes, fixed_bw = FALSE,
   residus_fut <- data.frame(ts.union(
     resid_prev_lm,
     resid_prev_piecelm,
-    resid_prev_piecetvlm,
-    resid_prev_tvlm,
     resid_prev_piecelm_fixe,
+    resid_prev_tvlm,
+    resid_prev_piecetvlm,
     resid_prev_piecetvlm_fixe,
     resid_prev_tvlm_fixe
   ))
   rmse_past <- sapply(residus_past, rmse_res)
   rmse_fut <- sapply(residus_fut, rmse_res)
-  names(rmse_past) <- c("lm", "piece_lm", "piece_tvlm", "TvLM", "piece_lm fixed coeff", "piece_tvlm fixed coeff", "TvLM fixed coeff")
-  names(rmse_fut) <- c("lm", "piece_lm", "piece_tvlm", "TvLM", "piece_lm fixed coeff", "piece_tvlm fixed coeff", "TvLM fixed coeff")
+  names(rmse_past) <- names(rmse_fut) <-
+    c("lm", "piece_lm", "piece_lm fixed coeff", "TvLM", "piece_tvlm", "piece_tvlm fixed coeff", "TvLM fixed coeff")
   res <- list(
     model = list(
       "lm" = x_lm,
       "piece_lm" = x_piecelm,
-      "piece_tvlm" = x_piecetvlm,
-      "tvlm" = x_tvlm,
       "piece_lm_fixe" = x_piecelm_fixe,
+      "tvlm" = x_tvlm,
+      "piece_tvlm" = x_piecetvlm,
       "piece_tvlm_fixe" = x_piecetvlm_fixe,
       "tvlm_fixe" = x_tvlm_fixe
     ),
     prevision = list(
       "prev_lm" = prev_x_lm,
       "prev_piece_lm" = prev_x_piecelm,
-      "prev_piece_tvlm" = prev_x_piecetvlm,
-      "prev_tvlm" = prev_x_tvlm,
       "prev_piece_lm_fixe" = prev_x_piecelm_fixe,
+      "prev_tvlm" = prev_x_tvlm,
+      "prev_piece_tvlm" = prev_x_piecetvlm,
       "prev_piece_tvlm_fixe" = prev_x_piecetvlm_fixe,
       "prev_tvlm_fixe" = prev_x_tvlm_fixe
     ),
@@ -184,29 +184,28 @@ rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 28, b
   resid_prev_piecelm <- prev_x_piecelm$residuals
   resid_prev_piecetvlm <- prev_x_piecetvlm$residuals
   resid_prev_tvlm <- prev_x_tvlm$residuals
-  residus_past <- list(resid_lm, resid_piecelm, resid_piecetvlm, resid_tvlm)
+  residus_past <- list(resid_lm, resid_piecelm, resid_tvlm, resid_piecetvlm)
   residus_fut <- data.frame(ts.union(
     resid_prev_lm,
     resid_prev_piecelm,
-    resid_prev_piecetvlm,
-    resid_prev_tvlm
+    resid_prev_tvlm,
+    resid_prev_piecetvlm
   ))
   rmse_past <- sapply(residus_past, rmse_res)
   rmse_fut <- sapply(residus_fut, rmse_res)
-  names(rmse_past) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
-  names(rmse_fut) <- c("lm", "piece_lm", "piece_tvlm", "TvLM")
+  names(rmse_past) <- names(rmse_fut) <- c("lm", "piece_lm", "TvLM", "piece_tvlm")
   res <- list(
     model = list(
       "lm" = x_lm,
       "piece_lm" = x_piecelm,
-      "piece_tvlm" = x_piecetvlm,
-      "tvlm" = x_tvlm
+      "tvlm" = x_tvlm,
+      "piece_tvlm" = x_piecetvlm
     ),
     prevision = list(
       "prev_lm" = prev_x_lm,
       "prev_piece_lm" = prev_x_piecelm,
-      "prev_piece_tvlm" = prev_x_piecetvlm,
-      "prev_tvlm" = prev_x_tvlm
+      "prev_tvlm" = prev_x_tvlm,
+      "prev_piece_tvlm" = prev_x_piecetvlm
     ),
     rmse = list(rmse_past, rmse_fut)
   )
