@@ -58,9 +58,6 @@
     <loc>/reference/piece_reg.html</loc>
   </url>
   <url>
-    <loc>/reference/plot.best_ssm.html</loc>
-  </url>
-  <url>
     <loc>/reference/resid_lm_fixed.html</loc>
   </url>
   <url>
@@ -71,12 +68,6 @@
   </url>
   <url>
     <loc>/reference/ssm_lm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ssm_lm_best.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ssm_lm_best_oos.html</loc>
   </url>
   <url>
     <loc>/reference/ssm_lm_oos.html</loc>
