@@ -48,13 +48,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, var_fixes <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, fixed_var <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for formula</span></span>
-<span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, var_fixes <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, fixed_var <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for lm</span></span>
-<span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, var_fixes <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">rmse_prev</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span>, fixed_var <span class="op">=</span> <span class="cn">NULL</span>, fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,7 +67,7 @@
 <dd><p>a <code>ts</code> object containing the variables in the model. Necessary only when <code>x</code> is a formula.</p></dd>
 
 
-<dt>var_fixes</dt>
+<dt>fixed_var</dt>
 <dd><p>which variables of the model should have their coefficients fixed for the models with fixed coefficients. Obtained thanks to the hansen test.</p></dd>
 
 
@@ -96,8 +96,8 @@
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>In additional arguments, parameters as date and period can be informed. As in <a href="soos_prev.html">soos_prev</a> they are by default respectively set to 10 and 1.</p>
-<p>To estimate prevision models, the function <a href="soos_prev.html">soos_prev</a> is used.</p>
+    <p>In additional arguments, parameters as date and period can be informed. As in <a href="oos_prev.html">oos_prev</a> they are by default respectively set to 10 and 1.</p>
+<p>To estimate prevision models, the function <a href="oos_prev.html">oos_prev</a> is used.</p>
 <p>For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before <a href="bp.lms.html">bp.lms</a> or tvLM are run on moving variables.</p>
     </div>
 

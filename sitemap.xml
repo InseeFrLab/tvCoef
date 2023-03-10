@@ -52,6 +52,9 @@
     <loc>/reference/moving_coefficients.html</loc>
   </url>
   <url>
+    <loc>/reference/oos_prev.html</loc>
+  </url>
+  <url>
     <loc>/reference/piece_reg.html</loc>
   </url>
   <url>
@@ -61,13 +64,10 @@
     <loc>/reference/resid_lm_fixed.html</loc>
   </url>
   <url>
+    <loc>/reference/rmse.html</loc>
+  </url>
+  <url>
     <loc>/reference/rmse_prev.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rmse_res.html</loc>
-  </url>
-  <url>
-    <loc>/reference/soos_prev.html</loc>
   </url>
   <url>
     <loc>/reference/ssm_lm.html</loc>
