@@ -1,5 +1,8 @@
+#' Extract Formula From model
+#'
+#' @param x the model.
+#'
 #' @export
-
 get_formula <- function(x) {
   UseMethod("get_formula", x)
 }

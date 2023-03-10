@@ -10,3 +10,38 @@ navbar:
     github:
       icon: fa-github fa-lg
       href: https://github.com/AQLT/tvCoef
+
+reference:
+- title: Database
+  contents:
+  - '`manufacturing`'
+  - '`gdp`'
+  - '`hansen_table`'
+- title: Tools around models
+  contents:
+  - '`get_data`'
+  - '`get_formula`'
+  - '`last_coef`'
+  - '`rmse`'
+  - '`hansen.test`'
+  - '`moving_coefficients`'
+  - '`oos_prev`'
+- title: State space models
+  desc: Functions to manipulate state space models
+  contents:
+  - '`ssm_lm`'
+  - '`ssm_lm_oos`'
+- title: Piecewise regression
+  contents:
+  - '`piece_reg`'
+  - '`bp.lms`'
+  - '`break_data`'
+  - '`lm_fenetre_fixe`'
+  - '`lm_fixed_coeff`'
+  - '`lm_residual_effect`'
+  - '`resid_lm_fixed`'
+- title: Estimate all models
+  desc : ~
+  contents:
+  - '`rmse_prev`'
+  - '`get_rmse`'
