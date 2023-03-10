@@ -7,7 +7,7 @@
 piece_reg(
   x,
   break_dates = NULL,
-  var_fixes = NULL,
+  fixed_var = NULL,
   tvlm = FALSE,
   bw = NULL,
   left = TRUE,
@@ -19,7 +19,7 @@ piece_reg(
 
 \item{break_dates}{optional, to indicate the breakdates if they are known. By default set to \code{NULL}.}
 
-\item{var_fixes}{fixed variables (not splitted using \code{break_dates}).}
+\item{fixed_var}{fixed variables (not splitted using \code{break_dates}).}
 
 \item{tvlm}{By default set to \code{FALSE}. Indicates which model will be run on each sub data. \code{FALSE} means a \link{lm} will be run.}
 

@@ -6,18 +6,18 @@
 \alias{rmse_prev.lm}
 \title{Computes RMSE of different models}
 \usage{
-rmse_prev(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+rmse_prev(x, data, fixed_var = NULL, fixed_bw = FALSE, ...)
 
-\method{rmse_prev}{formula}(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+\method{rmse_prev}{formula}(x, data, fixed_var = NULL, fixed_bw = FALSE, ...)
 
-\method{rmse_prev}{lm}(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
+\method{rmse_prev}{lm}(x, data, fixed_var = NULL, fixed_bw = FALSE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{formula} or \code{lm}, that is the description of the model to be fitted, or the model itself.}
 
 \item{data}{a \code{ts} object containing the variables in the model. Necessary only when \code{x} is a formula.}
 
-\item{var_fixes}{which variables of the model should have their coefficients fixed for the models with fixed coefficients. Obtained thanks to the hansen test.}
+\item{fixed_var}{which variables of the model should have their coefficients fixed for the models with fixed coefficients. Obtained thanks to the hansen test.}
 
 \item{fixed_bw}{\code{logical}, by default set to \code{FALSE}. Indicates if the bandwidth has to be computed again in the prevision model, or if it takes the value of the bandwidth of the \code{tvlm} model.}
 
@@ -33,9 +33,9 @@ Returns an object of class \code{prev} which is a list containing the following 
 Computes 6 models: linear regression, piecewise regression (with linear regression and local regression), local regression (with \link{tvLM}), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
 }
 \details{
-In additional arguments, parameters as date and period can be informed. As in \link{soos_prev} they are by default respectively set to 10 and 1.
+In additional arguments, parameters as date and period can be informed. As in \link{oos_prev} they are by default respectively set to 10 and 1.
 
-To estimate prevision models, the function \link{soos_prev} is used.
+To estimate prevision models, the function \link{oos_prev} is used.
 
 For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before \link{bp.lms} or \link{tvLM} are run on moving variables.
 }

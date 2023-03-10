@@ -4,16 +4,16 @@
 \alias{resid_lm_fixed}
 \title{Extract data frame for lm_fixed_coeff}
 \usage{
-resid_lm_fixed(x, var_fixes)
+resid_lm_fixed(x, fixed_var)
 }
 \arguments{
 \item{x}{\code{lm} model}
 
-\item{var_fixes}{list of variables that don't vary through time according to \link{hansen.test}}
+\item{fixed_var}{list of variables that don't vary through time according to \link{hansen.test}}
 }
 \value{
 A new environment where the explained variable is named "fixed".
 }
 \description{
-According to parameter \code{var_fixes}, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
+According to parameter \code{fixed_var}, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 }

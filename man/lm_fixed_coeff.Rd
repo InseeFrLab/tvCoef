@@ -4,14 +4,14 @@
 \alias{lm_fixed_coeff}
 \title{Fixed and variable coefficients regressions}
 \usage{
-lm_fixed_coeff(formula, data, var_fixes, ...)
+lm_fixed_coeff(formula, data, fixed_var, ...)
 }
 \arguments{
 \item{formula}{a \code{formula} object.}
 
 \item{data}{time series data.}
 
-\item{var_fixes}{chosen variables whose coefficients aren't allowed to vary through time}
+\item{fixed_var}{chosen variables whose coefficients aren't allowed to vary through time}
 
 \item{...}{further arguments passed to \code{\link[tvReg:tvLM]{tvReg::tvLM()}}}
 }
