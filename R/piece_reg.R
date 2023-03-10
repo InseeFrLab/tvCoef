@@ -46,7 +46,7 @@ break_data <- function(x, break_dates, left = TRUE, ...) {
 #'
 #' @param x `lm` object. It is the global regression model
 #' @param break_dates optional, to indicate the breakdates if they are known. By default set to `NULL`.
-#' @param var_fixes fixed variables (not splitted using `break_dates`).
+#' @param fixed_var fixed variables (not splitted using `break_dates`).
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
 #' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. `FALSE` means a [lm] will be run.
 #' @param bw bandwidth of the local regression (when `tvlm = TRUE`).
@@ -58,7 +58,7 @@ break_data <- function(x, break_dates, left = TRUE, ...) {
 #'
 #' @export
 
-piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw = NULL, left = TRUE, ...) {
+piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw = NULL, left = TRUE, ...) {
   data <- get_data(x)
   intercept <- length(grep("Intercept", names(coef(x)))) > 0
   if (intercept) {
@@ -81,7 +81,7 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
       return(tv)
     }
   }
-  if(is.null(var_fixes)) {
+  if(is.null(fixed_var)) {
     data_break <- break_data(data[,-1], break_dates = break_dates, left = left)
     data2 <- cbind(data[,1], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_break))
@@ -92,9 +92,9 @@ piece_reg <- function(x, break_dates = NULL, var_fixes = NULL, tvlm = FALSE, bw 
     }
   } else {
     data_x = data[,-1]
-    data_break <- break_data(data_x[,- var_fixes], break_dates = break_dates, left = left)
-    data2 <- cbind(data[,1], data_x[,var_fixes], data_break)
-    colnames(data2) <- c(colnames(data)[1], colnames(data_x)[var_fixes], colnames(data_break))
+    data_break <- break_data(data_x[,- fixed_var], break_dates = break_dates, left = left)
+    data2 <- cbind(data[,1], data_x[,fixed_var], data_break)
+    colnames(data2) <- c(colnames(data)[1], colnames(data_x)[fixed_var], colnames(data_break))
     if(!tvlm) {
       piecereg = dynlm::dynlm(formula = as.formula(formula), data = data2)
     } else {

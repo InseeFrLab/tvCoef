@@ -204,7 +204,7 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 #' Computes out of sample previsions of a given state space model. Unlike [ssm_lm] it can manage dummies.
 #'
 #' @inheritParams ssm_lm
-#' @inheritParams soos_prev
+#' @inheritParams oos_prev
 #'
 #' @return
 #' Returns all coefficients of all variables and the residual
@@ -446,8 +446,8 @@ ssm_lm_best <- function(model) {
 
   names(smoothed_res) = names(filtering_res) = names(mod)
 
-  rmse_smoothed = lapply(smoothed_res, rmse_res)
-  rmse_filtering = lapply(filtering_res, rmse_res)
+  rmse_smoothed = lapply(smoothed_res, rmse)
+  rmse_filtering = lapply(filtering_res, rmse)
   min_rmse_smoothed = min(unlist(rmse_smoothed), na.rm = TRUE)
   min_rmse_filtering = min(unlist(rmse_filtering), na.rm = TRUE)
   rmse_best_model_smoothed = rmse_smoothed[c(match(min_rmse_smoothed, rmse_smoothed))]
@@ -651,7 +651,7 @@ ssm_lm_best_oos <- function(model) {
   filtering <- filtering[filtering_not_na]
   filtering_res = lapply(filtering, residuals)
   names(filtering_res) = names(filtering)
-  rmse_filtering = lapply(filtering_res, rmse_res)
+  rmse_filtering = lapply(filtering_res, rmse)
   min_rmse_filtering = min(unlist(rmse_filtering), na.rm = TRUE)
   rmse_best_model_filtering = rmse_filtering[c(match(min_rmse_filtering, rmse_filtering))]
   best_model_filtering = filtering[names(rmse_best_model_filtering)]

@@ -71,7 +71,7 @@ get_rmse_bw_small = function(model, ...) {
   resid_prev_piece_lm_bws = model$prevision$prev_piece_lm$residuals[time(model$prevision$prev_piece_lm$residuals) %in% time_bw_s]
   resid_prev_tvlm_bws = model$prevision$prev_tvlm$residuals[time(model$prevision$prev_tvlm$residuals) %in% time_bw_s]
   resid = list("lm" = resid_prev_lm_bws, "piece_lm" = resid_prev_piece_lm_bws, "tvlm" = resid_prev_tvlm_bws)
-  sapply(resid, rmse_res)
+  sapply(resid, rmse)
 }
 
 #' @rdname get_rmse

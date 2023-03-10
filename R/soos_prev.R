@@ -7,7 +7,7 @@
 #' @param ... other arguments
 #'
 #' @return
-#' soos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same previsions and residuals as below.
+#' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same previsions and residuals as below.
 #' An object of class `revision` is a list containing the following elements:
 #' \item{model}{all models used to forecast}
 #' \item{debut}{same as date chosen earlier}
@@ -19,14 +19,14 @@
 #'
 #' @export
 
-soos_prev <- function(model, date = 28, period = 1, ...) {
-  UseMethod("soos_prev", model)
+oos_prev <- function(model, date = 28, period = 1, ...) {
+  UseMethod("oos_prev", model)
 }
 
-#' @rdname soos_prev
+#' @rdname oos_prev
 #' @export
 
-soos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
+oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
   # formula <- get_formula(model)
   if (missing(data)) {
     data <- get_data(model)
@@ -79,10 +79,10 @@ soos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
   result
 }
 
-#' @rdname soos_prev
+#' @rdname oos_prev
 #' @export
 
-soos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
+oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
   # formula = get_formula(model)
   est <- model$est
   if (fixed_bw & is.null(bw)) {
@@ -152,10 +152,10 @@ soos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_
 }
 
 
-#' @rdname soos_prev
+#' @rdname oos_prev
 #' @export
 
-soos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
+oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
   data <- get_data(model)
 
   est_dates <- sapply(data, time)
@@ -259,8 +259,8 @@ soos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data
 }
 
 #' @export
-soos_prev.piecereg <- function(model, date = 28, period = 1, ...) {
-  soos_prev(model$model, date = date, period = period, ...)
+oos_prev.piecereg <- function(model, date = 28, period = 1, ...) {
+  oos_prev(model$model, date = date, period = period, ...)
 }
 
 #' @export

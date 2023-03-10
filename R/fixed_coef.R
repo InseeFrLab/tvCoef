@@ -92,9 +92,9 @@ prev_lm <- function(x) {
 
 #' @export
 
-prev_lm_fixed <- function(x, var_fixes) {
+prev_lm_fixed <- function(x, fixed_var) {
   data_predict <- x$model[[length(x$model)]]$model
-  data_predict[, -var_fixes] <- data_predict[, -var_fixes] * 0
+  data_predict[, -fixed_var] <- data_predict[, -fixed_var] * 0
   predict <- sapply(x$model, predict, x$model[[length(x$model)]]$model)
   predict_const <- sapply(x$model, function(mod) {
     const <- coef(mod)["(Intercept)"]
@@ -158,16 +158,16 @@ prev_tvlm <- function(x) {
 #' Extract data frame for lm_fixed_coeff
 #'
 #' @description
-#' According to parameter `var_fixes`, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
+#' According to parameter `fixed_var`, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 #'
 #' @param x `lm` model
-#' @param var_fixes list of variables that don't vary through time according to [hansen.test]
+#' @param fixed_var list of variables that don't vary through time according to [hansen.test]
 #'
 #' @return
 #' A new environment where the explained variable is named "fixed".
 #' @export
 
-resid_lm_fixed <- function(x, var_fixes) {
+resid_lm_fixed <- function(x, fixed_var) {
   intercept <- length(grep("Intercept", names(coef(x)))) > 0
   if (intercept) {
     data <- cbind(x$model[, 1], 1, x$model[, -1])
@@ -175,9 +175,9 @@ resid_lm_fixed <- function(x, var_fixes) {
   } else {data = x$model}
   data_y <- data[,1]
   data <- data[,-1]
-  data_fixes <- data[, var_fixes, drop = FALSE]
-  data_variables <- data[, -c(var_fixes), drop = FALSE]
-  coef_invariant <- coef(x)[var_fixes]
+  data_fixes <- data[, fixed_var, drop = FALSE]
+  data_variables <- data[, -c(fixed_var), drop = FALSE]
+  coef_invariant <- coef(x)[fixed_var]
   variables_fixes <- sapply(seq_len(ncol(data_fixes)), function(i) {
     data_fixes[, i] * coef_invariant[i]
   })
@@ -195,7 +195,7 @@ resid_lm_fixed <- function(x, var_fixes) {
 #'
 #' @param formula a `formula` object.
 #' @param data time series data.
-#' @param var_fixes chosen variables whose coefficients aren't allowed to vary through time
+#' @param fixed_var chosen variables whose coefficients aren't allowed to vary through time
 #'
 #' @param ... further arguments passed to [tvReg::tvLM()]
 #'
@@ -207,10 +207,10 @@ resid_lm_fixed <- function(x, var_fixes) {
 #'
 #' @export
 
-lm_fixed_coeff <- function(formula, data, var_fixes, ...) {
+lm_fixed_coeff <- function(formula, data, fixed_var, ...) {
   formula <- deparse(formula)
   x <- dynlm::dynlm(formula = formula(paste(formula, collapse = " ")), data = data)
-  data_variables <- resid_lm_fixed(x, var_fixes = var_fixes)
+  data_variables <- resid_lm_fixed(x, fixed_var = fixed_var)
   y_lm <- dynlm::dynlm(formula = fixes ~ -1 + ., data = data_variables)
   y_tvlm <- tvReg::tvLM(fixes ~ -1 + ., data = data_variables, ...)
   y_bplm <- bp.lms(y_lm, data_variables)
@@ -247,6 +247,6 @@ last_coef <- function(x) {
 #'
 #' @export
 
-rmse_res <- function(resid) {
+rmse <- function(resid) {
   sqrt(mean(resid^2, na.rm = TRUE))
 }
