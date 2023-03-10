@@ -56,9 +56,9 @@
 <span><span class="co"># S3 method for tvlm</span></span>
 <span><span class="fu">soos_prev</span><span class="op">(</span></span>
 <span>  <span class="va">model</span>,</span>
-<span>  data_est <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date <span class="op">=</span> <span class="fl">28</span>,</span>
 <span>  period <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  data_est <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">end</span>,</span>
@@ -69,9 +69,9 @@
 <span><span class="co"># S3 method for bp.lms</span></span>
 <span><span class="fu">soos_prev</span><span class="op">(</span></span>
 <span>  <span class="va">model</span>,</span>
-<span>  data_est <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date <span class="op">=</span> <span class="fl">28</span>,</span>
 <span>  period <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  data_est <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  fixed_bw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -102,7 +102,7 @@
     
 
 <p>soos_prev returns an object of class <code>revision</code>, only for models of class <a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a> and tvlm. For an object of class <code>bplm</code> it returns the same previsions and residuals as below.
-An object of class <code>revision</code> is a list containing the following elements :</p>
+An object of class <code>revision</code> is a list containing the following elements:</p>
 <dl><dt>model</dt>
 <dd><p>all models used to forecast</p></dd>
 

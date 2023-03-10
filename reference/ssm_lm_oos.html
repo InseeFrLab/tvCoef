@@ -49,12 +49,13 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ssm_lm_oos</span><span class="op">(</span></span>
-<span>  <span class="va">model</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  trend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  var_intercept <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  var_trend <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  var_slope <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  var_variables <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  fixed_var_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fixed_var_trend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fixed_var_variables <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  date <span class="op">=</span> <span class="fl">28</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -63,7 +64,7 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>model</dt>
+    <dl><dt>x</dt>
 <dd><p>a <code>lm</code> or <code>dynlm</code> model</p></dd>
 
 
@@ -71,20 +72,24 @@
 <dd><p>trend</p></dd>
 
 
-<dt>var_intercept</dt>
-<dd><p>??</p></dd>
+<dt>var_intercept, var_slope</dt>
+<dd><p>variance of the intercept and the slope (used if <code>trend = TRUE</code>).</p></dd>
 
 
 <dt>var_variables</dt>
-<dd><p>??</p></dd>
+<dd><p>variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.</p></dd>
 
 
-<dt>fixed_var_intercept</dt>
-<dd><p><code>logical</code></p></dd>
+<dt>fixed_var_intercept, fixed_var_trend, fixed_var_variables</dt>
+<dd><p>logical indicating if the variance are fixed or estimated.</p></dd>
 
 
-<dt>fixed_var_variables</dt>
-<dd><p><code>logical</code></p></dd>
+<dt>date</dt>
+<dd><p>choose when we want to start the revision process after the start date. By default set to 10.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>other arguments used in <code><a href="https://rdrr.io/pkg/rjd3sts/man/estimate.html" class="external-link">rjd3sts::estimate()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
