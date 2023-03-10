@@ -10,7 +10,7 @@ rmse_prev(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
 
 \method{rmse_prev}{formula}(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
 
-\method{rmse_prev}{lm}(x, var_fixes = NULL, fixed_bw = FALSE, ...)
+\method{rmse_prev}{lm}(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{formula} or \code{lm}, that is the description of the model to be fitted, or the model itself.}
@@ -24,13 +24,13 @@ rmse_prev(x, data, var_fixes = NULL, fixed_bw = FALSE, ...)
 \item{...}{additional arguments}
 }
 \value{
-Returns an object of class \code{prev} which is a list containing the following elements :
+Returns an object of class \code{prev} which is a list containing the following elements:
 \item{model}{a list of the 6 explanatory models}
 \item{prevision}{a list of the 6 predictions of the 6 previous models}
 \item{rmse}{a list of the 2 computed rmse, in sample and out of sample}
 }
 \description{
-Computes 6 models : linear regression, piecewise regression (with linear regression and local regression), local regression (with \link{tvLM}), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
+Computes 6 models: linear regression, piecewise regression (with linear regression and local regression), local regression (with \link{tvLM}), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
 }
 \details{
 In additional arguments, parameters as date and period can be informed. As in \link{soos_prev} they are by default respectively set to 10 and 1.

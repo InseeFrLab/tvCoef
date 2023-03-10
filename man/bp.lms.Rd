@@ -2,7 +2,7 @@
 % Please edit documentation in R/bp_lms.R
 \name{bp.lms}
 \alias{bp.lms}
-\title{Breakdates regression}
+\title{Pie regression}
 \usage{
 bp.lms(x, data, left = TRUE, break_dates, tvlm = FALSE, ...)
 }
@@ -15,10 +15,12 @@ bp.lms(x, data, left = TRUE, break_dates, tvlm = FALSE, ...)
 
 \item{break_dates}{optional, to indicate the breakup dates if they are known}
 
-\item{tvlm}{By default set to \code{FALSE}. Indicates which model will be run on each sub data. FALSE means a \link{lm} will be run.}
+\item{tvlm}{By default set to \code{FALSE}. Indicates which model will be run on each sub data. \code{FALSE} means a \link{lm} will be run.}
+
+\item{...}{other arguments passed to \code{\link[tvReg:tvLM]{tvReg::tvLM()}}.}
 }
 \value{
-Returns an element of class \code{bp.lms}. It is a list containing the following elements :
+Returns an element of class \code{bp.lms}. It is a list containing the following elements:
 \item{model}{all computed models, each of class \code{lm} or \code{tvlm} according to the parameter specified above}
 \item{start}{start date of the time serie}
 \item{end}{end date of the time serie}

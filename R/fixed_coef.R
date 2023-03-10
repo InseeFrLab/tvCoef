@@ -1,4 +1,4 @@
-#' Residual effect regression
+#' Residual Effect Regression
 #'
 #' Checks there is no residual effect in a model
 #'
@@ -14,12 +14,12 @@ lm_residual_effect <- function(x, var = c(-1)) {
   resid_effect
 }
 
-#' Computes regression on fixed window
+#' Fixed Window Regression
 #'
-#' @param formula a `formula` object
-#' @param data time series data
+#' @param formula a `formula` object.
+#' @param data time series data.
 #'
-#' @details
+#' @returns
 #'
 #' Return an object of class "lmffixe".
 #' Return all models, from which we can extract the usual coefficients, residuals, and fitted.values. And the divisor chosen by the function (arbitrary the middle one), the period, i.e. the length of each sub models, and the frequency of the data.
@@ -32,7 +32,7 @@ lm_fenetre_fixe <- function(formula, data, nbw = 1) {
   dataf <- lapply(1:(length(borne) - 1), function(i) {
     window(data,
       start = time(data)[borne[i]],
-      end = time(data)[borne[i + 1] - 1 / frequency(data)],
+      end = time(data)[borne[i + 1] - deltat(data)],
       frequency = frequency(data)
     )
   })
@@ -197,6 +197,8 @@ resid_lm_fixed <- function(x, var_fixes) {
 #' @param data time series data.
 #' @param var_fixes chosen variables whose coefficients aren't allowed to vary through time
 #'
+#' @param ... further arguments passed to [tvReg::tvLM()]
+#'
 #' @return
 #' \item{global_model}{the simple `lm` model}
 #' \item{linear_reg}{simple `lm` model with fixed coefficients}
@@ -222,7 +224,7 @@ lm_fixed_coeff <- function(formula, data, var_fixes, ...) {
 }
 
 
-#' Last coefficients function
+#' Extract Last Coefficients
 #'
 #' @description
 #' Get last coefficients of lm or tvLM models.

@@ -19,7 +19,7 @@ Performs Hansen test
 \details{
 Perform Hansen test, which indicates if the variance of a model, a global model and the coefficients of the variable within this model are likely to be unstable over time.
 
-HO : the coefficient/model is stable over time.
+HO: the coefficient/model is stable over time.
 }
 \references{
 Bruce E Hansen "Testing for parameter instability in linear models". Journal of policy Modeling (1992)

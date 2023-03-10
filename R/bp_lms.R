@@ -1,4 +1,4 @@
-#' Breakdates regression
+#' Pie regression
 #'
 #' Computes as many regressions as breakup dates within a global model
 #'
@@ -6,9 +6,11 @@
 #' @param data 	a data frame, list or environment containing the variables in the model
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
 #' @param break_dates optional, to indicate the breakup dates if they are known
-#' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. FALSE means a [lm] will be run.
+#' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. `FALSE` means a [lm] will be run.
+#' @param ... other arguments passed to [tvReg::tvLM()].
 #'
-#' @return Returns an element of class `bp.lms`. It is a list containing the following elements :
+#'
+#' @return Returns an element of class `bp.lms`. It is a list containing the following elements:
 #' \item{model}{all computed models, each of class `lm` or `tvlm` according to the parameter specified above}
 #' \item{start}{start date of the time serie}
 #' \item{end}{end date of the time serie}

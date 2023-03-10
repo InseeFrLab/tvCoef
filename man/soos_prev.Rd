@@ -13,9 +13,9 @@ soos_prev(model, date = 28, period = 1, ...)
 
 \method{soos_prev}{tvlm}(
   model,
-  data_est = NULL,
   date = 28,
   period = 1,
+  data_est = NULL,
   fixed_bw = FALSE,
   bw = NULL,
   end,
@@ -25,9 +25,9 @@ soos_prev(model, date = 28, period = 1, ...)
 
 \method{soos_prev}{bp.lms}(
   model,
-  data_est = NULL,
   date = 28,
   period = 1,
+  data_est = NULL,
   data,
   fixed_bw = FALSE,
   bw = NULL,
@@ -45,7 +45,7 @@ soos_prev(model, date = 28, period = 1, ...)
 }
 \value{
 soos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same previsions and residuals as below.
-An object of class \code{revision} is a list containing the following elements :
+An object of class \code{revision} is a list containing the following elements:
 \item{model}{all models used to forecast}
 \item{debut}{same as date chosen earlier}
 \item{intervalle}{same as period chosen earlier}

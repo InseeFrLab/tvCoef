@@ -5,29 +5,32 @@
 \title{Out of sample prevision of state space model}
 \usage{
 ssm_lm_oos(
-  model,
+  x,
   trend = FALSE,
   var_intercept = 0,
-  var_trend = 0,
+  var_slope = 0,
   var_variables = 0,
   fixed_var_intercept = TRUE,
+  fixed_var_trend = TRUE,
   fixed_var_variables = TRUE,
   date = 28,
   ...
 )
 }
 \arguments{
-\item{model}{a \code{lm} or \code{dynlm} model}
+\item{x}{a \code{lm} or \code{dynlm} model}
 
 \item{trend}{trend}
 
-\item{var_intercept}{??}
+\item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
 
-\item{var_variables}{??}
+\item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 
-\item{fixed_var_intercept}{\code{logical}}
+\item{fixed_var_intercept, fixed_var_trend, fixed_var_variables}{logical indicating if the variance are fixed or estimated.}
 
-\item{fixed_var_variables}{\code{logical}}
+\item{date}{choose when we want to start the revision process after the start date. By default set to 10.}
+
+\item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
 }
 \value{
 Returns all coefficients of all variables and the residual

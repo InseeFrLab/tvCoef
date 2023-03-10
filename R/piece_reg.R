@@ -11,6 +11,8 @@ NULL
 #' @param break_dates the date(s) at which you want to divide the data
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each subcolumn
 #'
+#' @param ... other unused arguments
+#'
 #' @return a `mts` containing as many times more data columns than breakdates
 #'
 #' @export
@@ -42,8 +44,13 @@ break_data <- function(x, break_dates, left = TRUE, ...) {
 #'
 #' @description Computes one global linear regression, on splitted data
 #'
-#' @param x `lm` object, of which we will separate the data
-#' @param break_dates optional, to indicate the breakdates if they are known. By default set to `NULL`
+#' @param x `lm` object. It is the global regression model
+#' @param break_dates optional, to indicate the breakdates if they are known. By default set to `NULL`.
+#' @param var_fixes fixed variables (not splitted using `break_dates`).
+#' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
+#' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. `FALSE` means a [lm] will be run.
+#' @param bw bandwidth of the local regression (when `tvlm = TRUE`).
+#' @param ... other arguments passed to [tvReg::tvLM()].
 #'
 #' @details Computes possible breakdates if not filled in. Uses function [break_data] and run a linear regression on the same splitted data.
 #'

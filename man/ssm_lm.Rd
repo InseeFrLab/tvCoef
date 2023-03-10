@@ -8,7 +8,6 @@ ssm_lm(
   x,
   trend = FALSE,
   var_intercept = 0,
-  var_trend = 0,
   var_slope = 0,
   var_variables = 0,
   fixed_var_intercept = TRUE,
@@ -19,6 +18,8 @@ ssm_lm(
 )
 }
 \arguments{
+\item{x}{a \code{lm} or \code{dynlm} model}
+
 \item{trend}{trend}
 
 \item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
@@ -27,10 +28,12 @@ ssm_lm(
 
 \item{fixed_var_intercept, fixed_var_trend, fixed_var_variables}{logical indicating if the variance are fixed or estimated.}
 
-\item{model}{a \code{lm} or \code{dynlm} model}
+\item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
+
+\item{remove_last_dummies}{boolean indicating if current dummies (i.e.: only 0 and 1 at the last date) should be removed.}
 }
 \value{
-Returns a \code{list} containing :
+Returns a \code{list} containing:
 \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
 \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
 \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}

@@ -8,7 +8,7 @@
 #'
 #' @return
 #' soos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same previsions and residuals as below.
-#' An object of class `revision` is a list containing the following elements :
+#' An object of class `revision` is a list containing the following elements:
 #' \item{model}{all models used to forecast}
 #' \item{debut}{same as date chosen earlier}
 #' \item{intervalle}{same as period chosen earlier}
@@ -82,7 +82,7 @@ soos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
 #' @rdname soos_prev
 #' @export
 
-soos_prev.tvlm <- function(model, data_est = NULL, date = 28, period = 1, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
+soos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
   # formula = get_formula(model)
   est <- model$est
   if (fixed_bw & is.null(bw)) {
@@ -155,7 +155,7 @@ soos_prev.tvlm <- function(model, data_est = NULL, date = 28, period = 1, fixed_
 #' @rdname soos_prev
 #' @export
 
-soos_prev.bp.lms <- function(model, data_est = NULL, date = 28, period = 1, data, fixed_bw = FALSE, bw = NULL, ...) {
+soos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
   data <- get_data(model)
 
   est_dates <- sapply(data, time)

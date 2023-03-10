@@ -4,12 +4,17 @@
 #'
 #' Use `rjd3sts` packages.
 #'
-#' @param model a `lm` or `dynlm` model
+#' @param x a `lm` or `dynlm` model
 #' @param trend trend
 #' @param var_intercept,var_slope variance of the intercept and the slope (used if `trend = TRUE`).
 #' @param var_variables variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.
 #' @param fixed_var_intercept,fixed_var_trend,fixed_var_variables logical indicating if the variance are fixed or estimated.
-#' @return Returns a `list` containing :
+#'
+#'
+#' @param ... other arguments used in [rjd3sts::estimate()].
+#' @param remove_last_dummies boolean indicating if current dummies (i.e.: only 0 and 1 at the last date) should be removed.
+#'
+#' @return Returns a `list` containing:
 #' \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
 #' \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
 #' \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
@@ -21,7 +26,6 @@
 
 ssm_lm <- function(x, trend = FALSE,
                    var_intercept = 0,
-                   var_trend = 0,
                    var_slope = 0,
                    var_variables = 0,
                    fixed_var_intercept = TRUE,
@@ -33,7 +37,6 @@ ssm_lm <- function(x, trend = FALSE,
 #' @export
 ssm_lm.lm <- function(x, trend = FALSE,
                       var_intercept = 0,
-                      var_trend = 0,
                       var_slope = 0,
                       var_variables = 0,
                       fixed_var_intercept = TRUE,
@@ -44,7 +47,6 @@ ssm_lm.lm <- function(x, trend = FALSE,
          intercept = length(grep("Intercept", names(coef(x)))) > 0,
          trend = trend,
          var_intercept = var_intercept,
-         var_trend = var_trend,
          var_slope = var_slope,
          var_variables = var_variables,
          fixed_var_intercept = fixed_var_intercept,
@@ -56,16 +58,15 @@ ssm_lm.lm <- function(x, trend = FALSE,
 
 #' @export
 ssm_lm.default <- function(x,
-                           intercept = TRUE,
                            trend = FALSE,
                            var_intercept = 0,
-                           var_trend = 0,
                            var_slope = 0,
                            var_variables = 0,
                            fixed_var_intercept = TRUE,
                            fixed_var_trend = TRUE,
                            fixed_var_variables = TRUE, ...,
-                           remove_last_dummies = FALSE) {
+                           remove_last_dummies = FALSE,
+                           intercept = TRUE) {
   data <- x
 
   if(length(var_variables) == 1)
@@ -87,7 +88,7 @@ ssm_lm.default <- function(x,
     rjd3sts::add(jmodel, rjd3sts::locallineartrend("Trend",
                                                    levelVariance = var_intercept,
                                                    fixedLevelVariance = fixed_var_intercept,
-                                                   slopevariance = var_trend, fixedSlopeVariance = fixed_var_trend))
+                                                   slopevariance = var_slope, fixedSlopeVariance = fixed_var_trend))
     rjd3sts::add.equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
     rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
@@ -202,27 +203,24 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 #' @description
 #' Computes out of sample previsions of a given state space model. Unlike [ssm_lm] it can manage dummies.
 #'
-#' @param model a `lm` or `dynlm` model
-#' @param trend trend
-#' @param var_intercept ??
-#' @param var_variables ??
-#' @param fixed_var_intercept `logical`
-#' @param fixed_var_variables `logical`
+#' @inheritParams ssm_lm
+#' @inheritParams soos_prev
 #'
 #' @return
 #' Returns all coefficients of all variables and the residual
 #'
 #' @export
-ssm_lm_oos <- function(model,
+ssm_lm_oos <- function(x,
                        trend = FALSE,
                        var_intercept = 0,
-                       var_trend = 0,
+                       var_slope = 0,
                        var_variables = 0,
                        fixed_var_intercept = TRUE,
+                       fixed_var_trend = TRUE,
                        fixed_var_variables = TRUE,
                        date = 28, ...) {
-  data <- get_data(model)
-  intercept <- length(grep("Intercept", names(coef(model)))) > 0
+  data <- get_data(x)
+  intercept <- length(grep("Intercept", names(coef(x)))) > 0
   est_data <- lapply(time(data)[-(1:date)], function(end_date) {
     window(data, end = end_date)
   })
@@ -230,9 +228,10 @@ ssm_lm_oos <- function(model,
                        trend = trend,
                        intercept = intercept,
                        var_intercept = var_intercept,
-                       var_trend = var_trend,
+                       var_slope = var_slope,
                        var_variables = var_variables,
                        fixed_var_intercept = fixed_var_intercept,
+                       fixed_var_trend = fixed_var_trend,
                        fixed_var_variables = fixed_var_variables,
                        remove_last_dummies = TRUE)
   oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
@@ -256,18 +255,18 @@ ssm_lm_oos <- function(model,
 #' Best state space model
 #'
 #' @description
-#' Computes 25 state space models, using [ssm_lm] with different parameters : `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`)
+#' Computes 25 state space models, using [ssm_lm] with different parameters: `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`)
 #'
 #' @param model a `lm` or `dynlm` model
 #'
 #' @return
-#' Return an object of class `best_ssm`, a list containing :
+#' Return an object of class `best_ssm`, a list containing:
 #' \item{rmse_best_model_smoothed}{gives the rmse of the best model for smoothed states}
 #' \item{rmse_best_model_filtering}{gives the rmse of the best model for filtering states}
 #' \item{best_model_smoothed}{the entire best model for smoothed states}
 #' \item{best_model_filtering}{the entire best model for filtering states}
 #' \item{model}{all 25 models}
-#' \item{rmse}{a `list` of 3 : all computed rmse}
+#' \item{rmse}{a `list` of 3: all computed rmse}
 #'
 #' @details
 #' It can give different models for smoothed and filtering states.
@@ -471,7 +470,7 @@ ssm_lm_best <- function(model) {
 #' Best out of sample state space model
 #'
 #' @description
-#' Computes 25 state space models, using [ssm_lm_oos] with different parameters : `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`).
+#' Computes 25 state space models, using [ssm_lm_oos] with different parameters: `fixed_var_intercept` and `fixed_var_variables` either `TRUE` or `FALSE`, and `var_intercept` and `var_variables` taking 0.01, 100 or 0 (only when associated parameters is set to `TRUE`).
 #'
 #' Is is the same 25 conbinations of parameters than in [ssm_lm_best]
 #'

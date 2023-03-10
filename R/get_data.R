@@ -86,6 +86,7 @@ get_data.piecereg <- function(model, ...) {
   get_data(model$model, ...)
 }
 
+#' @importFrom stats model.matrix na.pass
 #' @export
 full_exogeneous_matrix <- function(model, ...){
   new_diff <- new.env()

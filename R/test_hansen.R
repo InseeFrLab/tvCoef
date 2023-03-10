@@ -9,7 +9,7 @@
 #' @details
 #' Perform Hansen test, which indicates if the variance of a model, a global model and the coefficients of the variable within this model are likely to be unstable over time.
 #'
-#' HO : the coefficient/model is stable over time.
+#' HO: the coefficient/model is stable over time.
 #'
 #' @references Bruce E Hansen "Testing for parameter instability in linear models". Journal of policy Modeling (1992)
 #'
@@ -55,7 +55,7 @@ hansen.test <- function(x, var, sigma = FALSE) {
       c(L_c / nrow(S))
     },
     error = function(e) {
-      warning("Test joint impossible : supprimer les indicatrices")
+      warning("Test joint impossible: supprimer les indicatrices")
       NA
     }
   )
@@ -102,41 +102,7 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
   }
   cat("\n")
   cat("\n")
-  cat(sprintf("Lecture : True means reject H0 at level %s", b), "\n")
-}
-
-
-#' @export
-
-hansen.test.var <- function(x, var) {
-  e_t <- residuals(x)
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
-  if (intercept) {
-    x_reg <- cbind(1, x$model)
-  } else {
-    x_reg <- x$model
-  }
-  # On ajoute la constante
-  f <- cbind(apply(x_reg[, var], 2, `*`, e_t)) # i en colonne, t en ligne
-  colnames(f) <- names(coef(x))[var]
-  # equation 4 :
-  colSums(f)
-  # formule 5
-  S <- apply(f, 2, cumsum)
-  V_i <- colSums(f^2)
-
-  V <- lapply(1:nrow(f), function(i) matrix(f[i, ], ncol = 1) %*% matrix(f[i, ], nrow = 1))
-  V <- Reduce(`+`, V)
-  all.equal(diag(V), V_i, check.attributes = FALSE)
-  L_c <- lapply(1:nrow(S), function(i) matrix(S[i, ], nrow = 1) %*% solve(V, matrix(S[i, ], ncol = 1)))
-  L_c <- Reduce(`+`, L_c)
-  L_c <- L_c / nrow(S)
-  tests <- L_c
-  rejet <- L_c >= hansen_table[length(var), "5%"]
-  list(
-    tests,
-    rejet
-  )
+  cat(sprintf("Lecture: True means reject H0 at level %s", b), "\n")
 }
 
 #' Detect Fixed or Moving Coefficients

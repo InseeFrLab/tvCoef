@@ -15,9 +15,19 @@ piece_reg(
 )
 }
 \arguments{
-\item{x}{\code{lm} object, of which we will separate the data}
+\item{x}{\code{lm} object. It is the global regression model}
 
-\item{break_dates}{optional, to indicate the breakdates if they are known. By default set to \code{NULL}}
+\item{break_dates}{optional, to indicate the breakdates if they are known. By default set to \code{NULL}.}
+
+\item{var_fixes}{fixed variables (not splitted using \code{break_dates}).}
+
+\item{tvlm}{By default set to \code{FALSE}. Indicates which model will be run on each sub data. \code{FALSE} means a \link{lm} will be run.}
+
+\item{bw}{bandwidth of the local regression (when \code{tvlm = TRUE}).}
+
+\item{left}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each submodel}
+
+\item{...}{other arguments passed to \code{\link[tvReg:tvLM]{tvReg::tvLM()}}.}
 }
 \value{
 Returns an element of class \code{lm}

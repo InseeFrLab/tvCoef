@@ -3,7 +3,7 @@
 #' Computes RMSE of different models
 #'
 #' @description
-#' Computes 6 models : linear regression, piecewise regression (with linear regression and local regression), local regression (with [tvLM]), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
+#' Computes 6 models: linear regression, piecewise regression (with linear regression and local regression), local regression (with [tvLM]), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
 #'
 #' @param x an object of class `formula` or `lm`, that is the description of the model to be fitted, or the model itself.
 #' @param data a `ts` object containing the variables in the model. Necessary only when `x` is a formula.
@@ -19,7 +19,7 @@
 #' For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before [bp.lms] or [tvLM] are run on moving variables.
 #'
 #'
-#' @return Returns an object of class `prev` which is a list containing the following elements :
+#' @return Returns an object of class `prev` which is a list containing the following elements:
 #' \item{model}{a list of the 6 explanatory models}
 #' \item{prevision}{a list of the 6 predictions of the 6 previous models}
 #' \item{rmse}{a list of the 2 computed rmse, in sample and out of sample}
@@ -55,7 +55,8 @@ rmse_prev.formula <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...) 
 
 #' @rdname rmse_prev
 #' @export
-rmse_prev.lm <- function(x, var_fixes = NULL, fixed_bw = FALSE, ...) {
+rmse_prev.lm <- function(x, data, var_fixes = NULL, fixed_bw = FALSE, ...) {
+  # data argument not used
   x_lm <- x
   data = get_data(x_lm)
 
