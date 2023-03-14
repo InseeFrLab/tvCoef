@@ -122,7 +122,7 @@ rmse_prev_instable <- function(x_lm, formule, data, fixed_var, fixed_bw = FALSE,
   resid_prev_tvlm_fixe <- prev_x_tvlm_fixe$residuals
   resid_prev_piecelm_fixe <- prev_x_piecelm_fixe$residuals
   resid_prev_piecetvlm_fixe <- prev_x_piecetvlm_fixe$residuals
-  residus_past <- list(resid_lm, resid_piecelm, resid_piecetvlm, resid_tvlm, resid_piecelm_fixe, resid_piecetvlm_fixe, resid_tvlm_fixe)
+  residus_past <- list(resid_lm, resid_piecelm, resid_piecelm_fixe, resid_tvlm, resid_piecetvlm, resid_piecetvlm_fixe, resid_tvlm_fixe)
   residus_fut <- data.frame(ts.union(
     resid_prev_lm,
     resid_prev_piecelm,
