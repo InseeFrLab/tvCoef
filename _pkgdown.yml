@@ -26,6 +26,7 @@ reference:
   - '`hansen.test`'
   - '`moving_coefficients`'
   - '`oos_prev`'
+  - '`full_exogeneous_matrix`'
 - title: State space models
   desc: Functions to manipulate state space models
   contents:
