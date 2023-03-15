@@ -68,8 +68,6 @@ print.lmffixe <- function(x, ...) {
 }
 
 
-#' @export
-
 prev_lm <- function(x) {
   predict <- sapply(x$model, predict, x$model[[length(x$model)]]$model)
   prev <- res <- vector("list", length(x$model) - 1)
@@ -89,8 +87,6 @@ prev_lm <- function(x) {
     residuals = res
   )
 }
-
-#' @export
 
 prev_lm_fixed <- function(x, fixed_var) {
   data_predict <- x$model[[length(x$model)]]$model
@@ -121,8 +117,6 @@ prev_lm_fixed <- function(x, fixed_var) {
     residuals = res
   )
 }
-
-#' @export
 
 prev_tvlm <- function(x) {
   coefs <- sapply(x$model, last_coef)

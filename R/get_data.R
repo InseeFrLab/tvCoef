@@ -89,6 +89,10 @@ get_data.piecereg <- function(model, ...) {
   get_data(model$model, ...)
 }
 
+#' Extract Full Transformed Exogoneous matrix
+#'
+#' @param model the model
+#' @param ... other unused parameters
 #' @importFrom stats model.matrix na.pass
 #' @export
 full_exogeneous_matrix <- function(model, ...){

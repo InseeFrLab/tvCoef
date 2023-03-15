@@ -34,7 +34,7 @@ rmse_prev <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...){
 #' @export
 rmse_prev.formula <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...) {
   formula <- paste(deparse(x), collapse = " ")
-  x_lm <- dynlm(formula = as.formula(formula), data = data)
+  x_lm <- dynlm::dynlm(formula = as.formula(formula), data = data)
   data = get_data(x_lm)
 
   intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0

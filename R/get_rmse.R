@@ -88,18 +88,22 @@ get_coeff_plot = function(model, date, variable, titre = NULL) {
                             breaks = cumsum(round(data_plot$bw, 1) != 20)[round(data_plot$bw, 1) == 20],
                             ymin = min(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE),
                             ymax = max(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE))
-  ((ggplot(data_plot, aes(x = x))+
-      geom_ribbon(data = data_ribbon, aes(ymin = ymin, ymax = ymax, x = x, group = breaks), fill = "grey70", alpha = 0.2) +
-      geom_line(aes(y = tvlm_coef, colour = "TVLM")) +
-      geom_line(aes(y = lm_coef, colour = "LM")) +
-      labs(x = "", y = "Models", title = titre) +
-      scale_color_manual("", breaks = c("TVLM", "LM"),
-                         values = c("red", "green"))
-  )
-    /
-      (ggplot(data_plot, aes(x = x))+
-         geom_line(aes(y = bw)) +
-         labs(x = "", y = "bw"))) & (theme_bw() + theme(legend.position = "top",
-                                                        plot.title = element_text(hjust = 0.5)))
+  p1 <- ggplot2::ggplot(data_plot, ggplot2::aes(x = x))+
+    ggplot2::geom_ribbon(data = data_ribbon, ggplot2::aes(ymin = ymin, ymax = ymax, x = x, group = breaks), fill = "grey70", alpha = 0.2) +
+    ggplot2::geom_line(ggplot2::aes(y = tvlm_coef, colour = "TVLM")) +
+    ggplot2::geom_line(ggplot2::aes(y = lm_coef, colour = "LM")) +
+    ggplot2::labs(x = "", y = "Models", title = titre) +
+    ggplot2::scale_color_manual("", breaks = c("TVLM", "LM"),
+                                values = c("red", "green"))
+  p2 <- ggplot2::ggplot(data_plot, aes(x = x))+
+    ggplot2::geom_line(aes(y = bw)) +
+    labs(x = "", y = "bw")
+  p1 <- p1 + ggplot2::theme_bw() +
+    ggplot2::theme(legend.position = "top",
+                   plot.title = element_text(hjust = 0.5))
+  p2 <- p2 + ggplot2::theme_bw() +
+    ggplot2::theme(legend.position = "top",
+                   plot.title = element_text(hjust = 0.5))
+  patchwork::wrap_plots(p1,p2, ncol = 1)
 }
 
