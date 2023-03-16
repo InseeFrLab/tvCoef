@@ -12,7 +12,7 @@
 #' @param ... additional arguments
 #'
 #' @details
-#' In additional arguments, parameters as date and period can be informed. As in [oos_prev] they are by default respectively set to 10 and 1.
+#' In additional arguments, parameters as date and period can be informed. As in [oos_prev] they are by default respectively set to 28 and 1.
 #'
 #' To estimate prevision models, the function [oos_prev] is used.
 #'
