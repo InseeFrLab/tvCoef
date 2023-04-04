@@ -2,7 +2,7 @@
 #' Out of sample prevision (or simulated out of sample)
 #'
 #' @param model an object used to select a method
-#' @param date choose when we want to start the revision process after the start date. By default set to 10.
+#' @param date choose when we want to start the revision process after the start date. By default set to 28 periods.
 #' @param period choose by how many values we want to move forward. By default set to 1.
 #' @param ... other arguments
 #'
@@ -258,6 +258,7 @@ oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data,
   resultat
 }
 
+#' @rdname oos_prev
 #' @export
 oos_prev.piecereg <- function(model, date = 28, period = 1, ...) {
   oos_prev(model$model, date = date, period = period, ...)
