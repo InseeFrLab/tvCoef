@@ -89,10 +89,10 @@ ssm_lm.default <- function(x,
                                                    levelVariance = var_intercept,
                                                    fixedLevelVariance = fixed_var_intercept,
                                                    slopevariance = var_slope, fixedSlopeVariance = fixed_var_trend))
-    rjd3sts::add.equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
     rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
-    rjd3sts::add.equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   for (nom_var in colnames(data)[-1]) {
@@ -101,11 +101,11 @@ ssm_lm.default <- function(x,
     } else {
       rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_var_variables[nom_var]))
     }
-    rjd3sts::add.equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
-  rjd3sts::add.equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
+  rjd3sts::add_equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
   rjd3sts::add(jmodel, jeq)
 
@@ -117,10 +117,10 @@ ssm_lm.default <- function(x,
     cmp_names <- c("(Intercept)", cmp_names)
   }
   default_matrix <- matrix(NA, nrow = nrow(data), ncol = length(cmp_names))
-  smoothed_states <- tryCatch(rjd3sts::smoothedstates(jmodestimated), error = function(e) default_matrix)
-  smoothed_stdev <- tryCatch(rjd3sts::smoothedstatesstdev(jmodestimated), error = function(e) default_matrix)
-  filtering_states <- tryCatch(rjd3sts::filteringstates(jmodestimated), error = function(e) default_matrix)
-  filtering_stdev <- tryCatch(rjd3sts::filteringstatesstdev(jmodestimated), error = function(e) default_matrix)
+  smoothed_states <- tryCatch(rjd3sts::smoothed_states(jmodestimated), error = function(e) default_matrix)
+  smoothed_stdev <- tryCatch(rjd3sts::smoothed_states_stdev(jmodestimated), error = function(e) default_matrix)
+  filtering_states <- tryCatch(rjd3sts::filtering_states(jmodestimated), error = function(e) default_matrix)
+  filtering_stdev <- tryCatch(rjd3sts::filtering_states_stdev(jmodestimated), error = function(e) default_matrix)
 
 
   colnames(smoothed_states) <- colnames(smoothed_stdev) <-
@@ -184,6 +184,30 @@ residuals.ssm_lm <- function(object, ...) {
   object$data[,1] - object$fitted
 }
 
+#' @export
+summary.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+                           ...) {
+  text1 <- "Summary of time-varying estimated coefficients:"
+  cat("Summary of time-varying estimated coefficients (smoothing):", "\n")
+  coef <- object$smoothed_states
+  noise <- grep("^noise$", colnames(coef))
+  if (length(noise) > 0) {
+    coef <- coef[,-noise, drop = FALSE]
+  }
+  print(apply(object$smoothed_states, 2, summary), digits = digits)
+  invisible(object)
+}
+
+#' @export
+coef.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+                           ...) {
+  coef <- object$smoothed_states
+  noise <- grep("^noise$", colnames(coef))
+  if (length(noise) > 0) {
+    coef <- coef[,-noise, drop = FALSE]
+  }
+  coef
+}
 
 # internal function
 

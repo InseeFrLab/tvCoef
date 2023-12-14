@@ -18,7 +18,7 @@ lm_fixed_coeff(formula, data, fixed_var, ...)
 \value{
 \item{global_model}{the simple \code{lm} model}
 \item{linear_reg}{simple \code{lm} model with fixed coefficients}
-\item{piecewise_reg}{\code{bp.lms} model with fixed coefficients}
+\item{piecewise_reg}{\code{bp_lm} model with fixed coefficients}
 \item{tv_reg}{\code{tvlm} model with fixed coefficients}
 }
 \description{

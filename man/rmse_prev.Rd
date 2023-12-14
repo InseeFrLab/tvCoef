@@ -33,9 +33,9 @@ Returns an object of class \code{prev} which is a list containing the following 
 Computes 6 models: linear regression, piecewise regression (with linear regression and local regression), local regression (with \link{tvLM}), piecewise regression with some fixed coefficients and tvlm with fixed coefficients. Computes 6 rmse on their residuals and 6 others on the residuals of the predictions of these models.
 }
 \details{
-In additional arguments, parameters as date and period can be informed. As in \link{oos_prev} they are by default respectively set to 10 and 1.
+In additional arguments, parameters as date and period can be informed. As in \link{oos_prev} they are by default respectively set to 28 and 1.
 
 To estimate prevision models, the function \link{oos_prev} is used.
 
-For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before \link{bp.lms} or \link{tvLM} are run on moving variables.
+For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before \link{bp_lm} or \link{tvLM} are run on moving variables.
 }

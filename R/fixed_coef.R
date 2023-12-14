@@ -155,7 +155,7 @@ prev_tvlm <- function(x) {
 #' According to parameter `fixed_var`, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 #'
 #' @param x `lm` model
-#' @param fixed_var list of variables that don't vary through time according to [hansen.test]
+#' @param fixed_var list of variables that don't vary through time according to [hansen_test]
 #'
 #' @return
 #' A new environment where the explained variable is named "fixed".
@@ -196,7 +196,7 @@ resid_lm_fixed <- function(x, fixed_var) {
 #' @return
 #' \item{global_model}{the simple `lm` model}
 #' \item{linear_reg}{simple `lm` model with fixed coefficients}
-#' \item{piecewise_reg}{`bp.lms` model with fixed coefficients}
+#' \item{piecewise_reg}{`bp_lm` model with fixed coefficients}
 #' \item{tv_reg}{`tvlm` model with fixed coefficients}
 #'
 #' @export
@@ -207,7 +207,7 @@ lm_fixed_coeff <- function(formula, data, fixed_var, ...) {
   data_variables <- resid_lm_fixed(x, fixed_var = fixed_var)
   y_lm <- dynlm::dynlm(formula = fixes ~ -1 + ., data = data_variables)
   y_tvlm <- tvReg::tvLM(fixes ~ -1 + ., data = data_variables, ...)
-  y_bplm <- bp.lms(y_lm, data_variables)
+  y_bplm <- bp_lm(y_lm, data_variables)
   res <- list(
     global_model = x,
     linear_reg = y_lm,

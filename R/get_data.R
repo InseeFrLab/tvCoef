@@ -60,7 +60,7 @@ get_data.tvlm <- function(model, end, frequency, ...) {
 
 #' @rdname get_data
 #' @export
-get_data.bp.lms <- function(model, ...) {
+get_data.bp_lm <- function(model, ...) {
   if (model$tvlm) {
     data <- sapply(seq_along(model$model), function(i) {
       ts(data.frame(model$model[[i]]$y, model$model[[i]]$x),
@@ -85,7 +85,7 @@ get_data.bp.lms <- function(model, ...) {
 
 #' @rdname get_data
 #' @export
-get_data.piecereg <- function(model, ...) {
+get_data.piece_reg <- function(model, ...) {
   get_data(model$model, ...)
 }
 

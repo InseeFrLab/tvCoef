@@ -9,7 +9,7 @@ resid_lm_fixed(x, fixed_var)
 \arguments{
 \item{x}{\code{lm} model}
 
-\item{fixed_var}{list of variables that don't vary through time according to \link{hansen.test}}
+\item{fixed_var}{list of variables that don't vary through time according to \link{hansen_test}}
 }
 \value{
 A new environment where the explained variable is named "fixed".

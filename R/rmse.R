@@ -16,7 +16,7 @@
 #'
 #' To estimate prevision models, the function [oos_prev] is used.
 #'
-#' For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before [bp.lms] or [tvLM] are run on moving variables.
+#' For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before [bp_lm] or [tvLM] are run on moving variables.
 #'
 #'
 #' @return Returns an object of class `prev` which is a list containing the following elements:

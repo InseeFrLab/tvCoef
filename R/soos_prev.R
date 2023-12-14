@@ -155,7 +155,7 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
 #' @rdname oos_prev
 #' @export
 
-oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
+oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
   data <- get_data(model)
 
   est_dates <- sapply(data, time)
@@ -260,7 +260,7 @@ oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data,
 
 #' @rdname oos_prev
 #' @export
-oos_prev.piecereg <- function(model, date = 28, period = 1, ...) {
+oos_prev.piece_reg <- function(model, date = 28, period = 1, ...) {
   oos_prev(model$model, date = date, period = period, ...)
 }
 

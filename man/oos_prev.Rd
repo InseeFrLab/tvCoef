@@ -4,7 +4,8 @@
 \alias{oos_prev}
 \alias{oos_prev.lm}
 \alias{oos_prev.tvlm}
-\alias{oos_prev.bp.lms}
+\alias{oos_prev.bp_lm}
+\alias{oos_prev.piece_reg}
 \title{Out of sample prevision (or simulated out of sample)}
 \usage{
 oos_prev(model, date = 28, period = 1, ...)
@@ -23,7 +24,7 @@ oos_prev(model, date = 28, period = 1, ...)
   ...
 )
 
-\method{oos_prev}{bp.lms}(
+\method{oos_prev}{bp_lm}(
   model,
   date = 28,
   period = 1,
@@ -33,11 +34,13 @@ oos_prev(model, date = 28, period = 1, ...)
   bw = NULL,
   ...
 )
+
+\method{oos_prev}{piece_reg}(model, date = 28, period = 1, ...)
 }
 \arguments{
 \item{model}{an object used to select a method}
 
-\item{date}{choose when we want to start the revision process after the start date. By default set to 10.}
+\item{date}{choose when we want to start the revision process after the start date. By default set to 28 periods.}
 
 \item{period}{choose by how many values we want to move forward. By default set to 1.}
 
