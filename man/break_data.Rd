@@ -4,14 +4,17 @@
 \alias{break_data}
 \title{Break data}
 \usage{
-break_data(x, break_dates, left = TRUE, ...)
+break_data(x, break_dates, left = TRUE, names = NULL, ...)
 }
 \arguments{
-\item{x}{a \code{mts} to split}
+\item{x}{a \code{ts} or \code{mts} object to split}
 
 \item{break_dates}{the date(s) at which you want to divide the data}
 
 \item{left}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each subcolumn}
+
+\item{names}{optional vector containing the names of the variables used to build the splitted data.
+By default the function try to guess the names from the \code{x} parameter.}
 
 \item{...}{other unused arguments}
 }

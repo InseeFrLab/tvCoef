@@ -85,15 +85,13 @@ ssm_lm.default <- function(x,
   }
   jmodel <- rjd3sts::model()
   jeq <- rjd3sts::equation("eq1",variance = 1, fixed = FALSE)  #ne pas modifier
-  # rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
-  # rjd3sts::add.equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
   if (trend) {
     rjd3sts::add(jmodel, rjd3sts::locallineartrend("Trend",
                                                    levelVariance = var_intercept,
                                                    fixedLevelVariance = fixed_var_intercept,
                                                    slopevariance = var_slope, fixedSlopeVariance = fixed_var_trend))
-    rjd3sts::add.equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
     rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
     rjd3sts::add_equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
@@ -107,6 +105,9 @@ ssm_lm.default <- function(x,
     }
     rjd3sts::add_equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
+
+  rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
+  rjd3sts::add_equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
   rjd3sts::add(jmodel, jeq)
 
@@ -185,6 +186,30 @@ residuals.ssm_lm <- function(object, ...) {
   object$data[,1] - object$fitted
 }
 
+#' @export
+summary.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+                           ...) {
+  text1 <- "Summary of time-varying estimated coefficients:"
+  cat("Summary of time-varying estimated coefficients (smoothing):", "\n")
+  coef <- object$smoothed_states
+  noise <- grep("^noise$", colnames(coef))
+  if (length(noise) > 0) {
+    coef <- coef[,-noise, drop = FALSE]
+  }
+  print(apply(object$smoothed_states, 2, summary), digits = digits)
+  invisible(object)
+}
+
+#' @export
+coef.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+                           ...) {
+  coef <- object$smoothed_states
+  noise <- grep("^noise$", colnames(coef))
+  if (length(noise) > 0) {
+    coef <- coef[,-noise, drop = FALSE]
+  }
+  coef
+}
 
 # internal function
 
@@ -203,10 +228,10 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 
 
 
-#' Out of sample prevision of state space model
+#' Out of sample forecast of state space model
 #'
 #' @description
-#' Computes out of sample previsions of a given state space model. Unlike [ssm_lm] it can manage dummies.
+#' Computes out of sample forecasts of a given state space model. Unlike [ssm_lm] it can manage dummies.
 #'
 #' @inheritParams ssm_lm
 #' @inheritParams oos_prev
@@ -247,11 +272,11 @@ ssm_lm_oos <- function(x,
     ts(sapply(est_models, function(x) tail(x$fitted[,"filtering"],
                                            1)),
        end = end(data), frequency = frequency(data))
-  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)
-  prevision = data[,1] - oos_noise
+  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)[1:(length(colnames(est_models[[1]]$filtering_states))-1)]
+  forecast = data[,1] - oos_noise
   res = list(oos_filtering = oos_f,
              oos_noise = oos_noise,
-             prevision = prevision,
+             forecast = forecast,
              all_models = est_models)
   res
 }

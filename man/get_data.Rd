@@ -5,8 +5,8 @@
 \alias{get_data.lm}
 \alias{get_data.dynlm}
 \alias{get_data.tvlm}
-\alias{get_data.bp.lms}
-\alias{get_data.piecereg}
+\alias{get_data.bp_lm}
+\alias{get_data.piece_reg}
 \title{Get data function}
 \usage{
 get_data(model, ...)
@@ -17,9 +17,9 @@ get_data(model, ...)
 
 \method{get_data}{tvlm}(model, end, frequency, ...)
 
-\method{get_data}{bp.lms}(model, ...)
+\method{get_data}{bp_lm}(model, ...)
 
-\method{get_data}{piecereg}(model, ...)
+\method{get_data}{piece_reg}(model, ...)
 }
 \arguments{
 \item{model}{the model whose data we want}

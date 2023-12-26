@@ -7,9 +7,11 @@ NULL
 #'
 #' @description Splits a database according to one (or more) date
 #'
-#' @param x a `mts` to split
+#' @param x a `ts` or `mts` object to split
 #' @param break_dates the date(s) at which you want to divide the data
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each subcolumn
+#' @param names optional vector containing the names of the variables used to build the splitted data.
+#' By default the function try to guess the names from the `x` parameter.
 #'
 #' @param ... other unused arguments
 #'
@@ -17,12 +19,17 @@ NULL
 #'
 #' @export
 
-break_data <- function(x, break_dates, left = TRUE, ...) {
-  if (is.mts(x)) {
-    name_x <- colnames(x)
+break_data <- function(x, break_dates, left = TRUE, names = NULL, ...) {
+  if (is.null(names)) {
+    if (is.mts(x)) {
+      name_x <- colnames(x)
+    } else {
+      name_x <- deparse(substitute(x))
+    }
   } else {
-    name_x <- deparse(substitute(x))
+    name_x <- names
   }
+
   range_time_x = tsp(x)
   break_dates = c(range_time_x[1] - deltat(x) * left,
                   break_dates,
@@ -82,7 +89,7 @@ piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw 
     }
   }
   if(is.null(fixed_var)) {
-    data_break <- break_data(data[,-1], break_dates = break_dates, left = left)
+    data_break <- break_data(data[,-1], break_dates = break_dates, left = left, names = colnames(data)[-1])
     data2 <- cbind(data[,1], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_break))
     if(!tvlm) {
@@ -92,7 +99,7 @@ piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw 
     }
   } else {
     data_x = data[,-1]
-    data_break <- break_data(data_x[,- fixed_var], break_dates = break_dates, left = left)
+    data_break <- break_data(data_x[,- fixed_var], break_dates = break_dates, left = left, names = colnames(data)[-1][-fixed_var])
     data2 <- cbind(data[,1], data_x[,fixed_var], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_x)[fixed_var], colnames(data_break))
     if(!tvlm) {
@@ -107,17 +114,20 @@ piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw 
     end = end(data),
     frequency = frequency(data),
     breakdates = break_dates,
+    left_breaks = left,
     tvlm = tvlm
   )
-  class(res) <- "piecereg"
+  class(res) <- "piece_reg"
   res
 }
 
 
-print.piecereg <- function(x, ...) {
-  if(x$tvlm) {
-    print(x$model)
-  } else {
-    print(summary(x$model))
-  }
+#' @export
+print.piece_reg <- function(x, ...) {
+  print(x$model, ...)
+}
+
+#' @export
+summary.piece_reg <- function(x, ...) {
+  summary(x$model, ...)
 }

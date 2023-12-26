@@ -23,7 +23,7 @@ reference:
   - '`get_formula`'
   - '`last_coef`'
   - '`rmse`'
-  - '`hansen.test`'
+  - '`hansen_test`'
   - '`moving_coefficients`'
   - '`oos_prev`'
   - '`full_exogeneous_matrix`'
@@ -35,7 +35,7 @@ reference:
 - title: Piecewise regression
   contents:
   - '`piece_reg`'
-  - '`bp.lms`'
+  - '`bp_lm`'
   - '`break_data`'
   - '`lm_fenetre_fixe`'
   - '`lm_fixed_coeff`'

@@ -16,9 +16,9 @@
 #'
 #' @export
 
-hansen.test <- function(x, var, sigma = FALSE) {
+hansen_test <- function(x, var, sigma = FALSE) {
   if (!inherits(x, "lm")) {
-    stop("il faut un lm")
+    stop('x must be a "lm" object')
   }
   e_t <- residuals(x)
   intercept <- has_intercept(x)
@@ -65,13 +65,18 @@ hansen.test <- function(x, var, sigma = FALSE) {
     L_c = L_c,
     selected_var = var
   )
-  class(res) <- "hansen.test"
+  class(res) <- "hansen_test"
   return(res)
 }
 
+#' @export
+hansen.test <- function (...) {
+  .Deprecated("hansen_test")
+  hansen_test(...)
+}
 
 #' @export
-print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {
+print.hansen_test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {
   cat("\n")
   cat("Variable                 ", "L       ", "Stat    ", "Conclusion", "\n")
   cat("______________________________________________________________", "\n")
@@ -107,9 +112,9 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
 
 #' Detect Fixed or Moving Coefficients
 #'
-#' Functions to test if any coefficient is fixed or moving according to the Hansen test ([hansen.test()])
+#' Functions to test if any coefficient is fixed or moving according to the Hansen test ([hansen_test()])
 #'
-#' @inheritParams hansen.test
+#' @inheritParams hansen_test
 #' @param a level
 #' @param intercept boolean indicating if the intercept should be consider as a moving coefficient when at least one other variable is moving.
 #'
@@ -119,7 +124,7 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
 moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
-  test <- hansen.test(x, sigma = sigma)
+  test <- hansen_test(x, sigma = sigma)
   uni_tests <- test$L
   if (!sigma)
     uni_tests <- uni_tests[-grep("sigma2", names(uni_tests))]
@@ -139,7 +144,7 @@ moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE,
       uni_var <- unique(1, uni_var)
     return(uni_var)
   }
-  joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
+  joint_test <- hansen_test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
   } else if (joint_test$L_c < hansen_table[length(uni_var), b]) {
@@ -156,7 +161,7 @@ moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE,
 fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
-  test <- hansen.test(x, sigma = sigma)
+  test <- hansen_test(x, sigma = sigma)
   uni_tests <- test$L
   if (!sigma)
     uni_tests <- uni_tests[-grep("sigma2", names(uni_tests))]
@@ -177,7 +182,7 @@ fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, 
       uni_var <- NULL
     return(uni_var)
   }
-  joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
+  joint_test <- hansen_test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
   } else if (joint_test$L_c >= hansen_table[length(uni_var), b]) {
