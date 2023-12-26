@@ -1,5 +1,5 @@
 
-#' Out of sample prevision (or simulated out of sample)
+#' Out of sample forecast (or simulated out of sample)
 #'
 #' @param model an object used to select a method
 #' @param date choose when we want to start the revision process after the start date. By default set to 28 periods.
@@ -7,14 +7,14 @@
 #' @param ... other arguments
 #'
 #' @return
-#' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same previsions and residuals as below.
+#' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same forecasts and residuals as below.
 #' An object of class `revision` is a list containing the following elements:
 #' \item{model}{all models used to forecast}
 #' \item{debut}{same as date chosen earlier}
 #' \item{intervalle}{same as period chosen earlier}
 #' \item{end_dates}{a vector of all end date of each models}
 #' \item{frequency}{the frequency of the data}
-#' \item{prevision}{the forecast}
+#' \item{forecast}{the forecast}
 #' \item{residuals}{the errors of the forecast}
 #'
 #' @export
@@ -72,7 +72,7 @@ oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
     intervalle = res$intervalle,
     end_dates = res$end_dates,
     frequency = res$frequency,
-    prevision = prev$prevision,
+    forecast = prev$forecast,
     residuals = prev$residuals
   )
   class(result) <- "revision"
@@ -144,7 +144,7 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     intervalle = res$intervalle,
     end_dates = res$end_dates,
     frequency = res$frequency,
-    prevision = prev$prevision,
+    forecast = prev$forecast,
     residuals = prev$residuals
   )
   class(result) <- "revision"
@@ -240,7 +240,7 @@ oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, 
     results[[i]] <- lapply(results[[i]], window, end = first_date, extend = TRUE)
   }
   results_ <- list(
-    prevision = unlist(lapply(results, `[[`, "prevision")),
+    forecast = unlist(lapply(results, `[[`, "forecast")),
     residuals = unlist(lapply(results, `[[`, "residuals"))
   )
   results_ <- lapply(results_, ts, start = start(results[[1]][[1]]), frequency = frequency(results[[1]][[1]]))
@@ -251,7 +251,7 @@ oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, 
     intervalle = period,
     end_dates = est_dates,
     frequency = frequency(data[[1]]),
-    prevision = results_$prevision,
+    forecast = results_$forecast,
     residuals = results_$residuals
   )
   class(resultat) <- "revision"
@@ -267,5 +267,5 @@ oos_prev.piece_reg <- function(model, date = 28, period = 1, ...) {
 #' @export
 
 print.revision <- function(x, ...) {
-  print(list(prevision = x$prevision, residuals = x$residuals))
+  print(list(forecast = x$forecast, residuals = x$residuals))
 }

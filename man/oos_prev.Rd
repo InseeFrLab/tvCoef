@@ -6,7 +6,7 @@
 \alias{oos_prev.tvlm}
 \alias{oos_prev.bp_lm}
 \alias{oos_prev.piece_reg}
-\title{Out of sample prevision (or simulated out of sample)}
+\title{Out of sample forecast (or simulated out of sample)}
 \usage{
 oos_prev(model, date = 28, period = 1, ...)
 
@@ -47,16 +47,16 @@ oos_prev(model, date = 28, period = 1, ...)
 \item{...}{other arguments}
 }
 \value{
-oos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same previsions and residuals as below.
+oos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same forecasts and residuals as below.
 An object of class \code{revision} is a list containing the following elements:
 \item{model}{all models used to forecast}
 \item{debut}{same as date chosen earlier}
 \item{intervalle}{same as period chosen earlier}
 \item{end_dates}{a vector of all end date of each models}
 \item{frequency}{the frequency of the data}
-\item{prevision}{the forecast}
+\item{forecast}{the forecast}
 \item{residuals}{the errors of the forecast}
 }
 \description{
-Out of sample prevision (or simulated out of sample)
+Out of sample forecast (or simulated out of sample)
 }

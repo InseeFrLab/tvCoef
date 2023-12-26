@@ -226,10 +226,10 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
 
 
 
-#' Out of sample prevision of state space model
+#' Out of sample forecast of state space model
 #'
 #' @description
-#' Computes out of sample previsions of a given state space model. Unlike [ssm_lm] it can manage dummies.
+#' Computes out of sample forecasts of a given state space model. Unlike [ssm_lm] it can manage dummies.
 #'
 #' @inheritParams ssm_lm
 #' @inheritParams oos_prev
@@ -271,10 +271,10 @@ ssm_lm_oos <- function(x,
                                            1)),
        end = end(data), frequency = frequency(data))
   colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)[1:(length(colnames(est_models[[1]]$filtering_states))-1)]
-  prevision = data[,1] - oos_noise
+  forecast = data[,1] - oos_noise
   res = list(oos_filtering = oos_f,
              oos_noise = oos_noise,
-             prevision = prevision,
+             forecast = forecast,
              all_models = est_models)
   res
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssm_lm.R
 \name{ssm_lm_oos}
 \alias{ssm_lm_oos}
-\title{Out of sample prevision of state space model}
+\title{Out of sample forecast of state space model}
 \usage{
 ssm_lm_oos(
   x,
@@ -36,5 +36,5 @@ ssm_lm_oos(
 Returns all coefficients of all variables and the residual
 }
 \description{
-Computes out of sample previsions of a given state space model. Unlike \link{ssm_lm} it can manage dummies.
+Computes out of sample forecasts of a given state space model. Unlike \link{ssm_lm} it can manage dummies.
 }

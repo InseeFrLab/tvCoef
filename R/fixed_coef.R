@@ -83,7 +83,7 @@ prev_lm <- function(x) {
   res <- unlist(res)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
@@ -113,7 +113,7 @@ prev_lm_fixed <- function(x, fixed_var) {
   res <- unlist(res)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
@@ -143,7 +143,7 @@ prev_tvlm <- function(x) {
   prev <- ts(predict, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
