@@ -14,7 +14,8 @@ ssm_lm(
   fixed_var_trend = TRUE,
   fixed_var_variables = TRUE,
   ...,
-  remove_last_dummies = FALSE
+  remove_last_dummies = FALSE,
+  intercept = TRUE
 )
 }
 \arguments{

@@ -28,7 +28,7 @@ ssm_lm_oos(
 
 \item{fixed_var_intercept, fixed_var_trend, fixed_var_variables}{logical indicating if the variance are fixed or estimated.}
 
-\item{date}{choose when we want to start the revision process after the start date. By default set to 10.}
+\item{date}{choose when we want to start the revision process after the start date. By default set to 28 periods.}
 
 \item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
 }
