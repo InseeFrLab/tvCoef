@@ -31,7 +31,8 @@ ssm_lm <- function(x, trend = FALSE,
                    fixed_var_intercept = TRUE,
                    fixed_var_trend = TRUE,
                    fixed_var_variables = TRUE, ...,
-                   remove_last_dummies = FALSE) {
+                   remove_last_dummies = FALSE,
+                   intercept = TRUE) {
   UseMethod("ssm_lm", x)
 }
 #' @export
@@ -42,9 +43,10 @@ ssm_lm.lm <- function(x, trend = FALSE,
                       fixed_var_intercept = TRUE,
                       fixed_var_trend = TRUE,
                       fixed_var_variables = TRUE, ...,
-                      remove_last_dummies = FALSE) {
+                      remove_last_dummies = FALSE,
+                      intercept = has_intercept(x)) {
   ssm_lm(get_data(x),
-         intercept = length(grep("Intercept", names(coef(x)))) > 0,
+         intercept = intercept,
          trend = trend,
          var_intercept = var_intercept,
          var_slope = var_slope,
@@ -82,7 +84,9 @@ ssm_lm.default <- function(x,
     data = data[, !data_0]
   }
   jmodel <- rjd3sts::model()
-  jeq <- rjd3sts::equation("eq1",variance = 0, fixed = TRUE)  #ne pas modifier
+  jeq <- rjd3sts::equation("eq1",variance = 1, fixed = FALSE)  #ne pas modifier
+  # rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
+  # rjd3sts::add.equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
   if (trend) {
     rjd3sts::add(jmodel, rjd3sts::locallineartrend("Trend",
@@ -92,7 +96,7 @@ ssm_lm.default <- function(x,
     rjd3sts::add.equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
     rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
-    rjd3sts::add.equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   for (nom_var in colnames(data)[-1]) {
@@ -101,15 +105,12 @@ ssm_lm.default <- function(x,
     } else {
       rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_var_variables[nom_var]))
     }
-    rjd3sts::add.equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
+    rjd3sts::add_equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
-
-  rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
-  rjd3sts::add.equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
   rjd3sts::add(jmodel, jeq)
 
-  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1],...)
+  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1])
 
   cmp_names <- rjd3toolkit::result(jmodestimated, "ssf.cmpnames")
 
@@ -117,10 +118,10 @@ ssm_lm.default <- function(x,
     cmp_names <- c("(Intercept)", cmp_names)
   }
   default_matrix <- matrix(NA, nrow = nrow(data), ncol = length(cmp_names))
-  smoothed_states <- tryCatch(rjd3sts::smoothedstates(jmodestimated), error = function(e) default_matrix)
-  smoothed_stdev <- tryCatch(rjd3sts::smoothedstatesstdev(jmodestimated), error = function(e) default_matrix)
-  filtering_states <- tryCatch(rjd3sts::filteringstates(jmodestimated), error = function(e) default_matrix)
-  filtering_stdev <- tryCatch(rjd3sts::filteringstatesstdev(jmodestimated), error = function(e) default_matrix)
+  smoothed_states <- tryCatch(rjd3sts::smoothed_states(jmodestimated), error = function(e) default_matrix)
+  smoothed_stdev <- tryCatch(rjd3sts::smoothed_states_stdev(jmodestimated), error = function(e) default_matrix)
+  filtering_states <- tryCatch(rjd3sts::filtering_states(jmodestimated), error = function(e) default_matrix)
+  filtering_stdev <- tryCatch(rjd3sts::filtering_states_stdev(jmodestimated), error = function(e) default_matrix)
 
 
   colnames(smoothed_states) <- colnames(smoothed_stdev) <-
@@ -134,14 +135,14 @@ ssm_lm.default <- function(x,
     filtering_states <- ts(filtering_states, end = end(data), frequency = frequency(data))
     filtering_stdev <- ts(filtering_stdev, end = end(data), frequency = frequency(data))
   }
-  col_to_remove = ncol(filtering_states)
+  col_to_keep <- seq_len(ncol(filtering_states))
   if(trend)
-    col_to_remove = c(2, col_to_remove)
+    col_to_keep <- col_to_keep[-2]
   X = data[, -1, drop = FALSE]
   if (trend | intercept)
     X = cbind(1, X)
-  fitted_filtering <- rowSums(X * filtering_states[,-col_to_remove])
-  fitted_smoothed <- rowSums(X * smoothed_states[,-col_to_remove])
+  fitted_filtering <- rowSums(X * filtering_states[, col_to_keep])
+  fitted_smoothed <- rowSums(X * smoothed_states[, col_to_keep])
   fitted <- cbind(fitted_smoothed, fitted_filtering)
   colnames(fitted) <- c("smoothed", "filtering")
   if (is.ts(data)) {
@@ -197,7 +198,7 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
   } else {
     intercept_name <- NULL
   }
-  new_x[, c(intercept_name, names(data_0)[-1], "noise")]
+  new_x[, c(intercept_name, names(data_0)[-1])]
 }
 
 
@@ -224,7 +225,7 @@ ssm_lm_oos <- function(x,
                        fixed_var_variables = TRUE,
                        date = 28, ...) {
   data <- get_data(x)
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
+  intercept <- has_intercept(x)
   est_data <- lapply(time(data)[-(1:date)], function(end_date) {
     window(data, end = end_date)
   })
@@ -241,12 +242,12 @@ ssm_lm_oos <- function(x,
   oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
                                                     1))),
               end = end(data), frequency = frequency(data))
-  oos_f <- oos_f[, c(1:(ncol(oos_f)-1))]
+  oos_f <- oos_f
   oos_noise <- data[,1] -
     ts(sapply(est_models, function(x) tail(x$fitted[,"filtering"],
                                            1)),
        end = end(data), frequency = frequency(data))
-  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)[1:(length(colnames(est_models[[1]]$filtering_states))-1)]
+  colnames(oos_f) <- colnames(est_models[[1]]$filtering_states)
   prevision = data[,1] - oos_noise
   res = list(oos_filtering = oos_f,
              oos_noise = oos_noise,
@@ -256,3 +257,19 @@ ssm_lm_oos <- function(x,
 }
 
 
+#' Check if model has intercept
+#'
+#' @param x a model
+#'
+#' @export
+has_intercept <- function(x) {
+  UseMethod("has_intercept", x)
+}
+#' @export
+has_intercept.lm <- function(x) {
+  length(grep("Intercept", names(coef(x)))) > 0
+}
+
+predict.ssm_lm <- function(object, newdata){
+
+}

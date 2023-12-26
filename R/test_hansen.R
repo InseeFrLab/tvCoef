@@ -21,7 +21,7 @@ hansen.test <- function(x, var, sigma = FALSE) {
     stop("il faut un lm")
   }
   e_t <- residuals(x)
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
+  intercept <- has_intercept(x)
   if (intercept) {
     x_reg <- cbind(1, x$model[, -1])
   } else {

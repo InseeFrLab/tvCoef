@@ -162,7 +162,7 @@ prev_tvlm <- function(x) {
 #' @export
 
 resid_lm_fixed <- function(x, fixed_var) {
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
+  intercept <- has_intercept(x)
   if (intercept) {
     data <- cbind(x$model[, 1], 1, x$model[, -1])
     colnames(data) <- c(colnames(x$model)[1], "(Intercept)", colnames(x$model)[-1])

@@ -60,7 +60,7 @@ break_data <- function(x, break_dates, left = TRUE, ...) {
 
 piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw = NULL, left = TRUE, ...) {
   data <- get_data(x)
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
+  intercept <- has_intercept(x)
   if (intercept) {
     data_ <- cbind(data[, 1], 1, data[, -1])
     colnames(data_) <- c("y", "(Intercept)", colnames(data)[-1])
