@@ -13,9 +13,14 @@
 #'
 #' @references Bruce E Hansen "Testing for parameter instability in linear models". Journal of policy Modeling (1992)
 #'
+#' @examples
+#' model_gdp <- lm(
+#' formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+#' data = gdp
+#' )
+#' hansen_test(model_gdp)
 #'
 #' @export
-
 hansen_test <- function(x, var, sigma = FALSE) {
   if (!inherits(x, "lm")) {
     stop('x must be a "lm" object')
@@ -77,13 +82,12 @@ hansen.test <- function (...) {
 
 #' @export
 print.hansen_test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {
-  cat("\n")
-  cat("Variable                 ", "L       ", "Stat    ", "Conclusion", "\n")
-  cat("______________________________________________________________", "\n")
   k <- length(x$L)
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
   sigma <- length(grep("sigma2", names(x$L))) > 0
+  # Signif. codes:  0 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
   if (sigma) {
     u <- length(x$selected_var) + 1
   } else {
@@ -98,16 +102,13 @@ print.hansen_test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
   } else {
     names <- rbind(as.matrix(names(x$L)), "Joint Lc")
   }
-  datnames <- format(names, digits = 4)
   stat <- c(rep(hansen_table[1, b], times = k), hansen_table[u + 1, b])
-  l <- format(c(x$L, x$L_c), digits = 4)
-  rejet <- format(rejet, digits = 4)
-  for (j in 1:nrow(names)) {
-    cat(datnames[j], " ", l[j], " ", stat[j], " ", rejet[j], " ", "\n")
-  }
-  cat("\n")
-  cat("\n")
-  cat(sprintf("Lecture: True means reject H0 at level %s", b), "\n")
+  l <- format(c(x$L, x$L_c), digits = digits)
+  rejet <- format(rejet, digits = digits)
+  result <- data.frame(L = l, Stat = stat, rejet)
+  rownames(result) <- names
+  colnames(result)[3] <- sprintf("Reject at %s", b)
+  print(result)
 }
 
 #' Detect Fixed or Moving Coefficients

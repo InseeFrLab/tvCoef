@@ -21,6 +21,14 @@ Perform Hansen test, which indicates if the variance of a model, a global model 
 
 HO: the coefficient/model is stable over time.
 }
+\examples{
+model_gdp <- lm(
+formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+data = gdp
+)
+hansen_test(model_gdp)
+
+}
 \references{
 Bruce E Hansen "Testing for parameter instability in linear models". Journal of policy Modeling (1992)
 }
