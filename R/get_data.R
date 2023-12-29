@@ -28,10 +28,10 @@ get_data <- function(model, ...) {
 
 #' @rdname get_data
 #' @export
-get_data.lm <- function(model, start = 1, end = numeric(), frequency = 1, ...) {
+get_data.lm <- function(model, start = 1, frequency = 1, ...) {
   if (missing(start))
     start <- as.numeric(rownames(model$model)[1])
-  ts(model$model, start = start, end = end, frequency = frequency,...)
+  ts(model$model, start = start, frequency = frequency,...)
 }
 
 #' @rdname get_data

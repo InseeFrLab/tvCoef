@@ -11,7 +11,7 @@
 \usage{
 get_data(model, ...)
 
-\method{get_data}{lm}(model, start = 1, end = numeric(), frequency = 1, ...)
+\method{get_data}{lm}(model, start = 1, frequency = 1, ...)
 
 \method{get_data}{dynlm}(model, ...)
 
