@@ -207,3 +207,13 @@ coef.piece_reg <- function(object, ...) {
     all_coefs
   }
 }
+#'@export
+breakpoints.lm <- function(obj, ...) {
+  if (has_intercept(obj)) {
+    formula <- sprintf("%s ~ .", colnames(obj$model)[1])
+  } else {
+    formula <- sprintf("%s ~ -1 + .", colnames(obj$model)[1])
+  }
+  strucchange::breakpoints(formula = as.formula(formula),
+                           data = obj$model, ...)
+}
