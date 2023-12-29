@@ -23,8 +23,12 @@
 #' @importFrom tvReg tvLM
 #' @importFrom strucchange breakdates breakpoints
 bp_lm <- function(x, data, left = TRUE, break_dates, tvlm = FALSE, ...) {
-  formula <- sprintf("%s ~ .", colnames(x$model)[1])
-  .data <- ts(x$model, end = end(data), frequency = frequency(data))
+  if (has_intercept(x)) {
+    formula <- sprintf("%s ~ .", colnames(x$model)[1])
+  } else {
+    formula <- sprintf("%s ~ -1 + .", colnames(x$model)[1])
+  }
+  .data <- get_data(x, ...)
   if (missing(break_dates)) {
     break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = x$model))
   }
