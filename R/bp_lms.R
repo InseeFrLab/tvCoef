@@ -182,19 +182,19 @@ coef.piece_reg <- function(object, ...) {
     )
   } else {
     end_date <- object$end[1] + (object$end[2] - 1) / object$frequency
-    unique_names <- unique(gsub(paste0("(_",
-                                       c(object$breakdates, end_date),
-                                       ")", collapse = "|"),
-                                "", names(coef)))
+    all_n <- gsub(paste0("(_",
+                         c(object$breakdates, end_date),
+                         ")", collapse = "|"),
+                  "", names(coef))
+    unique_names <- unique(all_n, names(coef))
+
     int <- ts(1,
               start = object$start,
               end = object$end,
               frequency = object$frequency)
     break_int <- break_data(int, break_dates = object$breakdates, left = object$left_breaks)
     all_coefs <- do.call(cbind, lapply(unique_names, function(name) {
-      name <- gsub("`", "", name)
-      possible_var <- grep(name, names(coef), fixed = TRUE)
-
+      possible_var <- which(name == all_n)
       if (length(possible_var) == 1) {
         res <- coef[possible_var]
       } else {
@@ -207,7 +207,7 @@ coef.piece_reg <- function(object, ...) {
          frequency = object$frequency
       )
     }))
-    colnames(all_coefs) <- unique_names
+    colnames(all_coefs) <- gsub("`", "", unique_names)
     all_coefs
   }
 }

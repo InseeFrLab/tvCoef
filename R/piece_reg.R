@@ -75,7 +75,7 @@ piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw 
   } else {
     colnames(data) <- c("y", colnames(data)[-1])
   }
-  formula <- sprintf("%s ~ 0 + .", colnames(data)[1])
+  formula <- "%y ~ 0 + ."
 
   if (is.null(break_dates)) {
     break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = data))
