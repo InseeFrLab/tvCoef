@@ -36,9 +36,9 @@ ssm_lm(
 \value{
 Returns a \code{list} containing:
 \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
-\item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
+\item{smoothed_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_n]}}}
 \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
-\item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+\item{filtering_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_{t-1}]}}}
 \item{parameters}{some estimation parameters}
 \item{data}{data used in the original model}
 }
