@@ -208,7 +208,7 @@ print.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
   if (length(noise) > 0) {
     coef <- coef[,-noise, drop = FALSE]
   }
-  print(apply(object$smoothed_states, 2, mean, na.rm = TRUE), digits = digits)
+  print(round(apply(object$smoothed_states, 2, mean, na.rm = TRUE), digits), digits = digits)
   invisible(object)
 }
 
