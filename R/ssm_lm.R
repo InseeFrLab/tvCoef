@@ -16,9 +16,9 @@
 #'
 #' @return Returns a `list` containing:
 #' \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
-#' \item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
+#' \item{smoothed_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_n]}}}
 #' \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
-#' \item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+#' \item{filtering_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_{t-1}]}}}
 #' \item{parameters}{some estimation parameters}
 #' \item{data}{data used in the original model}
 #'
@@ -111,7 +111,7 @@ ssm_lm.default <- function(x,
 
   rjd3sts::add(jmodel, jeq)
 
-  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1])
+  jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1], ...)
 
   cmp_names <- rjd3toolkit::result(jmodestimated, "ssf.cmpnames")
 
@@ -136,8 +136,8 @@ ssm_lm.default <- function(x,
     filtering_states <- ts(filtering_states, end = end(data), frequency = frequency(data))
     filtering_stdev <- ts(filtering_stdev, end = end(data), frequency = frequency(data))
   }
-  col_to_keep <- seq_len(ncol(filtering_states))
-  if(trend)
+  col_to_keep <- seq_len(ncol(filtering_states) - 1)
+  if (trend)
     col_to_keep <- col_to_keep[-2]
   X = data[, -1, drop = FALSE]
   if (trend | intercept)
@@ -189,7 +189,6 @@ residuals.ssm_lm <- function(object, ...) {
 #' @export
 summary.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
                            ...) {
-  text1 <- "Summary of time-varying estimated coefficients:"
   cat("Summary of time-varying estimated coefficients (smoothing):", "\n")
   coef <- object$smoothed_states
   noise <- grep("^noise$", colnames(coef))
@@ -199,6 +198,20 @@ summary.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
   print(apply(object$smoothed_states, 2, summary), digits = digits)
   invisible(object)
 }
+
+#' @export
+print.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+                           ...) {
+  cat("Mean of time-varying estimated coefficients (smoothing):", "\n")
+  coef <- object$smoothed_states
+  noise <- grep("^noise$", colnames(coef))
+  if (length(noise) > 0) {
+    coef <- coef[,-noise, drop = FALSE]
+  }
+  print(apply(object$smoothed_states, 2, mean, na.rm = TRUE), digits = digits)
+  invisible(object)
+}
+
 
 #' @export
 coef.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
@@ -267,7 +280,7 @@ ssm_lm_oos <- function(x,
   oos_f <- ts(t(sapply(est_models, function(x) tail(x$filtering_states,
                                                     1))),
               end = end(data), frequency = frequency(data))
-  oos_f <- oos_f
+  oos_f <- oos_f[,-ncol(oos_f)]
   oos_noise <- data[,1] -
     ts(sapply(est_models, function(x) tail(x$fitted[,"filtering"],
                                            1)),
