@@ -17,7 +17,7 @@ Imports:
   strucchange,
   tvReg,
   rjd3toolkit,
-  rjd3sts
+  rjd3sts (>= 2.0.0)
 Suggests:
  ggplot2,
  patchwork

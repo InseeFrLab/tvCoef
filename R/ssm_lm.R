@@ -84,32 +84,32 @@ ssm_lm.default <- function(x,
     data = data[, !data_0]
   }
   jmodel <- rjd3sts::model()
-  jeq <- rjd3sts::equation("eq1",variance = 1, fixed = FALSE)  #ne pas modifier
+  # jeq <- rjd3sts::equation("eq1",variance = 0, fixed = TRUE)  #ne pas modifier
 
   if (trend) {
     rjd3sts::add(jmodel, rjd3sts::locallineartrend("Trend",
                                                    levelVariance = var_intercept,
                                                    fixedLevelVariance = fixed_var_intercept,
                                                    slopevariance = var_slope, fixedSlopeVariance = fixed_var_trend))
-    rjd3sts::add_equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
+    # rjd3sts::add_equation(jeq, "Trend", coeff = 1, fixed = TRUE) #ne pas modifier
   } else if (intercept) {
     rjd3sts::add(jmodel, rjd3sts::locallevel("(Intercept)", variance = var_intercept, fixed = fixed_var_intercept))
-    rjd3sts::add_equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
+    # rjd3sts::add_equation(jeq, "(Intercept)", coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   for (nom_var in colnames(data)[-1]) {
     if (fixed_var_variables[nom_var] & var_variables[nom_var] == 0){
-      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = NULL, fixed = fixed_var_variables[nom_var]))
+      rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = NULL))
     } else {
       rjd3sts::add(jmodel, rjd3sts::reg(nom_var, x = data[, nom_var], var = var_variables[nom_var], fixed = fixed_var_variables[nom_var]))
     }
-    rjd3sts::add_equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
+    # rjd3sts::add_equation(jeq, nom_var, coeff = 1, fixed = TRUE) #ne pas modifier
   }
 
   rjd3sts::add(jmodel, rjd3sts::noise("noise", variance = 0.1, fixed = FALSE)) #ne pas modifier
-  rjd3sts::add_equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
+  # rjd3sts::add_equation(jeq, "noise", coeff = 1, fixed = TRUE) #ne pas modifier
 
-  rjd3sts::add(jmodel, jeq)
+  # rjd3sts::add(jmodel, jeq)
 
   jmodestimated <- rjd3sts::estimate(jmodel, data = data[,1], ...)
 
