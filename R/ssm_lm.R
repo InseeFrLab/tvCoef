@@ -200,16 +200,16 @@ summary.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
 }
 
 #' @export
-print.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
+print.ssm_lm <- function(x, digits = max(3, getOption("digits") - 3),
                            ...) {
   cat("Mean of time-varying estimated coefficients (smoothing):", "\n")
-  coef <- object$smoothed_states
+  coef <- x$smoothed_states
   noise <- grep("^noise$", colnames(coef))
   if (length(noise) > 0) {
     coef <- coef[,-noise, drop = FALSE]
   }
-  print(round(apply(object$smoothed_states, 2, mean, na.rm = TRUE), digits), digits = digits)
-  invisible(object)
+  print(round(apply(x$smoothed_states, 2, mean, na.rm = TRUE), digits), digits = digits)
+  invisible(x)
 }
 
 
