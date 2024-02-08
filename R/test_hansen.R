@@ -27,11 +27,12 @@ hansen_test <- function(x, var, sigma = FALSE) {
   }
   e_t <- residuals(x)
   intercept <- has_intercept(x)
-  if (intercept) {
-    x_reg <- cbind(1, x$model[, -1])
-  } else {
-    x_reg <- x$model[, -1]
-  }
+  # if (intercept) {
+  #   x_reg <- cbind(1, x$model[, -1])
+  # } else {
+  #   x_reg <- x$model[, -1]
+  # }
+  x_reg <- model.matrix(x)
   if (missing(var)) {
     var <- 1:length(coef(x))
   }
