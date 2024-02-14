@@ -69,7 +69,7 @@ print.lmffixe <- function(x, ...) {
 
 
 prev_lm <- function(x) {
-  predict <- sapply(x$model, predict, x$model[[length(x$model)]]$model)
+  predict <- suppressWarnings(sapply(x$model, predict, x$model[[length(x$model)]]$model))
   prev <- res <- vector("list", length(x$model) - 1)
   y <- x$model[[length(x$model)]]$model[, 1]
   i <- 1

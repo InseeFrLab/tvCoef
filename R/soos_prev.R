@@ -25,10 +25,9 @@ oos_prev <- function(model, date = 28, period = 1, ...) {
 
 #' @rdname oos_prev
 #' @export
-
-oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
+oos_prev.lm <- function(model, date = 28, period = 1, data = NULL, ...) {
   # formula <- get_formula(model)
-  if (missing(data)) {
+  if (is.null(data)) {
     data <- get_data(model)
   }
   intercept_coef <- length(grep("Intercept", names(coef(model)))) > 0
@@ -79,6 +78,11 @@ oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
   result
 }
 
+#' @rdname oos_prev
+#' @export
+oos_prev.piece_reg <- function(model, date = 28, period = 1, data = NULL, ...) {
+  oos_prev(model$model, date = date, period = period, data = data, ...)
+}
 #' @rdname oos_prev
 #' @export
 
@@ -209,7 +213,7 @@ oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, 
       })
     } else {
       model <- lapply(dataf, function(data) {
-        lm(data = data, formula = as.formula(formule))
+       lm(data = data, formula = as.formula(formule))
       })
     }
   })
@@ -244,7 +248,6 @@ oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, 
     residuals = unlist(lapply(results, `[[`, "residuals"))
   )
   results_ <- lapply(results_, ts, start = start(results[[1]][[1]]), frequency = frequency(results[[1]][[1]]))
-  results_
   resultat <- list(
     model = res,
     debut = date,

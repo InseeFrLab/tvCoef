@@ -3,14 +3,16 @@
 \name{oos_prev}
 \alias{oos_prev}
 \alias{oos_prev.lm}
+\alias{oos_prev.piece_reg}
 \alias{oos_prev.tvlm}
 \alias{oos_prev.bp_lm}
-\alias{oos_prev.piece_reg}
 \title{Out of sample forecast (or simulated out of sample)}
 \usage{
 oos_prev(model, date = 28, period = 1, ...)
 
-\method{oos_prev}{lm}(model, date = 28, period = 1, data, ...)
+\method{oos_prev}{lm}(model, date = 28, period = 1, data = NULL, ...)
+
+\method{oos_prev}{piece_reg}(model, date = 28, period = 1, ...)
 
 \method{oos_prev}{tvlm}(
   model,
