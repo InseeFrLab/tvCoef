@@ -102,6 +102,20 @@ piece_reg <- function(x, break_dates = NULL, fixed_var = NULL, tvlm = FALSE, bw 
     data_break <- break_data(data_x[,- fixed_var], break_dates = break_dates, left = left, names = colnames(data)[-1][-fixed_var])
     data2 <- cbind(data[,1], data_x[,fixed_var], data_break)
     colnames(data2) <- c(colnames(data)[1], colnames(data_x)[fixed_var], colnames(data_break))
+    # reorder column in the same order
+    n_breaks <- length(break_dates)
+    non_fixed_var <- seq_len(ncol(data_x))[-fixed_var]
+    i_list <- as.list(seq_len(ncol(data_x)))
+    for(i in seq_along(non_fixed_var)){
+      i_list[[non_fixed_var[i]]] <- seq.int(i, length.out = n_breaks + 1, by = length(non_fixed_var)) +
+        length(fixed_var)
+    }
+
+    for(i in seq_along(fixed_var)){
+      i_list[[fixed_var[i]]] <- i
+    }
+    i_list <- unlist(i_list) + 1
+    data2 <- data2[,c(1, i_list)]
     if(!tvlm) {
       piecereg = dynlm::dynlm(formula = as.formula(formula), data = data2)
     } else {
