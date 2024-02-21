@@ -48,14 +48,18 @@ get_data.dynlm <- function(model, ...) {
 
 #' @rdname get_data
 #' @export
-get_data.tvlm <- function(model, end, frequency, ...) {
+get_data.tvlm <- function(model, end = numeric(), frequency = 1, ...) {
   data <- cbind(model$y, model$x)
   # gsub(" ~.*", "", deparse(model$call$formula)) # plutot que y
   colnames(data) <- c("y", colnames(model$x))
   if (colnames(data)[2] == "(Intercept)") {
     data <- data[, -2]
   }
-  ts(data, end = end, frequency = frequency)
+  if (length(end) == 0) {
+    ts(data, frequency = frequency)
+  } else {
+    ts(data, end = end, frequency = frequency)
+  }
 }
 
 #' @rdname get_data

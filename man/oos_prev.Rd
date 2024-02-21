@@ -21,8 +21,8 @@ oos_prev(model, date = 28, period = 1, ...)
   data_est = NULL,
   fixed_bw = FALSE,
   bw = NULL,
-  end,
-  frequency,
+  end = numeric(),
+  frequency = 1,
   ...
 )
 

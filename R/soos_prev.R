@@ -86,7 +86,7 @@ oos_prev.piece_reg <- function(model, date = 28, period = 1, data = NULL, ...) {
 #' @rdname oos_prev
 #' @export
 
-oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
+oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end = numeric(), frequency = 1, ...) {
   # formula = get_formula(model)
   est <- model$est
   if (fixed_bw & is.null(bw)) {
@@ -126,13 +126,16 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     formule <- get_formula(model)
   }
 
-  model <- lapply(data_est, function(data, formula) {
+  capture.output(
+    #To delete the cat message of the computed bandwidth
+    model <- lapply(data_est, function(data, formula) {
     tryCatch(tvReg::tvLM(data = data, formula = as.formula(formula), bw = bw, est = est),
              error = function(e) {
                tvReg::tvLM(data = data, formula = as.formula(formula), bw = NULL, est = est)
              })
   },
   formula = formule
+  )
   )
   res <- list(
     model = model,

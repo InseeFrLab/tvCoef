@@ -15,7 +15,7 @@ get_data(model, ...)
 
 \method{get_data}{dynlm}(model, ...)
 
-\method{get_data}{tvlm}(model, end, frequency, ...)
+\method{get_data}{tvlm}(model, end = numeric(), frequency = 1, ...)
 
 \method{get_data}{bp_lm}(model, ...)
 
