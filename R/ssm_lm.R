@@ -183,7 +183,9 @@ fitted.ssm_lm <- function(object, ...) {
 
 #' @export
 residuals.ssm_lm <- function(object, ...) {
-  object$data[,1] - object$fitted
+  res <- object$data[,1] - object$fitted
+  colnames(res) <- colnames(object$fitted)
+  res
 }
 
 #' @export
@@ -226,9 +228,8 @@ coef.ssm_lm <- function(object, digits = max(3, getOption("digits") - 3),
 
 # internal function
 
+
 add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
-  new_x <- cbind(x, matrix(0, ncol = sum(data_0), nrow = nrow(x)))
-  colnames(new_x) <- c(colnames(x), names(which(data_0)))
   if (trend) {
     intercept_name <- colnames(x)[1:2]
   } else if (intercept) {
@@ -236,8 +237,18 @@ add_removed_var <- function(x, data_0, intercept, trend = FALSE) {
   } else {
     intercept_name <- NULL
   }
-  new_x[, c(intercept_name, names(data_0)[-1])]
+  all_names <- c(intercept_name, names(data_0),
+                 # noise
+                 colnames(x)[ncol(x)])
+  new_x <- matrix(0, ncol = length(all_names), nrow = nrow(x))
+  colnames(new_x) <- all_names
+  new_x[,colnames(x)] <- x
+  new_x <- cbind(x, matrix(0, ncol = sum(data_0), nrow = nrow(x)))
+  if(is.ts(x))
+    new_x <- ts(new_x, start = start(x), frequency = frequency(x))
+  new_x
 }
+
 
 
 
