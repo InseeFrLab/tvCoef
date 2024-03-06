@@ -108,7 +108,7 @@ full_exogeneous_matrix <- function(model, ...){
   data <- eval(model$call$data)
   if (is.ts(data))
     res <- ts(res, start = start(data), frequency = frequency(data))
-
+  attr(res, "assign") <- NULL
   res
 }
 
