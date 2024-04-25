@@ -23,7 +23,7 @@ Suggests:
  patchwork
 SystemRequirements: Java (>= 17)
 Remotes:
-  github::rjdemetra/rjd3toolkit
+  github::rjdemetra/rjd3toolkit,
   github::rjdemetra/rjd3sts
 Encoding: UTF-8
 LazyData: true
