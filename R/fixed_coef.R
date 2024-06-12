@@ -6,8 +6,11 @@
 #' @param var the variables on which the residuals are to be regressed. By default use them all and cancel the explained variable
 #'
 #' @export
-
-
+#' @examples
+#' data("AirPassengers")
+#' model <- lm(AirPassengers ~ time(AirPassengers))
+#' lm_residual_effect(model)
+#'
 lm_residual_effect <- function(x, var = c(-1)) {
   resid_effect <- lm(resid(x) ~ ., data = as.data.frame(x$model[, var]))
   class(resid_effect) <- "lm"
@@ -18,6 +21,7 @@ lm_residual_effect <- function(x, var = c(-1)) {
 #'
 #' @param formula a `formula` object.
 #' @param data time series data.
+#' @param nbw number of windows.
 #'
 #' @returns
 #'
@@ -25,8 +29,6 @@ lm_residual_effect <- function(x, var = c(-1)) {
 #' Return all models, from which we can extract the usual coefficients, residuals, and fitted.values. And the divisor chosen by the function (arbitrary the middle one), the period, i.e. the length of each sub models, and the frequency of the data.
 #'
 #' @export
-
-
 lm_fenetre_fixe <- function(formula, data, nbw = 1) {
   borne <- trunc(seq(1, nrow(data), length.out = nbw + 1))
   dataf <- lapply(1:(length(borne) - 1), function(i) {
@@ -240,7 +242,6 @@ last_coef <- function(x) {
 #' @param resid the residuals vector on which rmse will be calculated
 #'
 #' @export
-
 rmse <- function(resid) {
   sqrt(mean(resid^2, na.rm = TRUE))
 }

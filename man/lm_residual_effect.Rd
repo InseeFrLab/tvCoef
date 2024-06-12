@@ -14,3 +14,9 @@ lm_residual_effect(x, var = c(-1))
 \description{
 Checks there is no residual effect in a model
 }
+\examples{
+data("AirPassengers")
+model <- lm(AirPassengers ~ time(AirPassengers))
+lm_residual_effect(model)
+
+}

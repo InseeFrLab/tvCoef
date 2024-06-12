@@ -47,3 +47,13 @@ Computes state space model with one equation. Starting with a simple \code{lm} m
 
 Use \code{rjd3sts} packages.
 }
+\examples{
+data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+reg_lin <- lm(
+  formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+  data = data_gdp
+)
+ssm <- ssm_lm(reg_lin, fixed_var_intercept = FALSE, fixed_var_variables = FALSE)
+ssm
+summary(ssm)
+}

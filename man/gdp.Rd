@@ -5,7 +5,7 @@
 \alias{gdp}
 \title{French GDP}
 \format{
-A quarterly \code{ts} object from 1977Q2 to 2023Q1 (TODO).
+A quarterly \code{ts} object from 1949Q2 to 2024Q1.
 }
 \source{
 INSEE
@@ -14,6 +14,18 @@ INSEE
 gdp
 }
 \description{
-French GDP
+Dataset containing the quarterly growth of the total gross domestic product (GDP)
+of France and quarterly series of the French business climate in level and in difference.
+}
+\details{
+Dataset containing the quarterly growth of the total gross domestic product (GDP, \code{"growth_gdp"}) of France,
+in volumes chained at previous year prices, seasonally and working day adjusted;
+and the French business climate in level.
+
+The French business climate is a monthly series, it is transformed into three quarterly series using the month's place in the quarter.
+For example, \code{"bc_fr_m1"} contains the values in the first month of each quarter, and the \code{"diff_fr_m1"} is the difference
+of the previous variable (the 2000Q1 value corresponds to the difference in business climate between January 2000 and October 1999).
+
+Data were downloaded March 15, 2024 and might therefore differ from the latest available data.
 }
 \keyword{datasets}

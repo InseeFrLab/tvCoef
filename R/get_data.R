@@ -19,14 +19,17 @@ get_formula.default <- function(x) {
 #' @description Retrieves the data used in the model
 #'
 #' @param model the model whose data we want
-
+#' @param ... other unused parameters.
+#'
 #' @export
-
 get_data <- function(model, ...) {
   UseMethod("get_data", model)
 }
 
 #' @rdname get_data
+#' @param model the model
+#' @param start the start of the data.
+#' @param frequency the frequency of the data.
 #' @export
 get_data.lm <- function(model, start = 1, frequency = 1, ...) {
   if (missing(start))
@@ -47,6 +50,7 @@ get_data.dynlm <- function(model, ...) {
 }
 
 #' @rdname get_data
+#' @param end the end of the data.
 #' @export
 get_data.tvlm <- function(model, end = numeric(), frequency = 1, ...) {
   data <- cbind(model$y, model$x)

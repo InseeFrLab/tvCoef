@@ -21,9 +21,16 @@
 #' \item{filtering_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_{t-1}]}}}
 #' \item{parameters}{some estimation parameters}
 #' \item{data}{data used in the original model}
-#'
+#' @examples
+#' data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+#' reg_lin <- lm(
+#'   formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+#'   data = data_gdp
+#' )
+#' ssm <- ssm_lm(reg_lin, fixed_var_intercept = FALSE, fixed_var_variables = FALSE)
+#' ssm
+#' summary(ssm)
 #' @export
-
 ssm_lm <- function(x, trend = FALSE,
                    var_intercept = 0,
                    var_slope = 0,
@@ -320,5 +327,23 @@ has_intercept.lm <- function(x) {
 }
 
 predict.ssm_lm <- function(object, newdata){
-
+  variance <- object$parameters$scaling * object$parameters$parameters
+  var_intercept <- grep("^\\(Intercept\\)\\.", names(variance))
+  var_var <- rep(0, ncol(object$data) - 1)
+  names(var_var) <- colnames(object$data)[-1]
+  if (length(var_intercept) > 0) {
+    var_intercept <- variance[var_intercept]
+  } else {
+    var_intercept <- 0
+  }
+  for (i in 1:length(var_var)) {
+    i_var <- grep(paste0("^", colnames(object$data)[i], "\\."), names(variance))
+    if(length(i_var) > 0)
+      var_var[i] <- variance[i_var]
+  }
+  ssm_lm(newdata,
+         var_intercept = var_intercept,
+         var_variables = var_var,
+         fixed_var_variables = TRUE,
+         fixed_var_intercept = TRUE)
 }

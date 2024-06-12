@@ -22,7 +22,15 @@ get_data(model, ...)
 \method{get_data}{piece_reg}(model, ...)
 }
 \arguments{
-\item{model}{the model whose data we want}
+\item{model}{the model}
+
+\item{...}{other unused parameters.}
+
+\item{start}{the start of the data.}
+
+\item{frequency}{the frequency of the data.}
+
+\item{end}{the end of the data.}
 }
 \description{
 Retrieves the data used in the model

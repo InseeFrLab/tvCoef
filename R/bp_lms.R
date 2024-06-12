@@ -2,10 +2,10 @@
 #'
 #' Computes as many regressions as breakup dates within a global model
 #'
-#' @param x `lm` object. It is the global regression model
+#' @param x `lm` object. It is the global regression model.
 #' @param data 	a data frame, list or environment containing the variables in the model.
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
-#' @param break_dates optional, to indicate the breakup dates if they are known
+#' @param break_dates optional, to indicate the breakup dates if they are known.
 #' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. `FALSE` means a [lm] will be run.
 #' @param ... other arguments passed to [tvReg::tvLM()].
 #'

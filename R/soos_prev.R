@@ -126,7 +126,7 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     formule <- get_formula(model)
   }
 
-  capture.output(
+  utils::capture.output(
     #To delete the cat message of the computed bandwidth
     model <- lapply(data_est, function(data, formula) {
     tryCatch(tvReg::tvLM(data = data, formula = as.formula(formula), bw = bw, est = est),

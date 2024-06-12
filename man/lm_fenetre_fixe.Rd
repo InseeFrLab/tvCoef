@@ -10,6 +10,8 @@ lm_fenetre_fixe(formula, data, nbw = 1)
 \item{formula}{a \code{formula} object.}
 
 \item{data}{time series data.}
+
+\item{nbw}{number of windows.}
 }
 \value{
 Return an object of class "lmffixe".

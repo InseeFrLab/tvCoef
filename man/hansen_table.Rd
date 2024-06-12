@@ -7,6 +7,10 @@
 \format{
 An object of class \code{data.frame} with 20 rows and 7 columns.
 }
+\source{
+Hansen, Bruce E. 1990. "Lagrange multiplier tests for parameter instability in non-linear models".
+\emph{University of Rochester}. \url{https://users.ssc.wisc.edu/~bhansen/papers/LMTests.pdf}.
+}
 \usage{
 hansen_table
 }

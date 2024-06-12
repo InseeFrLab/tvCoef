@@ -20,7 +20,6 @@
 #' `get_coeff_plot` plot `get_tvlm_coeff` of a certain variable at a certain date, `get_lm_coeff` of the same variable and the bandwidth of all prediction models, thanks to `get_tvlm_bw`. It also highlights when the bandwidth is equal to 20.
 #'
 #'
-
 #' @rdname get_rmse
 #' @export
 

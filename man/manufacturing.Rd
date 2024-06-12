@@ -5,7 +5,7 @@
 \alias{manufacturing}
 \title{Business Surveys}
 \format{
-An object of class \code{mts} (inherits from \code{ts}, \code{matrix}) with 300 rows and 208 columns.
+A quarterly \code{ts} object from 1949Q2 to 2024Q1.
 }
 \source{
 INSEE, Banque de France
@@ -14,6 +14,56 @@ INSEE, Banque de France
 manufacturing
 }
 \description{
-Business Surveys
+Dataset containing the quarterly growth of production in the manufacturing sector and its main sub-sectors,
+quarterly balance of opinion of business surveys published by INSEE and Banque de France and
+quarterly overhang of the industrial production index.
+}
+\details{
+Dataset containing the quarterly growth of production in the manufacturing sector and its main sub-sectors
+and quarterly series series of business surveys published by INSEE and Banque de France.
+
+The sectors studied are:
+\itemize{
+\item Manufacturing industry
+\item Food products and beverages (C1)
+\item Capital goods (C3)
+\item Transport equipments (C4)
+\item Other manufacturing (C5)
+}
+
+\code{"manuf_prod"} contains the quarterly growth in production in the manufacturing sector,
+and the sub-sectors are in the form \code{"prod_c1"}, \code{"prod_c3"}, \code{"prod_c4"} and \code{"prod_c5"}.
+
+The overhang of the industrial production index corresponds to the quarterly growth obtained extending the series by the last known value:
+\itemize{
+\item \code{"overhang_ipi0"} is the quarterly growth obtained extending the series by the last value of the previous quarter (December, March, June, September);
+\item \code{"overhang_ipi1"} is the quarterly growth obtained extending the series by the first value of the current quarter (January, April, July, October);
+\item \code{"overhang_ipi2"} is the quarterly growth obtained extending the series by the second value of the current quarter (February, May, August, November).
+}
+
+The business surveys being monthly, the balance of opinion are transformed into three quarterly series using the month's place in the quarter
+(for example taking the values of January, April, July and October).
+Variable names are constructed as the combination of several codes defined as follows:
+\itemize{
+\item data source code (INSEE, \code{ins}, or Banque de France, \code{bdf});
+\item name of the balance of opinion:\tabular{ll}{
+   \strong{Code} \tab \strong{Definition} \cr
+   bc \tab Business climate \cr
+   oscd \tab Overall order books \cr
+   tppa and prodpas \tab Past production \cr
+   tppre and prodpre \tab Personal production expectation \cr
+   sitcar \tab Situation of order books \cr
+   evocar \tab Evolution of order books \cr
+   prix \tab Selling prices \cr
+   stocks \tab Inventories of finished goods \cr
+   tres \tab Cash position \cr
+   tuc \tab Capacity utilisation rate \cr
+}
+
+\item sector: nothing for the manufacturing industri and \code{"c1"}, \code{"c3"}, \code{"c4"} or \code{"c5"} for the sub-sectors;
+\item place of the month in the quarter: \code{m1}, \code{m2} or \code{m3} for the first, second or third month of the quarter.
+}
+
+The dataset also contains some dummies labelled \code{"indYYYYQX"}, where \code{YYYY} is the year and \code{X} is the quarter.
 }
 \keyword{datasets}
