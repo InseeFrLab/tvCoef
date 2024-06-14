@@ -5,6 +5,8 @@
 #' @param date choose when we want to start the revision process after the start date. By default set to 28 periods.
 #' @param period choose by how many values we want to move forward. By default set to 1.
 #' @param ... other arguments
+#' @inheritParams piece_reg
+#' @inheritParams rmse_prev
 #'
 #' @return
 #' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same forecasts and residuals as below.
@@ -17,8 +19,14 @@
 #' \item{forecast}{the forecast}
 #' \item{residuals}{the errors of the forecast}
 #'
+#' @examples
+#' data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+#' reg_lin <- lm(
+#'   formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+#'   data = data_gdp
+#' )
+#' oos <- oos_prev(reg_lin)
 #' @export
-
 oos_prev <- function(model, date = 28, period = 1, ...) {
   UseMethod("oos_prev", model)
 }
@@ -30,8 +38,8 @@ oos_prev.lm <- function(model, date = 28, period = 1, data = NULL, ...) {
   if (is.null(data)) {
     data <- get_data(model)
   }
-  intercept_coef <- length(grep("Intercept", names(coef(model)))) > 0
-  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+  intercept_coef <- has_intercept(model)
+  intercept_data <- has_intercept(data)
   if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
   } else if (intercept_coef & !intercept_data) {
@@ -83,9 +91,10 @@ oos_prev.lm <- function(model, date = 28, period = 1, data = NULL, ...) {
 oos_prev.piece_reg <- function(model, date = 28, period = 1, data = NULL, ...) {
   oos_prev(model$model, date = date, period = period, data = data, ...)
 }
+#' @param data_est,end,frequency optional arguments to specify the data used to estimate the model, the last date and the frequency
 #' @rdname oos_prev
+#' @inheritParams rmse_prev
 #' @export
-
 oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end = numeric(), frequency = 1, ...) {
   # formula = get_formula(model)
   est <- model$est
@@ -97,8 +106,8 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     bw <- NULL
   }
   data <- get_data(model, end = end, frequency = frequency)
-  intercept_coef <- length(grep("Intercept", colnames(coef(model)))) > 0
-  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+  intercept_coef <- has_intercept(model)
+  intercept_data <- has_intercept(data)
 
   if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])

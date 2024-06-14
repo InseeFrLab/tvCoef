@@ -5,8 +5,9 @@
 #' Use `rjd3sts` packages.
 #'
 #' @param x a `lm` or `dynlm` model
-#' @param trend trend
-#' @param var_intercept,var_slope variance of the intercept and the slope (used if `trend = TRUE`).
+#' @param intercept boolean indicating if the model should have an intercept.
+#' @param trend boolean indicating if the model should have a trend.
+#' @param var_intercept,var_slope variance of the intercept (used if `ìntercept = TRUE`) and the slope (used if `trend = TRUE`).
 #' @param var_variables variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.
 #' @param fixed_var_intercept,fixed_var_trend,fixed_var_variables logical indicating if the variance are fixed or estimated.
 #'
@@ -52,7 +53,7 @@ ssm_lm.lm <- function(x, trend = FALSE,
                       fixed_var_variables = TRUE, ...,
                       remove_last_dummies = FALSE,
                       intercept = has_intercept(x)) {
-  ssm_lm(get_data(x),
+  res <- ssm_lm(get_data(x),
          intercept = intercept,
          trend = trend,
          var_intercept = var_intercept,
@@ -63,6 +64,8 @@ ssm_lm.lm <- function(x, trend = FALSE,
          fixed_var_variables = fixed_var_variables,
          remove_last_dummies = remove_last_dummies,
          ...)
+  res$call <- x$call
+  res
 }
 
 #' @export
@@ -325,25 +328,51 @@ has_intercept <- function(x) {
 has_intercept.lm <- function(x) {
   length(grep("Intercept", names(coef(x)))) > 0
 }
-
-predict.ssm_lm <- function(object, newdata){
-  variance <- object$parameters$scaling * object$parameters$parameters
-  var_intercept <- grep("^\\(Intercept\\)\\.", names(variance))
-  var_var <- rep(0, ncol(object$data) - 1)
-  names(var_var) <- colnames(object$data)[-1]
-  if (length(var_intercept) > 0) {
-    var_intercept <- variance[var_intercept]
-  } else {
-    var_intercept <- 0
-  }
-  for (i in 1:length(var_var)) {
-    i_var <- grep(paste0("^", colnames(object$data)[i], "\\."), names(variance))
-    if(length(i_var) > 0)
-      var_var[i] <- variance[i_var]
-  }
-  ssm_lm(newdata,
-         var_intercept = var_intercept,
-         var_variables = var_var,
-         fixed_var_variables = TRUE,
-         fixed_var_intercept = TRUE)
+#' @export
+has_intercept.tvlm <- function(x) {
+  length(grep("Intercept", colnames(coef(x)))) > 0
 }
+#' @export
+has_intercept.matrix <- function(x) {
+  length(grep("Intercept", colnames(x))) > 0
+}
+#' @export
+has_intercept.data.frame <- function(x) {
+  length(grep("Intercept", colnames(x))) > 0
+}
+#' @export
+has_intercept.ssm_lm <- function(x) {
+  length(grep("Intercept", colnames(x$filtering_stdev))) > 0
+}
+
+# predict.ssm_lm <- function(object, newdata){
+#   variance <- object$parameters$parameters
+#   var_intercept <- grep("^\\(Intercept\\)\\.", names(variance))
+#   var_var <- rep(0, ncol(object$data) - 1)
+#   names(var_var) <- colnames(object$data)[-1]
+#   if (length(var_intercept) > 0) {
+#     var_intercept <- variance[var_intercept]
+#   } else {
+#     var_intercept <- 0
+#   }
+#   for (i in 1:length(var_var)) {
+#     i_var <- grep(paste0("^", names(var_var)[i], "\\."), names(variance))
+#     if(length(i_var) > 0)
+#       var_var[i] <- variance[i_var]
+#   }
+#
+#   if (is.null(object$call)) {
+#     data <- newdata[, colnames(object$data), drop = FALSE]
+#   } else {
+#     data <- model.frame(object$call$formula,
+#                         data = newdata,
+#                         na.action = na.pass)
+#   }
+#
+#   ssm_lm(data,
+#          var_intercept = var_intercept,
+#          var_variables = var_var,
+#          fixed_var_variables = TRUE,
+#          fixed_var_intercept = TRUE,
+#          intercept = has_intercept(object))
+# }

@@ -70,16 +70,14 @@ get_data.tvlm <- function(model, end = numeric(), frequency = 1, ...) {
 #' @export
 get_data.bp_lm <- function(model, ...) {
   if (model$tvlm) {
-    data <- sapply(seq_along(model$model), function(i) {
+    data <- lapply(seq_along(model$model), function(i) {
       ts(data.frame(model$model[[i]]$y, model$model[[i]]$x),
          end = model$breakdates[i + 1],
          frequency = model$frequency)
     })
     for(i in seq_along(data)){
       colnames(data[[i]]) = c("y", colnames(model$model[[i]]$x))
-    }
-    if (colnames(data[[1]])[2] == "(Intercept)") {
-      for(i in seq_along(data_x)) {
+      if (colnames(data[[i]])[2] == "(Intercept)") {
         data[[i]] <- data[[i]][, -2]
       }
     }

@@ -6,6 +6,7 @@
 #' @param model result of [rmse_prev] fonction
 #' @param date the date on which we want the tvlm coefficients
 #' @param variable `integer`. The variable of which we want the coefficients at the given date
+#' @param ... other unused parameters
 #'
 #' @details
 #'
@@ -73,36 +74,36 @@ get_rmse_bw_small = function(model, ...) {
   sapply(resid, rmse)
 }
 
-#' @rdname get_rmse
-#' @export
+## @rdname get_rmse
+## @export
 
-get_coeff_plot = function(model, date, variable, titre = NULL) {
-  if (is.null(titre))
-    titre <- paste(colnames(get_lm_coef(model))[variable], "in", date)
-  data_plot <- data.frame(x = time(get_lm_coef(model)[,variable]),
-                          lm_coef = get_lm_coef(model)[,variable],
-                          tvlm_coef = get_tvlm_coef(model, date, variable),
-                          bw = get_tvlm_bw(model))
-  data_ribbon <- data.frame(x = data_plot$x[round(data_plot$bw, 1) == 20],
-                            breaks = cumsum(round(data_plot$bw, 1) != 20)[round(data_plot$bw, 1) == 20],
-                            ymin = min(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE),
-                            ymax = max(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE))
-  p1 <- ggplot2::ggplot(data_plot, ggplot2::aes(x = x))+
-    ggplot2::geom_ribbon(data = data_ribbon, ggplot2::aes(ymin = ymin, ymax = ymax, x = x, group = breaks), fill = "grey70", alpha = 0.2) +
-    ggplot2::geom_line(ggplot2::aes(y = tvlm_coef, colour = "TVLM")) +
-    ggplot2::geom_line(ggplot2::aes(y = lm_coef, colour = "LM")) +
-    ggplot2::labs(x = "", y = "Models", title = titre) +
-    ggplot2::scale_color_manual("", breaks = c("TVLM", "LM"),
-                                values = c("red", "green"))
-  p2 <- ggplot2::ggplot(data_plot, aes(x = x))+
-    ggplot2::geom_line(aes(y = bw)) +
-    labs(x = "", y = "bw")
-  p1 <- p1 + ggplot2::theme_bw() +
-    ggplot2::theme(legend.position = "top",
-                   plot.title = element_text(hjust = 0.5))
-  p2 <- p2 + ggplot2::theme_bw() +
-    ggplot2::theme(legend.position = "top",
-                   plot.title = element_text(hjust = 0.5))
-  patchwork::wrap_plots(p1,p2, ncol = 1)
-}
+# get_coeff_plot = function(model, date, variable, titre = NULL) {
+#   if (is.null(titre))
+#     titre <- paste(colnames(get_lm_coef(model))[variable], "in", date)
+#   data_plot <- data.frame(x = time(get_lm_coef(model)[,variable]),
+#                           lm_coef = get_lm_coef(model)[,variable],
+#                           tvlm_coef = get_tvlm_coef(model, date, variable),
+#                           bw = get_tvlm_bw(model))
+#   data_ribbon <- data.frame(x = data_plot$x[round(data_plot$bw, 1) == 20],
+#                             breaks = cumsum(round(data_plot$bw, 1) != 20)[round(data_plot$bw, 1) == 20],
+#                             ymin = min(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE),
+#                             ymax = max(data_plot[,c("lm_coef", "tvlm_coef")], na.rm = TRUE))
+#   p1 <- ggplot2::ggplot(data_plot, ggplot2::aes(x = x))+
+#     ggplot2::geom_ribbon(data = data_ribbon, ggplot2::aes(ymin = ymin, ymax = ymax, x = x, group = breaks), fill = "grey70", alpha = 0.2) +
+#     ggplot2::geom_line(ggplot2::aes(y = tvlm_coef, colour = "TVLM")) +
+#     ggplot2::geom_line(ggplot2::aes(y = lm_coef, colour = "LM")) +
+#     ggplot2::labs(x = "", y = "Models", title = titre) +
+#     ggplot2::scale_color_manual("", breaks = c("TVLM", "LM"),
+#                                 values = c("red", "green"))
+#   p2 <- ggplot2::ggplot(data_plot, aes(x = x))+
+#     ggplot2::geom_line(aes(y = bw)) +
+#     labs(x = "", y = "bw")
+#   p1 <- p1 + ggplot2::theme_bw() +
+#     ggplot2::theme(legend.position = "top",
+#                    plot.title = element_text(hjust = 0.5))
+#   p2 <- p2 + ggplot2::theme_bw() +
+#     ggplot2::theme(legend.position = "top",
+#                    plot.title = element_text(hjust = 0.5))
+#   patchwork::wrap_plots(p1,p2, ncol = 1)
+# }
 

@@ -142,6 +142,6 @@ print.piece_reg <- function(x, ...) {
 }
 
 #' @export
-summary.piece_reg <- function(x, ...) {
-  summary(x$model, ...)
+summary.piece_reg <- function(object, ...) {
+  summary(object$model, ...)
 }

@@ -4,12 +4,10 @@
 \alias{bp_lm}
 \title{Pie regression}
 \usage{
-bp_lm(x, data, left = TRUE, break_dates, tvlm = FALSE, ...)
+bp_lm(x, left = TRUE, break_dates, tvlm = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{lm} object. It is the global regression model.}
-
-\item{data}{a data frame, list or environment containing the variables in the model.}
 
 \item{left}{\code{logical}. By default set to \code{TRUE}, i.e. the breakdate is the end date of each submodel}
 

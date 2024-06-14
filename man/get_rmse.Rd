@@ -6,7 +6,6 @@
 \alias{get_tvlm_coef}
 \alias{get_tvlm_bw}
 \alias{get_rmse_bw_small}
-\alias{get_coeff_plot}
 \title{Get elements of rmse_prev}
 \usage{
 get_lm_coef(model)
@@ -16,8 +15,6 @@ get_tvlm_coef(model, date, variable)
 get_tvlm_bw(model)
 
 get_rmse_bw_small(model, ...)
-
-get_coeff_plot(model, date, variable, titre = NULL)
 }
 \arguments{
 \item{model}{result of \link{rmse_prev} fonction}
@@ -25,6 +22,8 @@ get_coeff_plot(model, date, variable, titre = NULL)
 \item{date}{the date on which we want the tvlm coefficients}
 
 \item{variable}{\code{integer}. The variable of which we want the coefficients at the given date}
+
+\item{...}{other unused parameters}
 }
 \description{
 Get elements of rmse_prev

@@ -20,9 +20,9 @@ ssm_lm_oos(
 \arguments{
 \item{x}{a \code{lm} or \code{dynlm} model}
 
-\item{trend}{trend}
+\item{trend}{boolean indicating if the model should have a trend.}
 
-\item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
+\item{var_intercept, var_slope}{variance of the intercept (used if \code{ìntercept = TRUE}) and the slope (used if \code{trend = TRUE}).}
 
 \item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 

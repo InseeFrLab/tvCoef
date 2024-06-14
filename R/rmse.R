@@ -37,7 +37,7 @@ rmse_prev.formula <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...) 
   x_lm <- dynlm::dynlm(formula = as.formula(formula), data = data)
   data = get_data(x_lm)
 
-  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  intercept <- has_intercept(x_lm)
   if(intercept) {
     colnames(data) = c("y", names(x_lm$coefficients)[-1])
     formule <- sprintf("%s ~ .", colnames(data)[1])
@@ -60,7 +60,7 @@ rmse_prev.lm <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...) {
   x_lm <- x
   data = get_data(x_lm)
 
-  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  intercept <- has_intercept(x_lm)
   if(intercept) {
     colnames(data) = c("y", names(x_lm$coefficients)[-1])
     formule <- sprintf("%s ~ .", colnames(data)[1])

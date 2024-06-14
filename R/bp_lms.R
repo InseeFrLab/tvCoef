@@ -3,7 +3,6 @@
 #' Computes as many regressions as breakup dates within a global model
 #'
 #' @param x `lm` object. It is the global regression model.
-#' @param data 	a data frame, list or environment containing the variables in the model.
 #' @param left `logical`. By default set to `TRUE`, i.e. the breakdate is the end date of each submodel
 #' @param break_dates optional, to indicate the breakup dates if they are known.
 #' @param tvlm By default set to `FALSE`. Indicates which model will be run on each sub data. `FALSE` means a [lm] will be run.
@@ -22,7 +21,7 @@
 #' @export
 #' @importFrom tvReg tvLM
 #' @importFrom strucchange breakdates breakpoints
-bp_lm <- function(x, data, left = TRUE, break_dates, tvlm = FALSE, ...) {
+bp_lm <- function(x, left = TRUE, break_dates, tvlm = FALSE, ...) {
   if (has_intercept(x)) {
     formula <- sprintf("%s ~ .", colnames(x$model)[1])
   } else {
@@ -30,13 +29,13 @@ bp_lm <- function(x, data, left = TRUE, break_dates, tvlm = FALSE, ...) {
   }
   .data <- get_data(x, ...)
   if (missing(break_dates)) {
-    break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = x$model))
+    break_dates <- strucchange::breakdates(strucchange::breakpoints(as.formula(formula), data = .data))
   }
   if (all(is.na(break_dates))) {
     if (!tvlm) {
       return(x)
     } else {
-      tv = tvReg::tvLM(formula = formula, data = x$model, ...)
+      tv = tvReg::tvLM(formula = formula, data = .data, ...)
       return(tv)
     }
   } else {
@@ -72,13 +71,9 @@ bp_lm <- function(x, data, left = TRUE, break_dates, tvlm = FALSE, ...) {
   res
 }
 
-#' @export
 #' @importFrom tvReg tvLM
 #' @importFrom strucchange breakdates breakpoints
-bp.lms <- function(...) {
-  .Deprecated("bp_lm")
-  bp_lm(...)
-}
+
 
 #' @export
 print.bp_lm <- function(x, ...) {

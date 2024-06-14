@@ -47,6 +47,14 @@ oos_prev(model, date = 28, period = 1, ...)
 \item{period}{choose by how many values we want to move forward. By default set to 1.}
 
 \item{...}{other arguments}
+
+\item{data}{a \code{ts} object containing the variables in the model. Necessary only when \code{x} is a formula.}
+
+\item{data_est, end, frequency}{optional arguments to specify the data used to estimate the model, the last date and the frequency}
+
+\item{fixed_bw}{\code{logical}, by default set to \code{FALSE}. Indicates if the bandwidth has to be computed again in the forecast model, or if it takes the value of the bandwidth of the \code{tvlm} model.}
+
+\item{bw}{bandwidth of the local regression (when \code{tvlm = TRUE}).}
 }
 \value{
 oos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same forecasts and residuals as below.
@@ -61,4 +69,12 @@ An object of class \code{revision} is a list containing the following elements:
 }
 \description{
 Out of sample forecast (or simulated out of sample)
+}
+\examples{
+data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+reg_lin <- lm(
+  formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+  data = data_gdp
+)
+oos <- oos_prev(reg_lin)
 }

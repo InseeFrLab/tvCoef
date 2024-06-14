@@ -21,9 +21,9 @@ ssm_lm(
 \arguments{
 \item{x}{a \code{lm} or \code{dynlm} model}
 
-\item{trend}{trend}
+\item{trend}{boolean indicating if the model should have a trend.}
 
-\item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
+\item{var_intercept, var_slope}{variance of the intercept (used if \code{ìntercept = TRUE}) and the slope (used if \code{trend = TRUE}).}
 
 \item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 
@@ -32,6 +32,8 @@ ssm_lm(
 \item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
 
 \item{remove_last_dummies}{boolean indicating if current dummies (i.e.: only 0 and 1 at the last date) should be removed.}
+
+\item{intercept}{boolean indicating if the model should have an intercept.}
 }
 \value{
 Returns a \code{list} containing:
