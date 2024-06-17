@@ -22,6 +22,7 @@ reference:
   - '`get_data`'
   - '`get_formula`'
   - '`last_coef`'
+  - '`has_intercept`'
   - '`rmse`'
   - '`hansen_test`'
   - '`moving_coefficients`'
@@ -46,3 +47,6 @@ reference:
   contents:
   - '`rmse_prev`'
   - '`get_rmse`'
+- title: Deprecated functions
+  contents:
+  - '`deprecated-tvCoef`'
