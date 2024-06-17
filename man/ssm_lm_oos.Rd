@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssm_lm.R
 \name{ssm_lm_oos}
 \alias{ssm_lm_oos}
-\title{Out of sample prevision of state space model}
+\title{Out of sample forecast of state space model}
 \usage{
 ssm_lm_oos(
   x,
@@ -20,15 +20,15 @@ ssm_lm_oos(
 \arguments{
 \item{x}{a \code{lm} or \code{dynlm} model}
 
-\item{trend}{trend}
+\item{trend}{boolean indicating if the model should have a trend.}
 
-\item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
+\item{var_intercept, var_slope}{variance of the intercept (used if \code{ìntercept = TRUE}) and the slope (used if \code{trend = TRUE}).}
 
 \item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 
 \item{fixed_var_intercept, fixed_var_trend, fixed_var_variables}{logical indicating if the variance are fixed or estimated.}
 
-\item{date}{choose when we want to start the revision process after the start date. By default set to 10.}
+\item{date}{choose when we want to start the revision process after the start date. By default set to 28 periods.}
 
 \item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
 }
@@ -36,5 +36,5 @@ ssm_lm_oos(
 Returns all coefficients of all variables and the residual
 }
 \description{
-Computes out of sample previsions of a given state space model. Unlike \link{ssm_lm} it can manage dummies.
+Computes out of sample forecasts of a given state space model. Unlike \link{ssm_lm} it can manage dummies.
 }

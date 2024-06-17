@@ -19,19 +19,22 @@ get_formula.default <- function(x) {
 #' @description Retrieves the data used in the model
 #'
 #' @param model the model whose data we want
-
+#' @param ... other unused parameters.
+#'
 #' @export
-
 get_data <- function(model, ...) {
   UseMethod("get_data", model)
 }
 
 #' @rdname get_data
+#' @param model the model
+#' @param start the start of the data.
+#' @param frequency the frequency of the data.
 #' @export
-get_data.lm <- function(model, start, ...) {
+get_data.lm <- function(model, start = 1, frequency = 1, ...) {
   if (missing(start))
     start <- as.numeric(rownames(model$model)[1])
-  ts(model$model, start = start,...)
+  ts(model$model, start = start, frequency = frequency,...)
 }
 
 #' @rdname get_data
@@ -47,31 +50,34 @@ get_data.dynlm <- function(model, ...) {
 }
 
 #' @rdname get_data
+#' @param end the end of the data.
 #' @export
-get_data.tvlm <- function(model, end, frequency, ...) {
+get_data.tvlm <- function(model, end = numeric(), frequency = 1, ...) {
   data <- cbind(model$y, model$x)
   # gsub(" ~.*", "", deparse(model$call$formula)) # plutot que y
   colnames(data) <- c("y", colnames(model$x))
   if (colnames(data)[2] == "(Intercept)") {
     data <- data[, -2]
   }
-  ts(data, end = end, frequency = frequency)
+  if (length(end) == 0) {
+    ts(data, frequency = frequency)
+  } else {
+    ts(data, end = end, frequency = frequency)
+  }
 }
 
 #' @rdname get_data
 #' @export
-get_data.bp.lms <- function(model, ...) {
+get_data.bp_lm <- function(model, ...) {
   if (model$tvlm) {
-    data <- sapply(seq_along(model$model), function(i) {
+    data <- lapply(seq_along(model$model), function(i) {
       ts(data.frame(model$model[[i]]$y, model$model[[i]]$x),
          end = model$breakdates[i + 1],
          frequency = model$frequency)
     })
     for(i in seq_along(data)){
       colnames(data[[i]]) = c("y", colnames(model$model[[i]]$x))
-    }
-    if (colnames(data[[1]])[2] == "(Intercept)") {
-      for(i in seq_along(data_x)) {
+      if (colnames(data[[i]])[2] == "(Intercept)") {
         data[[i]] <- data[[i]][, -2]
       }
     }
@@ -85,7 +91,7 @@ get_data.bp.lms <- function(model, ...) {
 
 #' @rdname get_data
 #' @export
-get_data.piecereg <- function(model, ...) {
+get_data.piece_reg <- function(model, ...) {
   get_data(model$model, ...)
 }
 
@@ -104,7 +110,7 @@ full_exogeneous_matrix <- function(model, ...){
   data <- eval(model$call$data)
   if (is.ts(data))
     res <- ts(res, start = start(data), frequency = frequency(data))
-
+  attr(res, "assign") <- NULL
   res
 }
 

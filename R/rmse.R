@@ -8,20 +8,20 @@
 #' @param x an object of class `formula` or `lm`, that is the description of the model to be fitted, or the model itself.
 #' @param data a `ts` object containing the variables in the model. Necessary only when `x` is a formula.
 #' @param fixed_var which variables of the model should have their coefficients fixed for the models with fixed coefficients. Obtained thanks to the hansen test.
-#' @param fixed_bw `logical`, by default set to \code{FALSE}. Indicates if the bandwidth has to be computed again in the prevision model, or if it takes the value of the bandwidth of the `tvlm` model.
+#' @param fixed_bw `logical`, by default set to \code{FALSE}. Indicates if the bandwidth has to be computed again in the forecast model, or if it takes the value of the bandwidth of the `tvlm` model.
 #' @param ... additional arguments
 #'
 #' @details
 #' In additional arguments, parameters as date and period can be informed. As in [oos_prev] they are by default respectively set to 28 and 1.
 #'
-#' To estimate prevision models, the function [oos_prev] is used.
+#' To estimate forecast models, the function [oos_prev] is used.
 #'
-#' For the previsions of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before [bp.lms] or [tvLM] are run on moving variables.
+#' For the forecasts of the two models with fixed coefficients, fixed coefficients are re-estimated at each date, before [bp_lm] or [tvLM] are run on moving variables.
 #'
 #'
 #' @return Returns an object of class `prev` which is a list containing the following elements:
 #' \item{model}{a list of the 6 explanatory models}
-#' \item{prevision}{a list of the 6 predictions of the 6 previous models}
+#' \item{forecast}{a list of the 6 predictions of the 6 previous models}
 #' \item{rmse}{a list of the 2 computed rmse, in sample and out of sample}
 #'
 #' @export
@@ -37,7 +37,7 @@ rmse_prev.formula <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...) 
   x_lm <- dynlm::dynlm(formula = as.formula(formula), data = data)
   data = get_data(x_lm)
 
-  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  intercept <- has_intercept(x_lm)
   if(intercept) {
     colnames(data) = c("y", names(x_lm$coefficients)[-1])
     formule <- sprintf("%s ~ .", colnames(data)[1])
@@ -60,7 +60,7 @@ rmse_prev.lm <- function(x, data, fixed_var = NULL, fixed_bw = FALSE, ...) {
   x_lm <- x
   data = get_data(x_lm)
 
-  intercept <- length(grep("Intercept", names(coef(x_lm)))) > 0
+  intercept <- has_intercept(x_lm)
   if(intercept) {
     colnames(data) = c("y", names(x_lm$coefficients)[-1])
     formule <- sprintf("%s ~ .", colnames(data)[1])
@@ -113,8 +113,8 @@ rmse_prev_instable <- function(x_lm, formule, data, fixed_var, fixed_bw = FALSE,
   prev_fixed_coef <- prev_lm_fixed(x = prev_x_lm, fixed_var = fixed_var, ...)
   y <- prev_x_lm$model[[length(prev_x_lm$model)]]$model[, 1]
   y <- y[-seq_len(prev_x_lm$debut)]
-  prev_x_tvlm_fixe$prevision <- prev_x_tvlm_fixe$prevision + prev_fixed_coef$prevision
-  prev_x_tvlm_fixe$residuals <- y - prev_x_tvlm_fixe$prevision
+  prev_x_tvlm_fixe$forecast <- prev_x_tvlm_fixe$forecast + prev_fixed_coef$forecast
+  prev_x_tvlm_fixe$residuals <- y - prev_x_tvlm_fixe$forecast
   resid_prev_lm <- prev_x_lm$residuals
   resid_prev_piecelm <- prev_x_piecelm$residuals
   resid_prev_piecetvlm <- prev_x_piecetvlm$residuals
@@ -146,7 +146,7 @@ rmse_prev_instable <- function(x_lm, formule, data, fixed_var, fixed_bw = FALSE,
       "piece_tvlm_fixe" = x_piecetvlm_fixe,
       "tvlm_fixe" = x_tvlm_fixe
     ),
-    prevision = list(
+    forecast = list(
       "prev_lm" = prev_x_lm,
       "prev_piece_lm" = prev_x_piecelm,
       "prev_piece_lm_fixe" = prev_x_piecelm_fixe,
@@ -202,7 +202,7 @@ rmse_prev_stable <- function(x_lm, formule, data, fixed_bw = FALSE, date = 28, b
       "tvlm" = x_tvlm,
       "piece_tvlm" = x_piecetvlm
     ),
-    prevision = list(
+    forecast = list(
       "prev_lm" = prev_x_lm,
       "prev_piece_lm" = prev_x_piecelm,
       "prev_tvlm" = prev_x_tvlm,

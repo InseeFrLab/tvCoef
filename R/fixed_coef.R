@@ -6,8 +6,11 @@
 #' @param var the variables on which the residuals are to be regressed. By default use them all and cancel the explained variable
 #'
 #' @export
-
-
+#' @examples
+#' data("AirPassengers")
+#' model <- lm(AirPassengers ~ time(AirPassengers))
+#' lm_residual_effect(model)
+#'
 lm_residual_effect <- function(x, var = c(-1)) {
   resid_effect <- lm(resid(x) ~ ., data = as.data.frame(x$model[, var]))
   class(resid_effect) <- "lm"
@@ -18,6 +21,7 @@ lm_residual_effect <- function(x, var = c(-1)) {
 #'
 #' @param formula a `formula` object.
 #' @param data time series data.
+#' @param nbw number of windows.
 #'
 #' @returns
 #'
@@ -25,8 +29,6 @@ lm_residual_effect <- function(x, var = c(-1)) {
 #' Return all models, from which we can extract the usual coefficients, residuals, and fitted.values. And the divisor chosen by the function (arbitrary the middle one), the period, i.e. the length of each sub models, and the frequency of the data.
 #'
 #' @export
-
-
 lm_fenetre_fixe <- function(formula, data, nbw = 1) {
   borne <- trunc(seq(1, nrow(data), length.out = nbw + 1))
   dataf <- lapply(1:(length(borne) - 1), function(i) {
@@ -69,7 +71,7 @@ print.lmffixe <- function(x, ...) {
 
 
 prev_lm <- function(x) {
-  predict <- sapply(x$model, predict, x$model[[length(x$model)]]$model)
+  predict <- suppressWarnings(sapply(x$model, predict, x$model[[length(x$model)]]$model))
   prev <- res <- vector("list", length(x$model) - 1)
   y <- x$model[[length(x$model)]]$model[, 1]
   i <- 1
@@ -83,7 +85,7 @@ prev_lm <- function(x) {
   res <- unlist(res)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
@@ -113,7 +115,7 @@ prev_lm_fixed <- function(x, fixed_var) {
   res <- unlist(res)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
@@ -143,7 +145,7 @@ prev_tvlm <- function(x) {
   prev <- ts(predict, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   res <- ts(res, start = x$end_dates[1] + 1 / x$frequency, frequency = x$frequency / x$intervalle)
   list(
-    prevision = prev,
+    forecast = prev,
     residuals = res
   )
 }
@@ -155,14 +157,14 @@ prev_tvlm <- function(x) {
 #' According to parameter `fixed_var`, computes a new explained variable, which is the explained variable minus the product between estimated coefficients and values of the fixed variables.
 #'
 #' @param x `lm` model
-#' @param fixed_var list of variables that don't vary through time according to [hansen.test]
+#' @param fixed_var list of variables that don't vary through time according to [hansen_test]
 #'
 #' @return
 #' A new environment where the explained variable is named "fixed".
 #' @export
 
 resid_lm_fixed <- function(x, fixed_var) {
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
+  intercept <- has_intercept(x)
   if (intercept) {
     data <- cbind(x$model[, 1], 1, x$model[, -1])
     colnames(data) <- c(colnames(x$model)[1], "(Intercept)", colnames(x$model)[-1])
@@ -196,7 +198,7 @@ resid_lm_fixed <- function(x, fixed_var) {
 #' @return
 #' \item{global_model}{the simple `lm` model}
 #' \item{linear_reg}{simple `lm` model with fixed coefficients}
-#' \item{piecewise_reg}{`bp.lms` model with fixed coefficients}
+#' \item{piecewise_reg}{`bp_lm` model with fixed coefficients}
 #' \item{tv_reg}{`tvlm` model with fixed coefficients}
 #'
 #' @export
@@ -207,7 +209,7 @@ lm_fixed_coeff <- function(formula, data, fixed_var, ...) {
   data_variables <- resid_lm_fixed(x, fixed_var = fixed_var)
   y_lm <- dynlm::dynlm(formula = fixes ~ -1 + ., data = data_variables)
   y_tvlm <- tvReg::tvLM(fixes ~ -1 + ., data = data_variables, ...)
-  y_bplm <- bp.lms(y_lm, data_variables)
+  y_bplm <- bp_lm(y_lm, data_variables)
   res <- list(
     global_model = x,
     linear_reg = y_lm,
@@ -240,7 +242,6 @@ last_coef <- function(x) {
 #' @param resid the residuals vector on which rmse will be calculated
 #'
 #' @export
-
 rmse <- function(resid) {
   sqrt(mean(resid^2, na.rm = TRUE))
 }

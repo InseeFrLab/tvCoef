@@ -14,15 +14,16 @@ ssm_lm(
   fixed_var_trend = TRUE,
   fixed_var_variables = TRUE,
   ...,
-  remove_last_dummies = FALSE
+  remove_last_dummies = FALSE,
+  intercept = TRUE
 )
 }
 \arguments{
 \item{x}{a \code{lm} or \code{dynlm} model}
 
-\item{trend}{trend}
+\item{trend}{boolean indicating if the model should have a trend.}
 
-\item{var_intercept, var_slope}{variance of the intercept and the slope (used if \code{trend = TRUE}).}
+\item{var_intercept, var_slope}{variance of the intercept (used if \code{ìntercept = TRUE}) and the slope (used if \code{trend = TRUE}).}
 
 \item{var_variables}{variance of the other variables: can be either a single value (same variance for all the variables) or a vector specifying each variance.}
 
@@ -31,13 +32,15 @@ ssm_lm(
 \item{...}{other arguments used in \code{\link[rjd3sts:estimate]{rjd3sts::estimate()}}.}
 
 \item{remove_last_dummies}{boolean indicating if current dummies (i.e.: only 0 and 1 at the last date) should be removed.}
+
+\item{intercept}{boolean indicating if the model should have an intercept.}
 }
 \value{
 Returns a \code{list} containing:
 \item{smoothed_states}{\eqn{E[a_t|y_0,\dots,y_n]}}
-\item{smoothed_stdev}{\eqn{V[a_t|y_0,\dots,y_n]}}
+\item{smoothed_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_n]}}}
 \item{filtering_states}{\eqn{E[a_t|y_0,\dots,y_{t-1}]}}
-\item{filtering_stdev}{\eqn{V[a_t|y_0,\dots,y_{t-1}]}}
+\item{filtering_stdev}{\eqn{\sqrt{V[a_t|y_0,\dots,y_{t-1}]}}}
 \item{parameters}{some estimation parameters}
 \item{data}{data used in the original model}
 }
@@ -45,4 +48,14 @@ Returns a \code{list} containing:
 Computes state space model with one equation. Starting with a simple \code{lm} model, build the all state space model and run it.
 
 Use \code{rjd3sts} packages.
+}
+\examples{
+data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+reg_lin <- lm(
+  formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+  data = data_gdp
+)
+ssm <- ssm_lm(reg_lin, fixed_var_intercept = FALSE, fixed_var_variables = FALSE)
+ssm
+summary(ssm)
 }

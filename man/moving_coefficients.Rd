@@ -32,5 +32,5 @@ fixed_coefficients(
 \code{NULL} if no variable selected, otherwise the order of the variables.
 }
 \description{
-Functions to test if any coefficient is fixed or moving according to the Hansen test (\code{\link[=hansen.test]{hansen.test()}})
+Functions to test if any coefficient is fixed or moving according to the Hansen test (\code{\link[=hansen_test]{hansen_test()}})
 }

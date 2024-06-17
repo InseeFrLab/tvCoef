@@ -3,13 +3,16 @@
 \name{oos_prev}
 \alias{oos_prev}
 \alias{oos_prev.lm}
+\alias{oos_prev.piece_reg}
 \alias{oos_prev.tvlm}
-\alias{oos_prev.bp.lms}
-\title{Out of sample prevision (or simulated out of sample)}
+\alias{oos_prev.bp_lm}
+\title{Out of sample forecast (or simulated out of sample)}
 \usage{
 oos_prev(model, date = 28, period = 1, ...)
 
-\method{oos_prev}{lm}(model, date = 28, period = 1, data, ...)
+\method{oos_prev}{lm}(model, date = 28, period = 1, data = NULL, ...)
+
+\method{oos_prev}{piece_reg}(model, date = 28, period = 1, ...)
 
 \method{oos_prev}{tvlm}(
   model,
@@ -18,12 +21,12 @@ oos_prev(model, date = 28, period = 1, ...)
   data_est = NULL,
   fixed_bw = FALSE,
   bw = NULL,
-  end,
-  frequency,
+  end = numeric(),
+  frequency = 1,
   ...
 )
 
-\method{oos_prev}{bp.lms}(
+\method{oos_prev}{bp_lm}(
   model,
   date = 28,
   period = 1,
@@ -33,27 +36,45 @@ oos_prev(model, date = 28, period = 1, ...)
   bw = NULL,
   ...
 )
+
+\method{oos_prev}{piece_reg}(model, date = 28, period = 1, ...)
 }
 \arguments{
 \item{model}{an object used to select a method}
 
-\item{date}{choose when we want to start the revision process after the start date. By default set to 10.}
+\item{date}{choose when we want to start the revision process after the start date. By default set to 28 periods.}
 
 \item{period}{choose by how many values we want to move forward. By default set to 1.}
 
 \item{...}{other arguments}
+
+\item{data}{a \code{ts} object containing the variables in the model. Necessary only when \code{x} is a formula.}
+
+\item{data_est, end, frequency}{optional arguments to specify the data used to estimate the model, the last date and the frequency}
+
+\item{fixed_bw}{\code{logical}, by default set to \code{FALSE}. Indicates if the bandwidth has to be computed again in the forecast model, or if it takes the value of the bandwidth of the \code{tvlm} model.}
+
+\item{bw}{bandwidth of the local regression (when \code{tvlm = TRUE}).}
 }
 \value{
-oos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same previsions and residuals as below.
+oos_prev returns an object of class \code{revision}, only for models of class \link{lm} and \link{tvlm}. For an object of class \code{bplm} it returns the same forecasts and residuals as below.
 An object of class \code{revision} is a list containing the following elements:
 \item{model}{all models used to forecast}
 \item{debut}{same as date chosen earlier}
 \item{intervalle}{same as period chosen earlier}
 \item{end_dates}{a vector of all end date of each models}
 \item{frequency}{the frequency of the data}
-\item{prevision}{the forecast}
+\item{forecast}{the forecast}
 \item{residuals}{the errors of the forecast}
 }
 \description{
-Out of sample prevision (or simulated out of sample)
+Out of sample forecast (or simulated out of sample)
+}
+\examples{
+data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+reg_lin <- lm(
+  formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+  data = data_gdp
+)
+oos <- oos_prev(reg_lin)
 }

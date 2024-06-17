@@ -13,20 +13,26 @@
 #'
 #' @references Bruce E Hansen "Testing for parameter instability in linear models". Journal of policy Modeling (1992)
 #'
+#' @examples
+#' model_gdp <- lm(
+#' formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+#' data = gdp
+#' )
+#' hansen_test(model_gdp)
 #'
 #' @export
-
-hansen.test <- function(x, var, sigma = FALSE) {
+hansen_test <- function(x, var, sigma = FALSE) {
   if (!inherits(x, "lm")) {
-    stop("il faut un lm")
+    stop('x must be a "lm" object')
   }
   e_t <- residuals(x)
-  intercept <- length(grep("Intercept", names(coef(x)))) > 0
-  if (intercept) {
-    x_reg <- cbind(1, x$model[, -1])
-  } else {
-    x_reg <- x$model[, -1]
-  }
+  intercept <- has_intercept(x)
+  # if (intercept) {
+  #   x_reg <- cbind(1, x$model[, -1])
+  # } else {
+  #   x_reg <- x$model[, -1]
+  # }
+  x_reg <- model.matrix(x)
   if (missing(var)) {
     var <- 1:length(coef(x))
   }
@@ -65,51 +71,62 @@ hansen.test <- function(x, var, sigma = FALSE) {
     L_c = L_c,
     selected_var = var
   )
-  class(res) <- "hansen.test"
+  class(res) <- "hansen_test"
   return(res)
 }
 
+#' Deprecated function
+#'
+#' @param ... parameters
+#' @export
+#' @name deprecated-tvCoef
+hansen.test <- function (...) {
+  .Deprecated("hansen_test")
+  hansen_test(...)
+}
+#' @export
+#' @rdname deprecated-tvCoef
+bp.lms <- function(...) {
+  .Deprecated("bp_lm")
+  bp_lm(...)
+}
 
 #' @export
-print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {
-  cat("\n")
-  cat("Variable                 ", "L       ", "Stat    ", "Conclusion", "\n")
-  cat("______________________________________________________________", "\n")
+print.hansen_test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {
   k <- length(x$L)
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
   sigma <- length(grep("sigma2", names(x$L))) > 0
+  # Signif. codes:  0 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
   if (sigma) {
     u <- length(x$selected_var) + 1
   } else {
     u <- length(x$selected_var)
   }
   rejet <- c(
-    x$L >= hansen_table[1, b],
-    x$L_c >= hansen_table[u, b]
+    x$L >= tvCoef::hansen_table[1, b],
+    x$L_c >= tvCoef::hansen_table[u, b]
   )
   if (sigma) {
     names <- rbind(as.matrix(names(x$L)[-length(names(x$L))]), "Variance", "Joint Lc")
   } else {
     names <- rbind(as.matrix(names(x$L)), "Joint Lc")
   }
-  datnames <- format(names, digits = 4)
-  stat <- c(rep(hansen_table[1, b], times = k), hansen_table[u + 1, b])
-  l <- format(c(x$L, x$L_c), digits = 4)
-  rejet <- format(rejet, digits = 4)
-  for (j in 1:nrow(names)) {
-    cat(datnames[j], " ", l[j], " ", stat[j], " ", rejet[j], " ", "\n")
-  }
-  cat("\n")
-  cat("\n")
-  cat(sprintf("Lecture: True means reject H0 at level %s", b), "\n")
+  stat <- c(rep(tvCoef::hansen_table[1, b], times = k), tvCoef::hansen_table[u + 1, b])
+  l <- format(c(x$L, x$L_c), digits = digits)
+  rejet <- format(rejet, digits = digits)
+  result <- data.frame(L = l, Stat = stat, rejet)
+  rownames(result) <- names
+  colnames(result)[3] <- sprintf("Reject at %s", b)
+  print(result)
 }
 
 #' Detect Fixed or Moving Coefficients
 #'
-#' Functions to test if any coefficient is fixed or moving according to the Hansen test ([hansen.test()])
+#' Functions to test if any coefficient is fixed or moving according to the Hansen test ([hansen_test()])
 #'
-#' @inheritParams hansen.test
+#' @inheritParams hansen_test
 #' @param a level
 #' @param intercept boolean indicating if the intercept should be consider as a moving coefficient when at least one other variable is moving.
 #'
@@ -119,15 +136,15 @@ print.hansen.test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...)
 moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
-  test <- hansen.test(x, sigma = sigma)
+  test <- hansen_test(x, sigma = sigma)
   uni_tests <- test$L
   if (!sigma)
     uni_tests <- uni_tests[-grep("sigma2", names(uni_tests))]
 
-  uni_var = which(uni_tests >= hansen_table[1, b])
+  uni_var = which(uni_tests >= tvCoef::hansen_table[1, b])
 
   if(length(uni_var) == 0) {
-    if (test$L_c >= hansen_table[length(test$selected_var), b])
+    if (test$L_c >= tvCoef::hansen_table[length(test$selected_var), b])
       warning("Result not conform with joint test")
     return(NULL)
   }
@@ -139,10 +156,10 @@ moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE,
       uni_var <- unique(1, uni_var)
     return(uni_var)
   }
-  joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
+  joint_test <- hansen_test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
-  } else if (joint_test$L_c < hansen_table[length(uni_var), b]) {
+  } else if (joint_test$L_c < tvCoef::hansen_table[length(uni_var), b]) {
     warning("Result not conform with joint test")
   }
   if (intercept && has_unique_intercept)
@@ -156,15 +173,15 @@ moving_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE,
 fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, intercept = TRUE) {
   b <- paste0(a, "%")
   b <- match.arg(b[1], choices = c("1%", "2.5%", "5%", "7.5%", "10%", "20%"))
-  test <- hansen.test(x, sigma = sigma)
+  test <- hansen_test(x, sigma = sigma)
   uni_tests <- test$L
   if (!sigma)
     uni_tests <- uni_tests[-grep("sigma2", names(uni_tests))]
 
-  uni_var = which(uni_tests < hansen_table[1, b])
+  uni_var = which(uni_tests < tvCoef::hansen_table[1, b])
 
   if(length(uni_var) == 0) {
-    if (test$L_c < hansen_table[length(test$selected_var), b])
+    if (test$L_c < tvCoef::hansen_table[length(test$selected_var), b])
       warning("Result not conform with joint test")
     return(NULL)
   }
@@ -177,10 +194,10 @@ fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, 
       uni_var <- NULL
     return(uni_var)
   }
-  joint_test <- hansen.test(x, sigma = sigma, var = uni_var)
+  joint_test <- hansen_test(x, sigma = sigma, var = uni_var)
   if (is.na(joint_test$L_c)) {
     warning("Joint test impossible, check dummies")
-  } else if (joint_test$L_c >= hansen_table[length(uni_var), b]) {
+  } else if (joint_test$L_c >= tvCoef::hansen_table[length(uni_var), b]) {
     warning("Result not conform with joint test")
   }
   if (intercept && has_unique_intercept)
@@ -189,8 +206,8 @@ fixed_coefficients <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), sigma = FALSE, 
 }
 
 
-# usethis::use_data(hansen_table)
-# hansen_table <- structure(
+# usethis::use_data(tvCoef::hansen_table)
+# tvCoef::hansen_table <- structure(
 #   list(
 #     `Degrees of freedom (m + 1)` = 1:20,
 #     `1%` = c(

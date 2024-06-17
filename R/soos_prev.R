@@ -1,38 +1,45 @@
 
-#' Out of sample prevision (or simulated out of sample)
+#' Out of sample forecast (or simulated out of sample)
 #'
 #' @param model an object used to select a method
 #' @param date choose when we want to start the revision process after the start date. By default set to 28 periods.
 #' @param period choose by how many values we want to move forward. By default set to 1.
 #' @param ... other arguments
+#' @inheritParams piece_reg
+#' @inheritParams rmse_prev
 #'
 #' @return
-#' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same previsions and residuals as below.
+#' oos_prev returns an object of class `revision`, only for models of class [lm] and [tvlm]. For an object of class `bplm` it returns the same forecasts and residuals as below.
 #' An object of class `revision` is a list containing the following elements:
 #' \item{model}{all models used to forecast}
 #' \item{debut}{same as date chosen earlier}
 #' \item{intervalle}{same as period chosen earlier}
 #' \item{end_dates}{a vector of all end date of each models}
 #' \item{frequency}{the frequency of the data}
-#' \item{prevision}{the forecast}
+#' \item{forecast}{the forecast}
 #' \item{residuals}{the errors of the forecast}
 #'
+#' @examples
+#' data_gdp <- window(gdp, start = 1980, end = c(2019, 4))
+#' reg_lin <- lm(
+#'   formula = growth_gdp ~ bc_fr_m1 + diff_bc_fr_m1,
+#'   data = data_gdp
+#' )
+#' oos <- oos_prev(reg_lin)
 #' @export
-
 oos_prev <- function(model, date = 28, period = 1, ...) {
   UseMethod("oos_prev", model)
 }
 
 #' @rdname oos_prev
 #' @export
-
-oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
+oos_prev.lm <- function(model, date = 28, period = 1, data = NULL, ...) {
   # formula <- get_formula(model)
-  if (missing(data)) {
+  if (is.null(data)) {
     data <- get_data(model)
   }
-  intercept_coef <- length(grep("Intercept", names(coef(model)))) > 0
-  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+  intercept_coef <- has_intercept(model)
+  intercept_data <- has_intercept(data)
   if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
   } else if (intercept_coef & !intercept_data) {
@@ -72,7 +79,7 @@ oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
     intervalle = res$intervalle,
     end_dates = res$end_dates,
     frequency = res$frequency,
-    prevision = prev$prevision,
+    forecast = prev$forecast,
     residuals = prev$residuals
   )
   class(result) <- "revision"
@@ -81,8 +88,14 @@ oos_prev.lm <- function(model, date = 28, period = 1, data, ...) {
 
 #' @rdname oos_prev
 #' @export
-
-oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end, frequency, ...) {
+oos_prev.piece_reg <- function(model, date = 28, period = 1, data = NULL, ...) {
+  oos_prev(model$model, date = date, period = period, data = data, ...)
+}
+#' @param data_est,end,frequency optional arguments to specify the data used to estimate the model, the last date and the frequency
+#' @rdname oos_prev
+#' @inheritParams rmse_prev
+#' @export
+oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_bw = FALSE, bw = NULL, end = numeric(), frequency = 1, ...) {
   # formula = get_formula(model)
   est <- model$est
   if (fixed_bw & is.null(bw)) {
@@ -93,8 +106,8 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     bw <- NULL
   }
   data <- get_data(model, end = end, frequency = frequency)
-  intercept_coef <- length(grep("Intercept", colnames(coef(model)))) > 0
-  intercept_data <- length(grep("Intercept", colnames(data))) > 0
+  intercept_coef <- has_intercept(model)
+  intercept_data <- has_intercept(data)
 
   if (intercept_coef & intercept_data) {
     formule <- sprintf("%s ~ 0 + .", colnames(data)[1])
@@ -122,13 +135,16 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     formule <- get_formula(model)
   }
 
-  model <- lapply(data_est, function(data, formula) {
+  utils::capture.output(
+    #To delete the cat message of the computed bandwidth
+    model <- lapply(data_est, function(data, formula) {
     tryCatch(tvReg::tvLM(data = data, formula = as.formula(formula), bw = bw, est = est),
              error = function(e) {
                tvReg::tvLM(data = data, formula = as.formula(formula), bw = NULL, est = est)
              })
   },
   formula = formule
+  )
   )
   res <- list(
     model = model,
@@ -144,7 +160,7 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
     intervalle = res$intervalle,
     end_dates = res$end_dates,
     frequency = res$frequency,
-    prevision = prev$prevision,
+    forecast = prev$forecast,
     residuals = prev$residuals
   )
   class(result) <- "revision"
@@ -155,7 +171,7 @@ oos_prev.tvlm <- function(model, date = 28, period = 1, data_est = NULL, fixed_b
 #' @rdname oos_prev
 #' @export
 
-oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
+oos_prev.bp_lm <- function(model, date = 28, period = 1, data_est = NULL, data, fixed_bw = FALSE, bw = NULL, ...) {
   data <- get_data(model)
 
   est_dates <- sapply(data, time)
@@ -209,7 +225,7 @@ oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data,
       })
     } else {
       model <- lapply(dataf, function(data) {
-        lm(data = data, formula = as.formula(formule))
+       lm(data = data, formula = as.formula(formule))
       })
     }
   })
@@ -240,18 +256,17 @@ oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data,
     results[[i]] <- lapply(results[[i]], window, end = first_date, extend = TRUE)
   }
   results_ <- list(
-    prevision = unlist(lapply(results, `[[`, "prevision")),
+    forecast = unlist(lapply(results, `[[`, "forecast")),
     residuals = unlist(lapply(results, `[[`, "residuals"))
   )
   results_ <- lapply(results_, ts, start = start(results[[1]][[1]]), frequency = frequency(results[[1]][[1]]))
-  results_
   resultat <- list(
     model = res,
     debut = date,
     intervalle = period,
     end_dates = est_dates,
     frequency = frequency(data[[1]]),
-    prevision = results_$prevision,
+    forecast = results_$forecast,
     residuals = results_$residuals
   )
   class(resultat) <- "revision"
@@ -260,12 +275,12 @@ oos_prev.bp.lms <- function(model, date = 28, period = 1, data_est = NULL, data,
 
 #' @rdname oos_prev
 #' @export
-oos_prev.piecereg <- function(model, date = 28, period = 1, ...) {
+oos_prev.piece_reg <- function(model, date = 28, period = 1, ...) {
   oos_prev(model$model, date = date, period = period, ...)
 }
 
 #' @export
 
 print.revision <- function(x, ...) {
-  print(list(prevision = x$prevision, residuals = x$residuals))
+  print(list(forecast = x$forecast, residuals = x$residuals))
 }
