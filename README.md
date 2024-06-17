@@ -32,6 +32,8 @@ To get the current development version from GitHub:
 ``` r
 # install.packages("remotes")
 remotes::install_github("InseeFrLab/tvCoef")
+# or using r-universe:
+install.packages('tvCoef', repos = c('https://aqlt.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
 If you have troubles installing Java, check the [installation
