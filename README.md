@@ -20,11 +20,20 @@ linear regression:
 
 `tvCoef` relies on `rjd3sts` which need Java JRE 17 or later version.
 
+To get the current stable version (from the latest release):
+
 ``` r
 # install.packages("remotes")
-remotes::install_github("rjdverse/rjd3toolkit")
-remotes::install_github("rjdverse/rjd3sts")
+remotes::install_github("InseeFrLab/tvCoef@*release")
+```
+
+To get the current development version from GitHub:
+
+``` r
+# install.packages("remotes")
 remotes::install_github("InseeFrLab/tvCoef")
+# or using r-universe:
+install.packages('tvCoef', repos = c('https://aqlt.r-universe.dev', 'https://cloud.r-project.org'))
 ```
 
 If you have troubles installing Java, check the [installation

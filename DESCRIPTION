@@ -1,7 +1,7 @@
 Package: tvCoef
 Type: Package
 Title: Linear Time-Varying Coefficient Models
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
   person("Claire", "de Rosamel", role = c("aut")),
   person("Alain", "Quartier-la-Tente", role = c("aut", "cre"),
