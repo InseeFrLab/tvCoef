@@ -10,10 +10,16 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/bp.lms.html</loc>
+    <loc>/news/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bp_lm.html</loc>
   </url>
   <url>
     <loc>/reference/break_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deprecated-tvCoef.html</loc>
   </url>
   <url>
     <loc>/reference/full_exogeneous_matrix.html</loc>
@@ -31,10 +37,13 @@
     <loc>/reference/get_rmse.html</loc>
   </url>
   <url>
-    <loc>/reference/hansen.test.html</loc>
+    <loc>/reference/hansen_table.html</loc>
   </url>
   <url>
-    <loc>/reference/hansen_table.html</loc>
+    <loc>/reference/hansen_test.html</loc>
+  </url>
+  <url>
+    <loc>/reference/has_intercept.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
