@@ -23,9 +23,9 @@
 #' @importFrom strucchange breakdates breakpoints
 bp_lm <- function(x, left = TRUE, break_dates, tvlm = FALSE, ...) {
   if (has_intercept(x)) {
-    formula <- sprintf("%s ~ .", colnames(x$model)[1])
-  } else {
     formula <- sprintf("%s ~ -1 + .", colnames(x$model)[1])
+  } else {
+    formula <- sprintf("%s ~ .", colnames(x$model)[1])
   }
   .data <- get_data(x, ...)
   if (missing(break_dates)) {
