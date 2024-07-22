@@ -1,90 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/bp_lm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/break_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/deprecated-tvCoef.html</loc>
-  </url>
-  <url>
-    <loc>/reference/full_exogeneous_matrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gdp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_formula.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_rmse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hansen_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hansen_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/has_intercept.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/last_coef.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lm_fenetre_fixe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lm_fixed_coeff.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lm_residual_effect.html</loc>
-  </url>
-  <url>
-    <loc>/reference/manufacturing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/moving_coefficients.html</loc>
-  </url>
-  <url>
-    <loc>/reference/oos_prev.html</loc>
-  </url>
-  <url>
-    <loc>/reference/piece_reg.html</loc>
-  </url>
-  <url>
-    <loc>/reference/resid_lm_fixed.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rmse.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rmse_prev.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ssm_lm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ssm_lm_oos.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/bp_lm.html</loc></url>
+<url><loc>/reference/break_data.html</loc></url>
+<url><loc>/reference/full_exogeneous_matrix.html</loc></url>
+<url><loc>/reference/gdp.html</loc></url>
+<url><loc>/reference/get_data.html</loc></url>
+<url><loc>/reference/get_formula.html</loc></url>
+<url><loc>/reference/get_rmse.html</loc></url>
+<url><loc>/reference/hansen_table.html</loc></url>
+<url><loc>/reference/hansen_test.html</loc></url>
+<url><loc>/reference/has_intercept.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/last_coef.html</loc></url>
+<url><loc>/reference/lm_fenetre_fixe.html</loc></url>
+<url><loc>/reference/lm_fixed_coeff.html</loc></url>
+<url><loc>/reference/lm_residual_effect.html</loc></url>
+<url><loc>/reference/manufacturing.html</loc></url>
+<url><loc>/reference/moving_coefficients.html</loc></url>
+<url><loc>/reference/oos_prev.html</loc></url>
+<url><loc>/reference/piece_reg.html</loc></url>
+<url><loc>/reference/resid_lm_fixed.html</loc></url>
+<url><loc>/reference/rmse.html</loc></url>
+<url><loc>/reference/rmse_prev.html</loc></url>
+<url><loc>/reference/ssm_lm.html</loc></url>
+<url><loc>/reference/ssm_lm_oos.html</loc></url>
 </urlset>
+
