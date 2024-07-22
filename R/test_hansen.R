@@ -75,21 +75,6 @@ hansen_test <- function(x, var, sigma = FALSE) {
   return(res)
 }
 
-#' Deprecated function
-#'
-#' @param ... parameters
-#' @export
-#' @name deprecated-tvCoef
-hansen.test <- function (...) {
-  .Deprecated("hansen_test")
-  hansen_test(...)
-}
-#' @export
-#' @rdname deprecated-tvCoef
-bp.lms <- function(...) {
-  .Deprecated("bp_lm")
-  bp_lm(...)
-}
 
 #' @export
 print.hansen_test <- function(x, a = c(5, 1, 2.5, 7.5, 10, 20), digits = 4, ...) {

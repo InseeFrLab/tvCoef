@@ -47,6 +47,3 @@ reference:
   contents:
   - '`rmse_prev`'
   - '`get_rmse`'
-- title: Deprecated functions
-  contents:
-  - '`deprecated-tvCoef`'
