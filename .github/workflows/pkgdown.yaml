@@ -3,10 +3,6 @@
 on:
   push:
     branches: [develop]
-  pull_request:
-    branches: [develop]
-  release:
-    types: [published]
   workflow_dispatch:
 
 name: pkgdown

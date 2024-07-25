@@ -209,7 +209,7 @@ lm_fixed_coeff <- function(formula, data, fixed_var, ...) {
   data_variables <- resid_lm_fixed(x, fixed_var = fixed_var)
   y_lm <- dynlm::dynlm(formula = fixes ~ -1 + ., data = data_variables)
   y_tvlm <- tvReg::tvLM(fixes ~ -1 + ., data = data_variables, ...)
-  y_bplm <- bp_lm(y_lm, data_variables)
+  y_bplm <- bp_lm(y_lm)
   res <- list(
     global_model = x,
     linear_reg = y_lm,
